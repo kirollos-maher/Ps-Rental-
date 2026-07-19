@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PS Rental Pro - Multi-Tenant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0e17;
+      color: #e8f0fe;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Business Setup Screen */
+    .setup-screen {
+      background: #131c2e;
+      border-radius: 24px;
+      padding: 40px 32px;
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+
+    .setup-screen .logo { font-size: 48px; margin-bottom: 8px; }
+    .setup-screen h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00d4ff, #7b61ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .setup-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
+
+    .setup-screen .input-group {
+      margin: 12px 0;
+      text-align: left;
+    }
+    .setup-screen .input-group label {
+      display: block;
+      font-size: 13px;
+      color: #8ba0c7;
+      margin-bottom: 4px;
+    }
+    .setup-screen .input-group input {
+      width: 100%;
+      padding: 14px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      color: #e8f0fe;
+      font-size: 16px;
+      outline: none;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .setup-screen .input-group input:focus {
+      border-color: #00d4ff;
+    }
+    .setup-screen .input-group .hint {
+      font-size: 12px;
+      color: #5a6f8a;
+      margin-top: 4px;
+    }
+
+    .setup-screen .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: white;
+      margin-top: 8px;
+    }
+    .setup-screen .btn:active { transform: scale(0.97); }
+    .setup-screen .btn-primary { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
+    .setup-screen .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
+
+    .setup-screen .business-info {
+      background: rgba(0,212,255,0.05);
+      border: 1px solid rgba(0,212,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 12px 0;
+      font-size: 13px;
+      color: #8ba0c7;
+    }
+
+    /* Lock Screen */
+    .lock-screen {
+      background: #131c2e;
+      border-radius: 24px;
+      padding: 40px 32px;
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+
+    .lock-screen .business-name {
+      font-size: 14px;
+      color: #00d4ff;
+      margin-bottom: 4px;
+    }
+    .lock-screen .logo { font-size: 48px; margin-bottom: 8px; }
+    .lock-screen h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00d4ff, #7b61ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .lock-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .status-badge.locked { background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.2); }
+    .status-badge.active { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.2); }
+    .status-badge.expiring { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.2); }
+    .status-badge.revoked { background: rgba(231,76,60,0.2); color: #ff6b6b; border: 1px solid rgba(231,76,60,0.3); animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .price-tag {
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .price-tag .amount { font-size: 32px; font-weight: 700; color: #00d4ff; }
+    .price-tag .period { color: #8ba0c7; font-size: 14px; margin-top: 4px; }
+
+    .features {
+      text-align: left;
+      margin: 20px 0;
+      padding: 0 8px;
+    }
+    .features li {
+      list-style: none;
+      color: #b0c4de;
+      font-size: 14px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .features li:last-child { border-bottom: none; }
+    .features li .check { color: #2ecc71; font-weight: 700; }
+
+    .payment-section {
+      background: rgba(255,200,0,0.05);
+      border: 1px solid rgba(255,200,0,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+    .payment-section .label { color: #8ba0c7; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .payment-section .code {
+      font-family: 'Courier New', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffd700;
+      letter-spacing: 4px;
+      background: rgba(0,0,0,0.3);
+      padding: 12px;
+      border-radius: 8px;
+      user-select: all;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      touch-action: manipulation;
+      color: white;
+      margin-top: 8px;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
+    .btn-success { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46,204,113,0.3); }
+    .btn-secondary { background: rgba(255,255,255,0.08); }
+    .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+    .days-left { color: #8ba0c7; font-size: 14px; margin-top: 12px; }
+    .days-left strong { color: #00d4ff; }
+
+    .hidden { display: none !important; }
+
+    /* Main App Styles */
+    .app-container { 
+      width: 100%; 
+      max-width: 500px; 
+      margin: 0 auto; 
+      padding-bottom: 80px;
+      display: block !important;
+    }
+    
+    .app-container.hidden { 
+      display: none !important; 
+    }
+
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .header h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b61ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header .business-tag {
+      font-size: 10px;
+      background: rgba(0,212,255,0.1);
+      color: #00d4ff;
+      padding: 2px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,212,255,0.15);
+      font-weight: 600;
+    }
+    .version-badge { font-size: 10px; background: rgba(0,212,255,0.15); color: #00d4ff; padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(0,212,255,0.2); font-weight: 600; }
+    .header-time { color: #8ba0c7; font-size: 14px; }
+    .btn-settings { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #8ba0c7; padding: 8px 14px; border-radius: 10px; font-size: 20px; cursor: pointer; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      background: #131c2e;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat-item { text-align: center; }
+    .stat-item .number { font-size: 28px; font-weight: 700; }
+    .stat-item .label { font-size: 12px; color: #8ba0c7; margin-top: 4px; }
+    .stat-item .number.total { color: #00d4ff; }
+    .stat-item .number.active { color: #2ecc71; }
+    .stat-item .number.available { color: #8ba0c7; }
+
+    .stations-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #e8f0fe; }
+    .station-grid { display: flex; flex-direction: column; gap: 12px; }
+
+    .station-card {
+      background: #131c2e;
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .station-card.active { border-left: 4px solid #2ecc71; }
+    .station-card .info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; }
+    .station-card .name { font-size: 18px; font-weight: 600; }
+    .station-card .status { font-size: 13px; color: #8ba0c7; }
+    .station-card .status.active-text { color: #2ecc71; }
+    .station-card .duration { font-size: 14px; font-weight: 500; color: #00d4ff; }
+    .station-card .start-time { font-size: 12px; color: #8ba0c7; }
+    .station-card .right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .station-card .rate-badge { font-size: 11px; background: rgba(0,212,255,0.1); color: #00d4ff; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(0,212,255,0.15); white-space: nowrap; }
+    .station-card .rate-badge.special { background: rgba(255,165,0,0.15); color: #ffa500; border-color: rgba(255,165,0,0.2); }
+
+    .noodle-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,200,0,0.05);
+      padding: 4px 10px 4px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,200,0,0.1);
+    }
+    .noodle-section .noodle-icon { font-size: 16px; }
+    .noodle-section .noodle-count { font-size: 14px; font-weight: 600; color: #ffd700; min-width: 20px; text-align: center; }
+    .noodle-btn { background: rgba(255,200,0,0.15); border: none; color: #ffd700; width: 24px; height: 24px; border-radius: 50%; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .noodle-btn:active { transform: scale(0.85); }
+    .noodle-btn.minus { color: #ff6b6b; background: rgba(255,100,100,0.1); }
+    .noodle-btn.plus { color: #51cf66; background: rgba(80,200,100,0.1); }
+
+    .btn { padding: 8px 20px; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; color: white; min-width: 80px; text-align: center; }
+    .btn:active { transform: scale(0.95); }
+    .btn-start { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .btn-end { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .btn-small { padding: 6px 12px; font-size: 12px; min-width: 50px; }
+
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #131c2e; padding: 12px 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); font-size: 12px; color: #5a6f8a; }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal-content { background: #131c2e; border-radius: 16px; padding: 28px 24px; max-width: 400px; width: 100%; border: 1px solid rgba(255,255,255,0.08); max-height: 90vh; overflow-y: auto; }
+    .modal-content h2 { font-size: 20px; margin-bottom: 8px; }
+    .modal-content .sub { color: #8ba0c7; font-size: 14px; margin-bottom: 20px; }
+    .modal-content .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .modal-content .detail-row .label { color: #8ba0c7; }
+    .modal-content .detail-row .value { font-weight: 600; }
+    .modal-content .detail-row.noodle-row { border-bottom: 2px solid rgba(255,200,0,0.2); }
+    .modal-content .detail-row.noodle-row .value { color: #ffd700; }
+    .modal-content .detail-row.time-price-row .value { color: #00d4ff; }
+    .modal-content .total-row { display: flex; justify-content: space-between; padding: 16px 0 20px; font-size: 20px; font-weight: 700; }
+    .modal-content .total-row .amount { color: #00d4ff; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions .btn { flex: 1; }
+    .btn-done { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
+
+    .settings-group { margin-bottom: 20px; }
+    .settings-group label { display: block; font-size: 13px; color: #8ba0c7; margin-bottom: 4px; }
+    .settings-group input { width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #e8f0fe; font-size: 16px; outline: none; }
+    .settings-group input:focus { border-color: #00d4ff; }
+    .settings-group .hint { font-size: 12px; color: #5a6f8a; margin-top: 4px; }
+
+    .settings-device { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+    .settings-device .device-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .settings-device .device-header .device-num { font-weight: 600; font-size: 16px; }
+    .settings-device .device-header .device-status { font-size: 12px; color: #8ba0c7; }
+    .settings-device .device-header .device-status.in-use { color: #2ecc71; }
+    .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .settings-row .settings-group { margin-bottom: 0; }
+    .settings-note { font-size: 13px; color: #ffa500; background: rgba(255,165,0,0.08); padding: 12px; border-radius: 10px; margin: 12px 0; border: 1px solid rgba(255,165,0,0.1); }
+    .global-settings { background: rgba(255,200,0,0.05); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(255,200,0,0.1); }
+    .global-settings .global-label { display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 8px; color: #ffd700; }
+
+    .rental-banner {
+      background: rgba(0,212,255,0.05);
+      border: 1px solid rgba(0,212,255,0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .rental-banner .info { font-size: 13px; color: #8ba0c7; }
+    .rental-banner .info strong { color: #00d4ff; }
+    .rental-banner .btn-rental { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); color: #00d4ff; padding: 6px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+
+    .device-id-box {
+      background: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #00d4ff;
+      margin-top: 8px;
+      word-break: break-all;
+      user-select: all;
+    }
+
+    .copy-btn {
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.2);
+      color: #00d4ff;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .copy-btn:active { transform: scale(0.95); }
+
+    .access-revoked-banner {
+      background: rgba(231,76,60,0.15);
+      border: 2px solid rgba(231,76,60,0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 12px 0;
+      animation: pulse 1.5s infinite;
+    }
+    .access-revoked-banner .title {
+      color: #ff6b6b;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .access-revoked-banner .sub {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .switch-business {
+      margin-top: 12px;
+    }
+    .switch-business .btn {
+      background: rgba(255,255,255,0.05);
+      color: #8ba0c7;
+      font-size: 13px;
+      padding: 10px;
+    }
+    .switch-business .btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    @media (max-width: 400px) {
+      .stats-row { padding: 12px; }
+      .stat-item .number { font-size: 22px; }
+      .station-card { padding: 12px; }
+      .station-card .right { width: 100%; justify-content: flex-end; }
+      .btn { padding: 8px 14px; font-size: 13px; min-width: 70px; }
+      .settings-row { grid-template-columns: 1fr; }
+      .lock-screen { padding: 28px 20px; }
+      .setup-screen { padding: 28px 20px; }
+      .payment-section .code { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SETUP SCREEN -->
+  <div id="setupScreen" class="setup-screen">
+    <div class="logo">🏪</div>
+    <h1>PS Rental Pro</h1>
+    <div class="subtitle">Multi-Business Rental Management</div>
+
+    <div class="business-info">
+      🔑 Enter your business code to access your rental system
+    </div>
+
+    <div class="input-group">
+      <label>🏢 Business Code</label>
+      <input type="text" id="businessCodeInput" placeholder="Enter business code" maxlength="20" style="text-transform:uppercase;letter-spacing:2px;">
+      <div class="hint">Contact your seller for your business code</div>
+    </div>
+
+    <button class="btn btn-primary" onclick="enterBusiness()">🔑 Access Business</button>
+
+    <div class="switch-business" style="margin-top:16px;">
+      <div style="font-size:12px;color:#5a6f8a;margin-bottom:8px;">Need a new business?</div>
+      <button class="btn btn-secondary" onclick="createNewBusiness()">➕ Create New Business</button>
+    </div>
+
+    <div style="margin-top:16px;font-size:11px;color:#5a6f8a;">
+      <span id="demoDeviceId">Device: Loading...</span>
+    </div>
+  </div>
+
+  <!-- LOCK SCREEN -->
+  <div id="lockScreen" class="lock-screen hidden">
+    <div class="business-name" id="lockBusinessName">🏢 Business Name</div>
+    <div class="logo">🎮</div>
+    <h1>PS Rental Pro</h1>
+    <div class="subtitle">Professional PlayStation Rental Management</div>
+
+    <div class="status-badge locked" id="statusBadge">🔒 Locked</div>
+
+    <div id="revokedBanner" class="access-revoked-banner" style="display:none;">
+      <div class="title">⛔ Access Revoked</div>
+      <div class="sub">Your access has been removed by the seller</div>
+    </div>
+
+    <div class="price-tag">
+      <div class="amount" id="priceDisplay">150 EGP</div>
+      <div class="period">per month</div>
+    </div>
+
+    <ul class="features" id="lockFeatures">
+      <li><span class="check">✅</span> PlayStation stations</li>
+      <li><span class="check">✅</span> Session tracking & billing</li>
+      <li><span class="check">✅</span> Noodle/Indomi order tracking</li>
+      <li><span class="check">✅</span> Custom prices per device</li>
+      <li><span class="check">✅</span> All in EGP currency</li>
+      <li><span class="check">✅</span> 24/7 access</li>
+    </ul>
+
+    <div class="payment-section">
+      <div class="label">📱 Send payment to:</div>
+      <div class="code" id="paymentCode">01012345678</div>
+      <div style="color:#8ba0c7;font-size:12px;margin-top:8px;">Vodafone Cash / InstaPay</div>
+    </div>
+
+    <div style="margin: 12px 0;">
+      <div style="color:#8ba0c7;font-size:13px;margin-bottom:4px;">Your Device ID:</div>
+      <div class="device-id-box" id="deviceIdDisplay">Loading...</div>
+      <button class="copy-btn" onclick="copyDeviceId()">📋 Copy Device ID</button>
+    </div>
+
+    <div id="paymentStatus" style="margin: 12px 0;">
+      <button class="btn btn-primary" onclick="verifyPayment()">✅ I've Paid - Verify Now</button>
+    </div>
+
+    <div class="days-left" id="daysLeft"></div>
+
+    <div class="switch-business" style="margin-top:16px;">
+      <button class="btn btn-secondary" onclick="switchBusiness()" style="font-size:13px;padding:10px;">🔄 Switch Business</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainApp" class="app-container hidden">
+    <div class="header">
+      <div class="header-left">
+        <h1>PS Rental</h1>
+        <span class="business-tag" id="appBusinessTag">BIZ</span>
+        <span class="version-badge">V1.0</span>
+        <button class="btn-settings" onclick="openSettings()">⚙️</button>
+      </div>
+      <span class="header-time" id="currentTime">12:00 PM</span>
+    </div>
+
+    <div class="rental-banner">
+      <div class="info">📋 <strong id="rentalStatus">Active</strong> · Expires: <strong id="expiryDate">--</strong></div>
+      <button class="btn-rental" onclick="showRentalInfo()">🔑 Rental Info</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="number total" id="totalStations">0</div>
+        <div class="label">Total Stations</div>
+      </div>
+      <div class="stat-item">
+        <div class="number active" id="inUseCount">0</div>
+        <div class="label">In Use</div>
+      </div>
+      <div class="stat-item">
+        <div class="number available" id="availableCount">0</div>
+        <div class="label">Available</div>
+      </div>
+    </div>
+
+    <div class="stations-title">STATIONS</div>
+    <div class="station-grid" id="stationGrid">
+      <!-- Rendered by JS -->
+    </div>
+
+    <div class="switch-business" style="margin-top:16px;text-align:center;">
+      <button class="btn btn-secondary" onclick="switchBusiness()" style="font-size:13px;padding:10px;width:auto;display:inline-block;">🔄 Switch Business</button>
+    </div>
+  </div>
+
+  <!-- SESSION MODAL -->
+  <div class="modal-overlay" id="sessionModal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Session Complete</h2>
+      <div class="sub" id="modalSub">PlayStation 1</div>
+      <div class="detail-row"><span class="label">→ Start Time</span><span class="value" id="modalStart">--</span></div>
+      <div class="detail-row"><span class="label">↩ End Time</span><span class="value" id="modalEnd">--</span></div>
+      <div class="detail-row"><span class="label">○ Duration</span><span class="value" id="modalDuration">--</span></div>
+      <div class="detail-row" style="border-bottom: none;"><span class="label">Rate</span><span class="value" id="modalRate">25.00 EGP / hour</span></div>
+      <div class="detail-row time-price-row"><span class="label">⏱ Time Price</span><span class="value" id="modalTimePrice">0.00 EGP</span></div>
+      <div class="detail-row noodle-row" id="noodleRow" style="display:none;"><span class="label">🍜 Noodles</span><span class="value" id="modalNoodles">0 × 15.00 EGP = 0.00 EGP</span></div>
+      <div class="total-row"><span>Total</span><span class="amount" id="modalTotal">0.00 EGP</span></div>
+      <div class="modal-actions"><button class="btn btn-done" onclick="closeModal()">Done</button></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+      <h2>⚙️ Settings</h2>
+      <div class="sub">Customize each PlayStation station</div>
+      <div class="settings-note">💡 Changes apply immediately. Active sessions keep the rate they started with.</div>
+      <div class="global-settings">
+        <div class="global-label">🍜 Noodle / Indomi Settings</div>
+        <div class="settings-group" style="margin-bottom:0;">
+          <label>Price per Noodle (EGP)</label>
+          <input type="number" id="noodlePriceInput" value="15" min="1" max="100" step="0.5">
+          <div class="hint">Default: 15 EGP per noodle</div>
+        </div>
+      </div>
+      <div id="settingsList"></div>
+      <div class="modal-actions" style="margin-top:16px;"><button class="btn btn-done" onclick="closeSettings()" style="flex:1;">Done</button></div>
+    </div>
+  </div>
+
+  <!-- RENTAL INFO MODAL -->
+  <div class="modal-overlay" id="rentalModal">
+    <div class="modal-content">
+      <h2>🔑 Rental Information</h2>
+      <div class="sub" id="rentalModalBusiness">Business</div>
+      <div class="detail-row"><span class="label">Status</span><span class="value" id="rentalModalStatus">Active</span></div>
+      <div class="detail-row"><span class="label">Expires</span><span class="value" id="rentalModalExpiry">--</span></div>
+      <div class="detail-row"><span class="label">Days Remaining</span><span class="value" id="rentalModalDays">--</span></div>
+      <div class="detail-row" style="border-bottom: none;"><span class="label">Device ID</span><span class="value" id="rentalModalDeviceId" style="font-size:12px;color:#8ba0c7;">--</span></div>
+      <div style="margin:16px 0;padding:12px;background:rgba(255,200,0,0.05);border-radius:10px;border:1px solid rgba(255,200,0,0.1);">
+        <div style="font-size:13px;color:#ffd700;">📱 Send <span id="rentalModalPrice">150</span> EGP to:</div>
+        <div style="font-family:'Courier New',monospace;font-size:20px;color:#ffd700;margin:8px 0;letter-spacing:2px;" id="rentalModalPhone">01012345678</div>
+        <div style="font-size:12px;color:#8ba0c7;">Vodafone Cash / InstaPay</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="verifyPayment()" style="flex:1;">✅ I've Paid</button>
+        <button class="btn btn-secondary" onclick="closeRentalModal()" style="flex:0.5;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer" id="footer">
+    <span id="footerText">Made with Replit | Version 1.0</span>
+  </div>
+
+  <script>
+    // ============================================
+    // MULTI-TENANT SYSTEM
+    // ============================================
+
+    const BUSINESS_KEY = 'ps_business_code';
+    const DEVICE_ID_KEY = 'ps_device_id';
+    const ACCESS_CHECK_KEY = 'ps_access_check';
+
+    let currentBusiness = null;
+    let businessConfig = null;
+    let accessCheckInterval = null;
+    let isMainAppInitialized = false;
+
+    // ============================================
+    // BUSINESS MANAGEMENT
+    // ============================================
+
+    function getBusinessKey(code) {
+      return 'ps_biz_' + code.toUpperCase();
+    }
+
+    function loadBusiness(code) {
+      try {
+        const key = getBusinessKey(code);
+        const data = localStorage.getItem(key);
+        if (data) {
+          return JSON.parse(data);
+        }
+        return null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveBusinessConfig(code, config) {
+      const key = getBusinessKey(code);
+      try {
+        localStorage.setItem(key, JSON.stringify(config));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function getDefaultBusinessConfig(code) {
+      return {
+        businessName: 'Business ' + code,
+        totalStations: 11,
+        price: 150,
+        phone: '01012345678',
+        noodlePrice: 15,
+        deviceConfig: {},
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    function createNewBusiness() {
+      const code = prompt('Enter a new business code (e.g., BIZ123):', 'BIZ' + Math.floor(Math.random() * 10000));
+      if (!code) return;
+      
+      const cleanCode = code.trim().toUpperCase();
+      if (cleanCode.length < 3) {
+        alert('Business code must be at least 3 characters');
+        return;
+      }
+      
+      // Check if business exists
+      if (loadBusiness(cleanCode)) {
+        alert('Business code already exists! Please use a different one.');
+        return;
+      }
+      
+      const config = getDefaultBusinessConfig(cleanCode);
+      
+      // Ask for stations
+      const stations = prompt('How many PlayStation stations? (default: 11)', '11');
+      if (stations) {
+        const num = parseInt(stations);
+        if (!isNaN(num) && num > 0) {
+          config.totalStations = num;
+        }
+      }
+      
+      // Ask for price
+      const price = prompt('Monthly price in EGP? (default: 150)', '150');
+      if (price) {
+        const num = parseFloat(price);
+        if (!isNaN(num) && num > 0) {
+          config.price = num;
+        }
+      }
+      
+      // Ask for phone
+      const phone = prompt('Payment phone number? (default: 01012345678)', '01012345678');
+      if (phone && phone.trim().length > 0) {
+        config.phone = phone.trim();
+      }
+      
+      // Ask for business name
+      const name = prompt('Business name?', 'My PS Rental');
+      if (name && name.trim().length > 0) {
+        config.businessName = name.trim();
+      }
+      
+      // Initialize device config
+      for (let i = 1; i <= config.totalStations; i++) {
+        config.deviceConfig[i] = {
+          name: `PS ${i}`,
+          rate: i === 1 ? 20 : 25
+        };
+      }
+      
+      if (saveBusinessConfig(cleanCode, config)) {
+        alert('✅ Business created successfully!\n\nCode: ' + cleanCode + '\nName: ' + config.businessName + '\nStations: ' + config.totalStations + '\nPrice: ' + config.price + ' EGP');
+        // Enter the business
+        document.getElementById('businessCodeInput').value = cleanCode;
+        enterBusiness();
+      } else {
+        alert('❌ Failed to create business');
+      }
+    }
+
+    function enterBusiness() {
+      const input = document.getElementById('businessCodeInput');
+      const code = input.value.trim().toUpperCase();
+      
+      if (!code) {
+        alert('Please enter a business code');
+        return;
+      }
+      
+      const config = loadBusiness(code);
+      if (!config) {
+        alert('❌ Business not found! Please check the code or create a new business.');
+        return;
+      }
+      
+      // Save current business
+      currentBusiness = code;
+      businessConfig = config;
+      localStorage.setItem(BUSINESS_KEY, code);
+      
+      // Initialize device config if needed
+      if (!config.deviceConfig || Object.keys(config.deviceConfig).length === 0) {
+        config.deviceConfig = {};
+        for (let i = 1; i <= config.totalStations; i++) {
+          config.deviceConfig[i] = {
+            name: `PS ${i}`,
+            rate: i === 1 ? 20 : 25
+          };
+        }
+        saveBusinessConfig(code, config);
+      }
+      
+      // Hide setup, show app
+      document.getElementById('setupScreen').classList.add('hidden');
+      document.getElementById('setupScreen').style.display = 'none';
+      
+      // Initialize the app with this business
+      initBusinessApp(code);
+    }
+
+    function switchBusiness() {
+      if (confirm('Switch to a different business?\n\nCurrent: ' + currentBusiness + '\nAll unsaved data will be saved.')) {
+        // Save current state
+        saveCurrentState();
+        
+        // Show setup screen
+        document.getElementById('setupScreen').classList.remove('hidden');
+        document.getElementById('setupScreen').style.display = 'block';
+        document.getElementById('lockScreen').classList.add('hidden');
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('mainApp').classList.add('hidden');
+        document.getElementById('mainApp').style.display = 'none';
+        
+        // Clear current business
+        currentBusiness = null;
+        businessConfig = null;
+        isMainAppInitialized = false;
+        
+        // Stop access checker
+        if (accessCheckInterval) {
+          clearInterval(accessCheckInterval);
+          accessCheckInterval = null;
+        }
+        
+        // Clear input
+        document.getElementById('businessCodeInput').value = '';
+        document.getElementById('demoDeviceId').textContent = 'Device: ' + getDeviceId();
+      }
+    }
+
+    function saveCurrentState() {
+      // Save any pending state
+      if (currentBusiness && businessConfig) {
+        saveBusinessConfig(currentBusiness, businessConfig);
+      }
+    }
+
+    // ============================================
+    // DEVICE ID (Shared across businesses)
+    // ============================================
+
+    function getDeviceId() {
+      let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+      if (!deviceId) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = 'PS-';
+        for (let i = 0; i < 8; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        deviceId = result;
+        localStorage.setItem(DEVICE_ID_KEY, deviceId);
+      }
+      return deviceId;
+    }
+
+    function copyDeviceId() {
+      const deviceId = getDeviceId();
+      navigator.clipboard.writeText(deviceId).then(() => {
+        alert('📋 Device ID copied: ' + deviceId);
+      }).catch(() => {
+        const input = document.createElement('input');
+        input.value = deviceId;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        alert('📋 Device ID copied: ' + deviceId);
+      });
+    }
+
+    // ============================================
+    // BUSINESS APP INITIALIZATION
+    // ============================================
+
+    function initBusinessApp(code) {
+      const config = loadBusiness(code);
+      if (!config) return;
+      
+      currentBusiness = code;
+      businessConfig = config;
+      
+      // Update UI with business info
+      document.getElementById('lockBusinessName').textContent = '🏢 ' + config.businessName;
+      document.getElementById('appBusinessTag').textContent = code;
+      document.getElementById('rentalModalBusiness').textContent = config.businessName;
+      
+      // Update features list
+      const featuresList = document.getElementById('lockFeatures');
+      featuresList.innerHTML = `
+        <li><span class="check">✅</span> ${config.totalStations} PlayStation stations</li>
+        <li><span class="check">✅</span> Session tracking & billing</li>
+        <li><span class="check">✅</span> Noodle/Indomi order tracking</li>
+        <li><span class="check">✅</span> Custom prices per device</li>
+        <li><span class="check">✅</span> All in EGP currency</li>
+        <li><span class="check">✅</span> 24/7 access</li>
+      `;
+      
+      // Update price
+      document.getElementById('priceDisplay').textContent = config.price + ' EGP';
+      document.getElementById('paymentCode').textContent = config.phone;
+      
+      // Update device ID
+      document.getElementById('deviceIdDisplay').textContent = getDeviceId();
+      
+      // Show lock screen
+      document.getElementById('lockScreen').classList.remove('hidden');
+      document.getElementById('lockScreen').style.display = 'block';
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('mainApp').style.display = 'none';
+      
+      // Update lock screen
+      updateLockScreen();
+      
+      // Start access checker
+      startAccessChecker();
+      
+      console.log('========================================');
+      console.log('🏢 Business: ' + config.businessName);
+      console.log('📋 Code: ' + code);
+      console.log('🎮 Stations: ' + config.totalStations);
+      console.log('💰 Price: ' + config.price + ' EGP');
+      console.log('📱 Phone: ' + config.phone);
+      console.log('========================================');
+    }
+
+    // ============================================
+    // USER DATA (Per Business + Device)
+    // ============================================
+
+    function getUserDataKey() {
+      const deviceId = getDeviceId();
+      return 'ps_user_' + currentBusiness + '_' + deviceId;
+    }
+
+    function getUserData() {
+      if (!currentBusiness) return null;
+      try {
+        const key = getUserDataKey();
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+      } catch (e) { return null; }
+    }
+
+    function saveUserData(data) {
+      if (!currentBusiness) return;
+      try {
+        const key = getUserDataKey();
+        localStorage.setItem(key, JSON.stringify(data));
+        // Trigger access check
+        localStorage.setItem(ACCESS_CHECK_KEY, Date.now().toString());
+      } catch (e) {}
+    }
+
+    // ============================================
+    // RENTAL STATE
+    // ============================================
+
+    function isRentalActive() {
+      const data = getUserData();
+      if (!data) return false;
+      if (!data.isActive) return false;
+      if (data.revoked === true) return false;
+      if (!data.expiryDate) return false;
+      const now = new Date();
+      const expiry = new Date(data.expiryDate);
+      return now <= expiry;
+    }
+
+    function getDaysRemaining() {
+      const data = getUserData();
+      if (!data || !data.isActive || !data.expiryDate) return 0;
+      const now = new Date();
+      const diff = new Date(data.expiryDate) - now;
+      return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    }
+
+    function activateRental() {
+      const now = new Date();
+      const expiry = new Date(now);
+      expiry.setMonth(expiry.getMonth() + 1);
+      
+      const data = {
+        isActive: true,
+        expiryDate: expiry.toISOString(),
+        activatedAt: now.toISOString(),
+        revoked: false
+      };
+      
+      saveUserData(data);
+      updateLockScreen();
+      updateAppAccess();
+      
+      alert('✅ Payment verified! Your rental is active until ' + expiry.toLocaleDateString());
+    }
+
+    // ============================================
+    // VERIFICATION
+    // ============================================
+
+    function verifyPayment() {
+      const deviceId = getDeviceId();
+      const code = prompt(
+        '📱 Enter verification code from seller:\n\n' +
+        'Send ' + businessConfig.price + ' EGP to ' + businessConfig.phone + '\n' +
+        'Then enter the dynamic code provided by the seller.\n\n' +
+        'Business: ' + businessConfig.businessName + '\n' +
+        'Device ID: ' + deviceId + '\n\n' +
+        '⚠️ Code changes every time for security!'
+      );
+      
+      if (code) {
+        const deviceSuffix = deviceId.slice(-4);
+        if (code.length >= 6 && code.includes(deviceSuffix)) {
+          activateRental();
+        } else {
+          alert('❌ Invalid verification code. Please contact the seller.\n\nDevice ID: ' + deviceId);
+        }
+      }
+    }
+
+    // ============================================
+    // REAL-TIME ACCESS CHECK
+    // ============================================
+
+    function checkAccess() {
+      const data = getUserData();
+      const deviceId = getDeviceId();
+      
+      if (!data) {
+        if (isRentalActive()) {
+          updateAppAccess();
+          updateLockScreen();
+        }
+        return false;
+      }
+
+      if (data.revoked === true) {
+        if (isRentalActive()) {
+          data.isActive = false;
+          data.expiryDate = null;
+          saveUserData(data);
+          updateAppAccess();
+          updateLockScreen();
+          
+          document.getElementById('revokedBanner').style.display = 'block';
+          document.getElementById('statusBadge').textContent = '⛔ Revoked';
+          document.getElementById('statusBadge').className = 'status-badge revoked';
+          
+          stopAllPlayTimers();
+        }
+        return false;
+      }
+
+      if (data.isActive && data.expiryDate) {
+        const now = new Date();
+        const expiry = new Date(data.expiryDate);
+        if (now > expiry) {
+          data.isActive = false;
+          saveUserData(data);
+          updateAppAccess();
+          updateLockScreen();
+          return false;
+        }
+        return true;
+      }
+
+      return false;
+    }
+
+    function startAccessChecker() {
+      if (accessCheckInterval) return;
+      
+      checkAccess();
+      
+      accessCheckInterval = setInterval(() => {
+        checkAccess();
+      }, 5000);
+      
+      console.log('🔐 Real-time access checker started');
+    }
+
+    // ============================================
+    // LOCK SCREEN UI
+    // ============================================
+
+    function updateLockScreen() {
+      if (!businessConfig) return;
+      
+      const statusBadge = document.getElementById('statusBadge');
+      const daysLeft = document.getElementById('daysLeft');
+      const paymentStatus = document.getElementById('paymentStatus');
+      const deviceIdDisplay = document.getElementById('deviceIdDisplay');
+      const priceDisplay = document.getElementById('priceDisplay');
+      const paymentCode = document.getElementById('paymentCode');
+      const revokedBanner = document.getElementById('revokedBanner');
+      
+      priceDisplay.textContent = businessConfig.price + ' EGP';
+      paymentCode.textContent = businessConfig.phone;
+      
+      const deviceId = getDeviceId();
+      deviceIdDisplay.textContent = deviceId;
+      
+      const data = getUserData();
+      const isActive = isRentalActive();
+      const days = getDaysRemaining();
+      const isRevoked = data && data.revoked === true;
+      
+      revokedBanner.style.display = 'none';
+      
+      if (isRevoked) {
+        statusBadge.textContent = '⛔ Revoked';
+        statusBadge.className = 'status-badge revoked';
+        revokedBanner.style.display = 'block';
+        daysLeft.innerHTML = '🔴 Access has been revoked by the seller. Contact them for support.';
+        paymentStatus.innerHTML = `
+          <button class="btn btn-primary" onclick="verifyPayment()">🔄 Request New Access</button>
+        `;
+      } else if (isActive) {
+        statusBadge.textContent = '✅ Active';
+        statusBadge.className = 'status-badge active';
+        
+        if (days <= 3) {
+          statusBadge.textContent = '⚠️ Expiring Soon';
+          statusBadge.className = 'status-badge expiring';
+        }
+        
+        daysLeft.innerHTML = '📅 <strong>' + days + '</strong> days remaining until ' + new Date(data.expiryDate).toLocaleDateString();
+        paymentStatus.innerHTML = `
+          <div style="color:#2ecc71;margin:8px 0;">✅ Access granted</div>
+          <button class="btn btn-success" onclick="showRentalInfo()">📋 View Rental Info</button>
+          <button class="btn btn-secondary" onclick="logout()" style="margin-top:4px;">🚪 Logout</button>
+        `;
+      } else {
+        statusBadge.textContent = '🔒 Locked';
+        statusBadge.className = 'status-badge locked';
+        daysLeft.innerHTML = '💡 Pay ' + businessConfig.price + ' EGP to unlock for 30 days\n⚠️ Dynamic code changes every time for security';
+        paymentStatus.innerHTML = `
+          <button class="btn btn-primary" onclick="verifyPayment()">✅ I've Paid - Verify Now</button>
+          <div style="font-size:11px;color:#5a6f8a;margin-top:8px;">🔐 Dynamic security code required</div>
+        `;
+      }
+    }
+
+    function logout() {
+      if (confirm('Logout and lock the app?')) {
+        const data = getUserData();
+        if (data) {
+          data.isActive = false;
+          data.expiryDate = null;
+          saveUserData(data);
+        }
+        updateLockScreen();
+        updateAppAccess();
+      }
+    }
+
+    // ============================================
+    // APP ACCESS CONTROL
+    // ============================================
+
+    function updateAppAccess() {
+      const isActive = isRentalActive();
+      const lockScreen = document.getElementById('lockScreen');
+      const mainApp = document.getElementById('mainApp');
+      
+      if (isActive && currentBusiness) {
+        lockScreen.style.display = 'none';
+        mainApp.classList.remove('hidden');
+        mainApp.style.display = 'block';
+        
+        if (!isMainAppInitialized) {
+          initMainApp();
+        } else {
+          renderMain();
+        }
+      } else {
+        lockScreen.style.display = 'block';
+        mainApp.classList.add('hidden');
+        mainApp.style.display = 'none';
+        updateLockScreen();
+      }
+    }
+
+    function showRentalInfo() {
+      const modal = document.getElementById('rentalModal');
+      const isActive = isRentalActive();
+      const days = getDaysRemaining();
+      const data = getUserData();
+      
+      document.getElementById('rentalModalStatus').textContent = isActive ? '✅ Active' : '🔒 Expired';
+      document.getElementById('rentalModalStatus').style.color = isActive ? '#2ecc71' : '#e74c3c';
+      document.getElementById('rentalModalExpiry').textContent = data?.expiryDate ? new Date(data.expiryDate).toLocaleDateString() : '--';
+      document.getElementById('rentalModalDays').textContent = isActive ? days + ' days' : 'Expired';
+      document.getElementById('rentalModalDeviceId').textContent = getDeviceId();
+      document.getElementById('rentalModalPrice').textContent = businessConfig.price;
+      document.getElementById('rentalModalPhone').textContent = businessConfig.phone;
+      
+      modal.classList.add('show');
+    }
+
+    function closeRentalModal() {
+      document.getElementById('rentalModal').classList.remove('show');
+    }
+
+    // ============================================
+    // MAIN APP
+    // ============================================
+
+    let deviceConfig = {};
+    let sessions = {};
+    let noodleOrders = {};
+    let noodlePrice = 15;
+    let activeTimers = {};
+
+    function getStoragePrefix() {
+      return 'ps_biz_' + currentBusiness + '_';
+    }
+
+    function loadMainState() {
+      if (!currentBusiness) return;
+      
+      const prefix = getStoragePrefix();
+      
+      try {
+        const savedConfig = localStorage.getItem(prefix + 'device_config');
+        if (savedConfig) {
+          deviceConfig = JSON.parse(savedConfig);
+        } else {
+          deviceConfig = businessConfig.deviceConfig || {};
+        }
+
+        const savedSessions = localStorage.getItem(prefix + 'sessions');
+        if (savedSessions) {
+          sessions = JSON.parse(savedSessions);
+          Object.keys(sessions).forEach(key => {
+            if (sessions[key].startTime) {
+              sessions[key].startTime = new Date(sessions[key].startTime);
+            }
+            if (sessions[key].endTime) {
+              sessions[key].endTime = new Date(sessions[key].endTime);
+            }
+          });
+        }
+
+        const savedNoodles = localStorage.getItem(prefix + 'noodle_orders');
+        if (savedNoodles) {
+          noodleOrders = JSON.parse(savedNoodles);
+        } else {
+          noodleOrders = {};
+          for (let i = 1; i <= businessConfig.totalStations; i++) {
+            noodleOrders[i] = 0;
+          }
+        }
+
+        noodlePrice = businessConfig.noodlePrice || 15;
+      } catch (e) {
+        console.warn('Failed to load main state');
+      }
+    }
+
+    function saveMainState() {
+      if (!currentBusiness) return;
+      
+      const prefix = getStoragePrefix();
+      
+      try {
+        localStorage.setItem(prefix + 'device_config', JSON.stringify(deviceConfig));
+        const sessionsToSave = {};
+        Object.keys(sessions).forEach(key => {
+          sessionsToSave[key] = { ...sessions[key] };
+          if (sessionsToSave[key].startTime) {
+            sessionsToSave[key].startTime = sessionsToSave[key].startTime.toISOString();
+          }
+          if (sessionsToSave[key].endTime) {
+            sessionsToSave[key].endTime = sessionsToSave[key].endTime.toISOString();
+          }
+        });
+        localStorage.setItem(prefix + 'sessions', JSON.stringify(sessionsToSave));
+        localStorage.setItem(prefix + 'noodle_orders', JSON.stringify(noodleOrders));
+        
+        // Also save to business config
+        businessConfig.deviceConfig = deviceConfig;
+        businessConfig.noodlePrice = noodlePrice;
+        saveBusinessConfig(currentBusiness, businessConfig);
+      } catch (e) {
+        console.warn('Failed to save main state');
+      }
+    }
+
+    function getRate(d) { return deviceConfig[d]?.rate || 25; }
+    function getDeviceName(d) { return deviceConfig[d]?.name || `PS ${d}`; }
+    function getNoodlePrice() { return noodlePrice || 15; }
+    function now() { return new Date(); }
+    function formatTime(date) { if (!date) return '--'; return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
+    
+    function formatDuration(ms) {
+      if (ms < 0) return '0s';
+      const seconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const remainingSeconds = seconds % 60;
+      const remainingMinutes = minutes % 60;
+      if (hours > 0) return `${hours}h ${remainingMinutes}m ${remainingSeconds}s`;
+      if (minutes > 0) return `${minutes}m ${remainingSeconds}s`;
+      return `${seconds}s`;
+    }
+
+    function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
+
+    function calculateAmount(startTime, endTime, rate) {
+      if (!startTime || !endTime) return 0;
+      const diffMs = endTime - startTime;
+      if (diffMs < 0) return 0;
+      const hours = diffMs / (1000 * 60 * 60);
+      return Math.round(hours * rate * 100) / 100;
+    }
+
+    function getTotalNoodles() {
+      let total = 0;
+      Object.values(noodleOrders).forEach(c => total += c || 0);
+      return total;
+    }
+
+    function getTotalNoodleRevenue() { return getTotalNoodles() * getNoodlePrice(); }
+    function getTotalSessionRevenue() {
+      let total = 0;
+      Object.values(sessions).forEach(s => { if (s.completed) total += s.amount || 0; });
+      return total;
+    }
+    function getGrandTotal() { return getTotalSessionRevenue() + getTotalNoodleRevenue(); }
+
+    function addNoodle(d) {
+      noodleOrders[d] = (noodleOrders[d] || 0) + 1;
+      saveMainState();
+      updateNoodleDisplay(d);
+      updateFooterStats();
+    }
+
+    function removeNoodle(d) {
+      if ((noodleOrders[d] || 0) > 0) {
+        noodleOrders[d] = (noodleOrders[d] || 0) - 1;
+        saveMainState();
+        updateNoodleDisplay(d);
+        updateFooterStats();
+      }
+    }
+
+    function updateNoodleDisplay(d) {
+      const count = noodleOrders[d] || 0;
+      const display = document.querySelector(`[data-noodle-count="${d}"]`);
+      if (display) display.textContent = count;
+      updateFooterStats();
+    }
+
+    function startSession(d) {
+      if (sessions[d] && !sessions[d].completed) {
+        alert(`Station ${d} is already in use!`);
+        return;
+      }
+      const nowTime = now();
+      sessions[d] = { startTime: nowTime, endTime: null, completed: false, amount: 0, duration: 0, rate: getRate(d) };
+      saveMainState();
+      renderMain();
+      startPlayTimer(d);
+    }
+
+    function endSession(d) {
+      const session = sessions[d];
+      if (!session || session.completed) return;
+      const endTime = now();
+      session.endTime = endTime;
+      session.completed = true;
+      session.duration = endTime - session.startTime;
+      session.amount = calculateAmount(session.startTime, endTime, session.rate);
+      saveMainState();
+      stopPlayTimer(d);
+      renderMain();
+      showSessionModal(d);
+    }
+
+    function deleteSession(d) {
+      if (confirm(`Are you sure you want to delete Station ${d}? This action cannot be undone.`)) {
+        delete sessions[d];
+        stopPlayTimer(d);
+        saveMainState();
+        renderMain();
+      }
+    }
+
+    function getActiveCount() { return Object.keys(sessions).filter(k => !sessions[k].completed).length; }
+    function getAvailableCount() { return businessConfig.totalStations - Object.keys(sessions).length; }
+
+    function startPlayTimer(d) {
+      if (activeTimers[d]) return;
+      activeTimers[d] = setInterval(() => {
+        const session = sessions[d];
+        if (!session || session.completed) { stopPlayTimer(d); return; }
+        updateStationDisplay(d);
+      }, 1000);
+    }
+
+    function stopPlayTimer(d) {
+      if (activeTimers[d]) { clearInterval(activeTimers[d]); delete activeTimers[d]; }
+    }
+
+    function stopAllPlayTimers() {
+      Object.keys(activeTimers).forEach(key => stopPlayTimer(parseInt(key)));
+    }
+
+    function updateStationDisplay(d) {
+      const session = sessions[d];
+      if (!session) return;
+      const card = document.querySelector(`[data-device="${d}"]`);
+      if (!card) return;
+      const statusEl = card.querySelector('.status');
+      const durationEl = card.querySelector('.duration');
+      const startTimeEl = card.querySelector('.start-time');
+      if (!session.completed) {
+        const nowTime = now();
+        const duration = nowTime - session.startTime;
+        durationEl.textContent = formatDuration(duration);
+        statusEl.textContent = 'In Use';
+        statusEl.className = 'status active-text';
+        startTimeEl.textContent = `Started ${formatTime(session.startTime)}`;
+      }
+    }
+
+    function updateFooterStats() {
+      const footer = document.getElementById('footerText');
+      if (footer) {
+        const noodleCount = getTotalNoodles();
+        footer.textContent = `🍜 ${noodleCount} noodles · ${formatCurrency(getGrandTotal())} total · ${currentBusiness}`;
+      }
+    }
+
+    function renderMain() {
+      if (!businessConfig) return;
+      
+      const grid = document.getElementById('stationGrid');
+      if (!grid) return;
+      
+      const totalStations = businessConfig.totalStations || 11;
+      const activeCount = getActiveCount();
+      const availableCount = getAvailableCount();
+
+      document.getElementById('totalStations').textContent = totalStations;
+      document.getElementById('inUseCount').textContent = activeCount;
+      document.getElementById('availableCount').textContent = availableCount;
+      document.getElementById('currentTime').textContent = formatTime(now());
+
+      const days = getDaysRemaining();
+      document.getElementById('rentalStatus').textContent = isRentalActive() ? '✅ Active' : '🔒 Expired';
+      const data = getUserData();
+      document.getElementById('expiryDate').textContent = data?.expiryDate ? new Date(data.expiryDate).toLocaleDateString() : '--';
+
+      let html = '';
+      for (let i = 1; i <= totalStations; i++) {
+        const session = sessions[i];
+        const isActive = session && !session.completed;
+        const isAvailable = !session;
+        const rate = getRate(i);
+        const name = getDeviceName(i);
+        const isSpecial = rate !== 25;
+        const noodleCount = noodleOrders[i] || 0;
+
+        let statusText = 'Available';
+        let statusClass = '';
+        let durationText = '';
+        let startTimeText = '';
+        let buttonHtml = '';
+        let cardClass = 'station-card';
+
+        if (isActive) {
+          statusText = 'In Use';
+          statusClass = 'active-text';
+          const nowTime = now();
+          const duration = nowTime - session.startTime;
+          durationText = formatDuration(duration);
+          startTimeText = `Started ${formatTime(session.startTime)}`;
+          cardClass += ' active';
+          buttonHtml = `<button class="btn btn-end" onclick="endSession(${i})">End Session</button>`;
+        } else if (isAvailable) {
+          buttonHtml = `<button class="btn btn-start" onclick="startSession(${i})">Start</button>`;
+        } else {
+          statusText = 'Completed';
+          durationText = formatDuration(session.duration);
+          startTimeText = `Ended ${formatTime(session.endTime)}`;
+          buttonHtml = `
+            <button class="btn btn-start btn-small" onclick="startSession(${i})">Restart</button>
+            <button class="btn btn-end btn-small" onclick="deleteSession(${i})" style="background:rgba(255,255,255,0.1);">✕</button>
+          `;
+        }
+
+        const rateLabel = isSpecial ? `${rate} EGP/hr` : '';
+        const rateClass = isSpecial ? 'rate-badge special' : 'rate-badge';
+
+        html += `
+          <div class="${cardClass}" data-device="${i}">
+            <div class="info">
+              <div class="name">${name}</div>
+              <div class="status ${statusClass}">${statusText}</div>
+              ${isActive || session?.completed ? `<div class="duration">${durationText}</div>` : ''}
+              ${isActive ? `<div class="start-time">${startTimeText}</div>` : ''}
+              ${session?.completed ? `<div class="start-time">${startTimeText}</div>` : ''}
+            </div>
+            <div class="right">
+              ${isSpecial ? `<span class="${rateClass}">${rate} EGP/hr</span>` : ''}
+              <div class="noodle-section">
+                <span class="noodle-icon">🍜</span>
+                <button class="noodle-btn minus" onclick="removeNoodle(${i})">−</button>
+                <span class="noodle-count" data-noodle-count="${i}">${noodleCount}</span>
+                <button class="noodle-btn plus" onclick="addNoodle(${i})">+</button>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                ${buttonHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+      updateFooterStats();
+    }
+
+    function showSessionModal(d) {
+      const session = sessions[d];
+      if (!session) return;
+      
+      const noodleCount = noodleOrders[d] || 0;
+      const price = getNoodlePrice();
+      const noodleTotal = noodleCount * price;
+      const sessionTotal = session.amount || 0;
+      const grandTotal = sessionTotal + noodleTotal;
+      
+      document.getElementById('modalSub').textContent = getDeviceName(d);
+      document.getElementById('modalStart').textContent = formatTime(session.startTime);
+      document.getElementById('modalEnd').textContent = formatTime(session.endTime);
+      document.getElementById('modalDuration').textContent = formatDuration(session.duration);
+      document.getElementById('modalRate').textContent = session.rate.toFixed(2) + ' EGP / hour';
+      document.getElementById('modalTimePrice').textContent = formatCurrency(sessionTotal);
+      
+      const noodleRow = document.getElementById('noodleRow');
+      if (noodleCount > 0) {
+        noodleRow.style.display = 'flex';
+        document.getElementById('modalNoodles').textContent = `${noodleCount} × ${price.toFixed(2)} EGP = ${noodleTotal.toFixed(2)} EGP`;
+      } else {
+        noodleRow.style.display = 'none';
+      }
+      
+      document.getElementById('modalTotal').textContent = formatCurrency(grandTotal);
+      document.getElementById('sessionModal').classList.add('show');
+    }
+
+    function closeModal() { document.getElementById('sessionModal').classList.remove('show'); }
+
+    function openSettings() {
+      const modal = document.getElementById('settingsModal');
+      const list = document.getElementById('settingsList');
+      document.getElementById('noodlePriceInput').value = getNoodlePrice();
+
+      let html = '';
+      const totalStations = businessConfig.totalStations || 11;
+      for (let i = 1; i <= totalStations; i++) {
+        const config = deviceConfig[i] || { name: `PS ${i}`, rate: 25 };
+        const session = sessions[i];
+        const isActive = session && !session.completed;
+        const statusText = isActive ? '🔴 In Use' : '⚪ Available';
+        const statusClass = isActive ? 'in-use' : '';
+
+        html += `
+          <div class="settings-device">
+            <div class="device-header">
+              <span class="device-num">${i}</span>
+              <span class="device-status ${statusClass}">${statusText}</span>
+            </div>
+            <div class="settings-row">
+              <div class="settings-group">
+                <label>Name</label>
+                <input type="text" id="settings_name_${i}" value="${config.name}" placeholder="PS ${i}" ${isActive ? 'disabled' : ''}>
+                ${isActive ? '<div class="hint">⛔ Cannot rename while in use</div>' : ''}
+              </div>
+              <div class="settings-group">
+                <label>Rate (EGP/hour)</label>
+                <input type="number" id="settings_rate_${i}" value="${config.rate}" min="1" max="100" step="0.5" ${isActive ? 'disabled' : ''}>
+                ${isActive ? '<div class="hint">⛔ Cannot change rate while in use</div>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      list.innerHTML = html;
+      modal.classList.add('show');
+    }
+
+    function closeSettings() {
+      const noodlePriceInput = document.getElementById('noodlePriceInput');
+      if (noodlePriceInput) {
+        const newPrice = parseFloat(noodlePriceInput.value);
+        if (!isNaN(newPrice) && newPrice > 0) noodlePrice = newPrice;
+      }
+
+      const totalStations = businessConfig.totalStations || 11;
+      for (let i = 1; i <= totalStations; i++) {
+        const nameInput = document.getElementById(`settings_name_${i}`);
+        const rateInput = document.getElementById(`settings_rate_${i}`);
+        if (nameInput && !nameInput.disabled) {
+          const newName = nameInput.value.trim() || `PS ${i}`;
+          deviceConfig[i] = deviceConfig[i] || {};
+          deviceConfig[i].name = newName;
+        }
+        if (rateInput && !rateInput.disabled) {
+          const newRate = parseFloat(rateInput.value);
+          if (!isNaN(newRate) && newRate > 0) {
+            deviceConfig[i] = deviceConfig[i] || {};
+            deviceConfig[i].rate = newRate;
+          }
+        }
+      }
+
+      saveMainState();
+      renderMain();
+      document.getElementById('settingsModal').classList.remove('show');
+    }
+
+    // ============================================
+    // MAIN APP INIT
+    // ============================================
+
+    function initMainApp() {
+      if (isMainAppInitialized) {
+        renderMain();
+        return;
+      }
+      
+      loadMainState();
+      
+      Object.keys(sessions).forEach(key => {
+        if (!sessions[key].completed) startPlayTimer(parseInt(key));
+      });
+      
+      renderMain();
+      
+      setInterval(() => {
+        document.getElementById('currentTime').textContent = formatTime(now());
+        Object.keys(sessions).forEach(key => {
+          if (!sessions[key].completed) updateStationDisplay(parseInt(key));
+        });
+      }, 1000);
+      
+      setInterval(saveMainState, 5000);
+      
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) saveMainState();
+        if (!document.hidden) {
+          checkAccess();
+        }
+      });
+      
+      isMainAppInitialized = true;
+      console.log('✅ Main app initialized for ' + currentBusiness);
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+
+    // Check if there's a saved business
+    const savedBusiness = localStorage.getItem(BUSINESS_KEY);
+    document.getElementById('demoDeviceId').textContent = 'Device: ' + getDeviceId();
+
+    if (savedBusiness) {
+      const config = loadBusiness(savedBusiness);
+      if (config) {
+        document.getElementById('businessCodeInput').value = savedBusiness;
+        enterBusiness();
+      } else {
+        // Invalid business, clear it
+        localStorage.removeItem(BUSINESS_KEY);
+      }
+    }
+
+    // Close modals on outside click
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('show');
+      }
+    });
+
+    console.log('========================================');
+    console.log('🏪 PS RENTAL PRO - MULTI-TENANT');
+    console.log('📌 One website, multiple businesses');
+    console.log('🔑 Each business has its own:');
+    console.log('   • Stations count');
+    console.log('   • Price');
+    console.log('   • Phone number');
+    console.log('   • Device names & rates');
+    console.log('   • Users');
+    console.log('========================================');
+    console.log('💡 How to use:');
+    console.log('1. Create a business with code');
+    console.log('2. Share the code with your customer');
+    console.log('3. Customer enters code to access');
+    console.log('4. Each business is completely separate');
+    console.log('========================================');
+  </script>
+</body>
+</html>
