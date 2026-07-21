@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PS Rental Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e17;
+            color: #e8f0fe;
+            min-height: 100vh;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .setup-screen {
+            background: #131c2e;
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+
+        .setup-screen .logo { font-size: 48px; margin-bottom: 8px; }
+        .setup-screen h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b61ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .setup-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
+
+        .setup-screen .input-group {
+            margin: 12px 0;
+            text-align: left;
+        }
+        .setup-screen .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #8ba0c7;
+            margin-bottom: 4px;
+        }
+        .setup-screen .input-group input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            color: #e8f0fe;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .setup-screen .input-group input:focus {
+            border-color: #00d4ff;
+        }
+        .setup-screen .input-group .hint {
+            font-size: 12px;
+            color: #5a6f8a;
+            margin-top: 4px;
+        }
+
+        .setup-screen .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            margin-top: 8px;
+        }
+        .setup-screen .btn:active { transform: scale(0.97); }
+        .setup-screen .btn-primary { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
+        .setup-screen .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
+
+        .setup-screen .business-info {
+            background: rgba(0,212,255,0.05);
+            border: 1px solid rgba(0,212,255,0.1);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 13px;
+            color: #8ba0c7;
+        }
+
+        .switch-business {
+            margin-top: 16px;
+        }
+        .switch-business .btn {
+            background: rgba(255,255,255,0.05);
+            color: #8ba0c7;
+            font-size: 13px;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .lock-screen {
+            background: #131c2e;
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            text-align: center;
+            display: none;
+        }
+
+        .lock-screen .business-name {
+            font-size: 14px;
+            color: #00d4ff;
+            margin-bottom: 4px;
+        }
+        .lock-screen .logo { font-size: 48px; margin-bottom: 8px; }
+        .lock-screen h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b61ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .lock-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .status-badge.locked { background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.2); }
+        .status-badge.active { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.2); }
+        .status-badge.expiring { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.2); }
+
+        .price-tag {
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .price-tag .amount { font-size: 32px; font-weight: 700; color: #00d4ff; }
+        .price-tag .period { color: #8ba0c7; font-size: 14px; margin-top: 4px; }
+
+        .features {
+            text-align: left;
+            margin: 20px 0;
+            padding: 0 8px;
+        }
+        .features li {
+            list-style: none;
+            color: #b0c4de;
+            font-size: 14px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .features li:last-child { border-bottom: none; }
+        .features li .check { color: #2ecc71; font-weight: 700; }
+
+        .payment-section {
+            background: rgba(255,200,0,0.05);
+            border: 1px solid rgba(255,200,0,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        .payment-section .label { color: #8ba0c7; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .payment-section .code {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffd700;
+            letter-spacing: 4px;
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 8px;
+            user-select: all;
+        }
+
+        .device-id-box {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #00d4ff;
+            margin-top: 8px;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .copy-btn {
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.2);
+            color: #00d4ff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        .days-left { color: #8ba0c7; font-size: 14px; margin-top: 12px; }
+        .days-left strong { color: #00d4ff; }
+
+        .hidden { display: none !important; }
+
+        .app-container { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            padding-bottom: 80px;
+            display: none !important;
+        }
+        
+        .app-container.active { 
+            display: block !important; 
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b61ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .business-tag {
+            font-size: 10px;
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,212,255,0.15);
+            font-weight: 600;
+        }
+        .header-time { color: #8ba0c7; font-size: 14px; }
+
+        .btn-settings {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #8ba0c7;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            line-height: 1;
+        }
+        .btn-settings:active { transform: scale(0.92); }
+        .btn-settings:hover { background: rgba(255,255,255,0.15); }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: #131c2e;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .stat-item { text-align: center; }
+        .stat-item .number { font-size: 28px; font-weight: 700; }
+        .stat-item .label { font-size: 12px; color: #8ba0c7; margin-top: 4px; }
+        .stat-item .number.total { color: #00d4ff; }
+        .stat-item .number.active { color: #2ecc71; }
+        .stat-item .number.available { color: #8ba0c7; }
+
+        .stations-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #e8f0fe;
+        }
+
+        .station-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .station-card {
+            background: #131c2e;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .station-card.active { border-left: 4px solid #2ecc71; }
+
+        .station-card .info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 120px;
+        }
+        .station-card .name { font-size: 18px; font-weight: 600; }
+        .station-card .status { font-size: 13px; color: #8ba0c7; }
+        .station-card .status.active-text { color: #2ecc71; }
+        .station-card .duration { font-size: 14px; font-weight: 500; color: #00d4ff; }
+        .station-card .start-time { font-size: 12px; color: #8ba0c7; }
+
+        .station-card .right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .station-card .rate-badge {
+            font-size: 11px;
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(0,212,255,0.15);
+            white-space: nowrap;
+        }
+        .station-card .rate-badge.special {
+            background: rgba(255,165,0,0.15);
+            color: #ffa500;
+            border-color: rgba(255,165,0,0.2);
+        }
+
+        .noodle-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,200,0,0.05);
+            padding: 2px 8px 2px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,200,0,0.1);
+        }
+        .noodle-section .noodle-icon { font-size: 14px; }
+        .noodle-section .noodle-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffd700;
+            min-width: 20px;
+            text-align: center;
+        }
+        .noodle-btn {
+            background: rgba(255,200,0,0.15);
+            border: none;
+            color: #ffd700;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .noodle-btn:active { transform: scale(0.85); }
+        .noodle-btn.minus { color: #ff6b6b; background: rgba(255,100,100,0.1); }
+        .noodle-btn.plus { color: #51cf66; background: rgba(80,200,100,0.1); }
+        .noodle-btn:hover { opacity: 0.7; }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+            touch-action: manipulation;
+            color: white;
+            min-width: 70px;
+            text-align: center;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-start { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .btn-start:hover { box-shadow: 0 4px 15px rgba(46,204,113,0.3); }
+        .btn-end { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-end:hover { box-shadow: 0 4px 15px rgba(231,76,60,0.3); }
+        .btn-small { padding: 4px 10px; font-size: 11px; min-width: 50px; }
+
+        .btn-pay {
+            background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+            color: white !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            padding: 14px !important;
+            border: none !important;
+            border-radius: 12px !important;
+            cursor: pointer !important;
+            width: 100% !important;
+            transition: all 0.2s !important;
+            margin-top: 8px !important;
+        }
+        .btn-pay:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(46,204,113,0.4) !important;
+        }
+        .btn-pay:active {
+            transform: scale(0.97) !important;
+        }
+
+        .footer { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: #131c2e; 
+            padding: 10px 16px; 
+            text-align: center; 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+            font-size: 11px; 
+            color: #5a6f8a; 
+            z-index: 100;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+
+        .modal-content {
+            background: #131c2e;
+            border-radius: 16px;
+            padding: 28px 24px;
+            max-width: 380px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #2ecc71;
+        }
+        .modal-content .sub {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .modal-content .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .modal-content .detail-row .label { color: #8ba0c7; }
+        .modal-content .detail-row .value { font-weight: 600; color: #e8f0fe; }
+        .modal-content .detail-row.noodle-row .value { color: #ffd700; }
+        .modal-content .detail-row.time-row .value { color: #00d4ff; }
+        .modal-content .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0 4px 0;
+            font-size: 20px;
+            font-weight: 700;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            margin-top: 8px;
+        }
+        .modal-content .total-row .amount { color: #00d4ff; }
+
+        .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .modal-actions .btn { flex: 1; padding: 12px; font-size: 15px; }
+        .btn-done { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
+        .btn-done:hover { box-shadow: 0 4px 15px rgba(0,212,255,0.3); }
+
+        .settings-modal-content {
+            background: #131c2e;
+            border-radius: 16px;
+            padding: 28px 24px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .settings-modal-content h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .settings-modal-content .sub {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .settings-group {
+            margin-bottom: 16px;
+        }
+        .settings-group label {
+            display: block;
+            font-size: 13px;
+            color: #8ba0c7;
+            margin-bottom: 4px;
+        }
+        .settings-group input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #e8f0fe;
+            font-size: 16px;
+            outline: none;
+        }
+        .settings-group input:focus { border-color: #00d4ff; }
+        .settings-group .hint {
+            font-size: 12px;
+            color: #5a6f8a;
+            margin-top: 4px;
+        }
+
+        .settings-device {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .settings-device .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .settings-device .device-header .device-num { font-weight: 600; font-size: 15px; }
+        .settings-device .device-header .device-status { font-size: 12px; color: #8ba0c7; }
+        .settings-device .device-header .device-status.in-use { color: #2ecc71; }
+
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .settings-row .settings-group { margin-bottom: 0; }
+
+        .settings-note {
+            font-size: 13px;
+            color: #ffa500;
+            background: rgba(255,165,0,0.08);
+            padding: 12px;
+            border-radius: 10px;
+            margin: 12px 0;
+            border: 1px solid rgba(255,165,0,0.1);
+        }
+
+        .global-settings {
+            background: rgba(255,200,0,0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,200,0,0.1);
+        }
+        .global-settings .global-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        @media (max-width: 400px) {
+            .stats-row { padding: 12px; }
+            .stat-item .number { font-size: 22px; }
+            .station-card { padding: 12px; }
+            .station-card .right { width: 100%; justify-content: flex-end; }
+            .btn { padding: 6px 12px; font-size: 12px; min-width: 60px; }
+            .lock-screen { padding: 28px 20px; }
+            .setup-screen { padding: 28px 20px; }
+            .payment-section .code { font-size: 18px; }
+            .noodle-btn { width: 20px; height: 20px; font-size: 12px; }
+            .settings-row { grid-template-columns: 1fr; }
+            .settings-modal-content { padding: 20px 16px; }
+            .btn-pay { font-size: 14px !important; padding: 12px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="setupScreen" class="setup-screen">
+        <div class="logo">🏪</div>
+        <h1>PS Rental Pro</h1>
+        <div class="subtitle">Multi-Business Rental Management</div>
+        <div class="business-info">🔑 Enter your business code to access your rental system</div>
+        <div class="input-group">
+            <label>🏢 Business Code</label>
+            <input type="text" id="businessCodeInput" placeholder="Enter business code" maxlength="20" style="text-transform:uppercase;letter-spacing:2px;">
+            <div class="hint">Contact your seller for your business code</div>
+        </div>
+        <button class="btn btn-primary" onclick="enterBusiness()">🔑 Access Business</button>
+        <div class="switch-business" style="margin-top:16px;">
+            <div style="font-size:12px;color:#5a6f8a;margin-bottom:8px;">Need a new business?</div>
+            <button class="btn btn-secondary" onclick="createNewBusiness()" style="background:rgba(255,255,255,0.05);color:#8ba0c7;border:none;border-radius:12px;padding:10px;width:100%;cursor:pointer;">➕ Create New Business</button>
+        </div>
+        <div style="margin-top:16px;font-size:11px;color:#5a6f8a;">
+            <span id="demoDeviceId">Device: Loading...</span>
+        </div>
+    </div>
+
+    <div id="lockScreen" class="lock-screen">
+        <div class="business-name" id="lockBusinessName">🏢 Business Name</div>
+        <div class="logo">🎮</div>
+        <h1>PS Rental Pro</h1>
+        <div class="subtitle">Professional PlayStation Rental Management</div>
+        <div class="status-badge locked" id="statusBadge">🔒 Locked</div>
+        <div class="price-tag">
+            <div class="amount" id="priceDisplay">150 EGP</div>
+            <div class="period">per month</div>
+        </div>
+        <ul class="features" id="lockFeatures">
+            <li><span class="check">✅</span> PlayStation stations</li>
+            <li><span class="check">✅</span> Session tracking & billing</li>
+            <li><span class="check">✅</span> Noodle/Indomi order tracking</li>
+            <li><span class="check">✅</span> Custom prices per device</li>
+            <li><span class="check">✅</span> All in EGP currency</li>
+            <li><span class="check">✅</span> 24/7 access</li>
+        </ul>
+        <div class="payment-section">
+            <div class="label">📱 Send payment to:</div>
+            <div class="code" id="paymentCode">01012345678</div>
+            <div style="color:#8ba0c7;font-size:12px;margin-top:8px;">Vodafone Cash / InstaPay</div>
+        </div>
+        <div style="margin: 12px 0;">
+            <div style="color:#8ba0c7;font-size:13px;margin-bottom:4px;">Your Device ID:</div>
+            <div class="device-id-box" id="deviceIdDisplay">Loading...</div>
+            <button class="copy-btn" onclick="copyDeviceId()">📋 Copy Device ID</button>
+        </div>
+        <div id="paymentStatus" style="margin: 12px 0;">
+            <button class="btn btn-pay" onclick="verifyPayment()">✅ I've Paid - Verify Now</button>
+        </div>
+        <div class="days-left" id="daysLeft"></div>
+        <div class="switch-business" style="margin-top:16px;">
+            <button class="btn btn-secondary" onclick="switchBusiness()" style="background:rgba(255,255,255,0.05);color:#8ba0c7;border:none;border-radius:12px;padding:10px;width:100%;cursor:pointer;">🔄 Switch Business</button>
+        </div>
+    </div>
+
+    <div id="mainApp" class="app-container">
+        <div class="header">
+            <div class="header-left">
+                <h1>PS Rental</h1>
+                <span class="business-tag" id="appBusinessTag">BIZ</span>
+                <button class="btn-settings" onclick="openSettings()">⚙️</button>
+            </div>
+            <span class="header-time" id="currentTime">12:00 PM</span>
+        </div>
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="number total" id="totalStations">0</div>
+                <div class="label">Total Stations</div>
+            </div>
+            <div class="stat-item">
+                <div class="number active" id="inUseCount">0</div>
+                <div class="label">In Use</div>
+            </div>
+            <div class="stat-item">
+                <div class="number available" id="availableCount">0</div>
+                <div class="label">Available</div>
+            </div>
+        </div>
+        <div class="stations-title">STATIONS</div>
+        <div class="station-grid" id="stationGrid"></div>
+    </div>
+
+    <div class="modal-overlay" id="sessionModal">
+        <div class="modal-content">
+            <h2>✅ Session Complete!</h2>
+            <div class="sub" id="modalSub">PlayStation 1</div>
+            <div class="detail-row">
+                <span class="label">⏱ Duration</span>
+                <span class="value" id="modalDuration">--</span>
+            </div>
+            <div class="detail-row time-row">
+                <span class="label">💰 Time Price</span>
+                <span class="value" id="modalTimePrice">0.00 EGP</span>
+            </div>
+            <div class="detail-row noodle-row" id="noodleRow" style="display:none;">
+                <span class="label">🍜 Noodles</span>
+                <span class="value" id="modalNoodles">0 × 15.00 EGP = 0.00 EGP</span>
+            </div>
+            <div class="total-row">
+                <span>Total</span>
+                <span class="amount" id="modalTotal">0.00 EGP</span>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-done" onclick="closeModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settingsModal">
+        <div class="settings-modal-content">
+            <h2>⚙️ Settings</h2>
+            <div class="sub">Customize each PlayStation station</div>
+            <div class="settings-note">💡 Changes apply immediately. Active sessions keep the rate they started with.</div>
+            <div class="global-settings">
+                <div class="global-label">🍜 Noodle / Indomi Settings</div>
+                <div class="settings-group" style="margin-bottom:0;">
+                    <label>Price per Noodle (EGP)</label>
+                    <input type="number" id="noodlePriceInput" value="15" min="1" max="100" step="0.5">
+                    <div class="hint">Default: 15 EGP per noodle</div>
+                </div>
+            </div>
+            <div id="settingsList"></div>
+            <div class="modal-actions" style="margin-top:16px;">
+                <button class="btn btn-done" onclick="closeSettings()" style="flex:1;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" id="footer">
+        <span id="footerText">Made with ❤️ | Version 1.0</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ============================================
+        // SUPABASE CONFIG
+        // ============================================
+        const SUPABASE_URL = 'https://fhjhtgbvtkuhhzitvxtx.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_X0aLD3gjXGqC_no4gW78ng_TWztP5cd';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ============================================
+        // CONSTANTS & STATE
+        // ============================================
+        const BUSINESS_KEY = 'ps_business_code';
+        const DEVICE_ID_KEY = 'ps_device_id';
+        const VERSION_KEY = 'ps_app_version';
+        const APP_VERSION = '1.0.0';
+
+        let currentBusiness = null;
+        let businessConfig = null;
+        let deviceConfig = {};
+        let noodleOrders = {};
+        let noodlePrice = 15;
+        let activeTimers = {};
+        let isMainAppInitialized = false;
+
+        // SESSIONS STORED IN LOCALSTORAGE ONLY
+        let sessions = {};
+
+        // ============================================
+        // VERSION CHECK
+        // ============================================
+        function checkVersion() {
+            const stored = localStorage.getItem(VERSION_KEY);
+            if (stored && stored !== APP_VERSION) {
+                localStorage.setItem(VERSION_KEY, APP_VERSION);
+                location.reload();
+                return true;
+            }
+            if (!stored) localStorage.setItem(VERSION_KEY, APP_VERSION);
+            return false;
+        }
+        setInterval(() => {
+            const stored = localStorage.getItem(VERSION_KEY);
+            if (stored && stored !== APP_VERSION) {
+                localStorage.setItem(VERSION_KEY, APP_VERSION);
+                location.reload();
+            }
+        }, 30000);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) checkVersion(); });
+        checkVersion();
+
+        // ============================================
+        // SESSION STORAGE FUNCTIONS (LOCALSTORAGE)
+        // ============================================
+        function getSessionsKey() {
+            return 'ps_sessions_' + currentBusiness + '_' + getDeviceId();
+        }
+
+        function loadSessionsFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                const data = localStorage.getItem(getSessionsKey());
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    // Convert string dates back to Date objects
+                    Object.keys(parsed).forEach(key => {
+                        if (parsed[key].startTime) {
+                            parsed[key].startTime = new Date(parsed[key].startTime);
+                        }
+                        if (parsed[key].endTime) {
+                            parsed[key].endTime = new Date(parsed[key].endTime);
+                        }
+                    });
+                    return parsed;
+                }
+                return {};
+            } catch (e) { return {}; }
+        }
+
+        function saveSessionsToStorage() {
+            if (!currentBusiness) return;
+            try {
+                const toSave = {};
+                Object.keys(sessions).forEach(key => {
+                    toSave[key] = { ...sessions[key] };
+                    if (toSave[key].startTime) {
+                        toSave[key].startTime = toSave[key].startTime.toISOString();
+                    }
+                    if (toSave[key].endTime) {
+                        toSave[key].endTime = toSave[key].endTime.toISOString();
+                    }
+                });
+                localStorage.setItem(getSessionsKey(), JSON.stringify(toSave));
+            } catch (e) {}
+        }
+
+        function loadNoodleOrdersFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                const data = localStorage.getItem('ps_noodles_' + currentBusiness + '_' + getDeviceId());
+                return data ? JSON.parse(data) : {};
+            } catch (e) { return {}; }
+        }
+
+        function saveNoodleOrdersToStorage() {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem('ps_noodles_' + currentBusiness + '_' + getDeviceId(), JSON.stringify(noodleOrders));
+            } catch (e) {}
+        }
+
+        // ============================================
+        // SUPABASE FUNCTIONS (BUSINESS & USER ONLY)
+        // ============================================
+        async function loadBusiness(code) {
+            try {
+                const { data, error } = await supabaseClient.from('businesses').select('*').eq('code', code.toUpperCase()).single();
+                if (error) return null;
+                return data;
+            } catch (e) { return null; }
+        }
+
+        async function saveBusinessConfig(code, config) {
+            try {
+                const { error } = await supabaseClient.from('businesses').upsert({
+                    code: code.toUpperCase(),
+                    business_name: config.businessName,
+                    total_stations: config.totalStations,
+                    price: config.price,
+                    phone: config.phone,
+                    noodle_price: config.noodlePrice || 15,
+                    device_config: config.deviceConfig || {}
+                });
+                if (error) return false;
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function getUserData(businessCode, deviceId) {
+            try {
+                const { data, error } = await supabaseClient.from('users').select('*').eq('business_code', businessCode).eq('device_id', deviceId).single();
+                if (error && error.code !== 'PGRST116') return null;
+                return data;
+            } catch (e) { return null; }
+        }
+
+        async function saveUserData(businessCode, deviceId, data) {
+            try {
+                const { error } = await supabaseClient.from('users').upsert({
+                    business_code: businessCode,
+                    device_id: deviceId,
+                    is_active: data.isActive || false,
+                    expiry_date: data.expiryDate,
+                    revoked: data.revoked || false
+                });
+                if (error) return false;
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function verifyCode(businessCode, code) {
+            try {
+                const { data, error } = await supabaseClient.from('code_history').select('*').eq('business_code', businessCode).eq('code', code).eq('used', false).single();
+                if (error || !data) return { valid: false };
+                await supabaseClient.from('code_history').update({ used: true }).eq('id', data.id);
+                return { valid: true };
+            } catch (e) { return { valid: false }; }
+        }
+
+        // ============================================
+        // USER DATA (LOCAL CACHE - FAST LOAD)
+        // ============================================
+        function getUserDataKey() {
+            return 'ps_user_' + currentBusiness + '_' + getDeviceId();
+        }
+
+        function getUserDataLocal() {
+            if (!currentBusiness) return null;
+            try {
+                const data = localStorage.getItem(getUserDataKey());
+                return data ? JSON.parse(data) : null;
+            } catch (e) { return null; }
+        }
+
+        function saveUserDataLocal(data) {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem(getUserDataKey(), JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        // ============================================
+        // RENTAL STATE - FROM LOCAL CACHE
+        // ============================================
+        function isRentalActive() {
+            const data = getUserDataLocal();
+            if (!data) return false;
+            if (!data.isActive) return false;
+            if (data.revoked === true) return false;
+            if (!data.expiryDate) return false;
+            const now = new Date();
+            const expiry = new Date(data.expiryDate);
+            return now <= expiry;
+        }
+
+        function getDaysRemaining() {
+            const data = getUserDataLocal();
+            if (!data || !data.isActive || !data.expiryDate) return 0;
+            const now = new Date();
+            const diff = new Date(data.expiryDate) - now;
+            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
+
+        // ============================================
+        // DEVICE ID
+        // ============================================
+        function getDeviceId() {
+            let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+            if (!deviceId) {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let result = 'PS-';
+                for (let i = 0; i < 8; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                deviceId = result;
+                localStorage.setItem(DEVICE_ID_KEY, deviceId);
+            }
+            return deviceId;
+        }
+
+        function copyDeviceId() {
+            const deviceId = getDeviceId();
+            navigator.clipboard.writeText(deviceId).then(() => {
+                alert('📋 Device ID copied: ' + deviceId);
+            }).catch(() => {
+                const input = document.createElement('input');
+                input.value = deviceId;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                alert('📋 Device ID copied: ' + deviceId);
+            });
+        }
+
+        // ============================================
+        // BUSINESS MANAGEMENT
+        // ============================================
+        async function createNewBusiness() {
+            const code = prompt('Enter a new business code (e.g., BIZ123):', 'BIZ' + Math.floor(Math.random() * 10000));
+            if (!code) return;
+            const cleanCode = code.trim().toUpperCase();
+            if (cleanCode.length < 3) {
+                alert('Business code must be at least 3 characters');
+                return;
+            }
+            const existing = await loadBusiness(cleanCode);
+            if (existing) {
+                alert('Business code already exists!');
+                return;
+            }
+            const config = {
+                businessName: prompt('Business name:', 'My PS Rental') || 'Business ' + cleanCode,
+                totalStations: parseInt(prompt('Number of stations:', '11')) || 11,
+                price: parseFloat(prompt('Monthly price (EGP):', '150')) || 150,
+                phone: prompt('Payment phone number:', '01012345678') || '01012345678',
+                noodlePrice: 15,
+                deviceConfig: {},
+                createdAt: new Date().toISOString()
+            };
+            for (let i = 1; i <= config.totalStations; i++) {
+                config.deviceConfig[i] = { name: `PS ${i}`, rate: i === 1 ? 20 : 25 };
+            }
+            if (await saveBusinessConfig(cleanCode, config)) {
+                alert('✅ Business created successfully!\n\nCode: ' + cleanCode + '\nName: ' + config.businessName + '\nStations: ' + config.totalStations + '\nPrice: ' + config.price + ' EGP');
+                document.getElementById('businessCodeInput').value = cleanCode;
+                enterBusiness();
+            } else {
+                alert('❌ Failed to create business');
+            }
+        }
+
+        // ============================================
+        // ENTER BUSINESS
+        // ============================================
+        async function enterBusiness() {
+            const input = document.getElementById('businessCodeInput');
+            const code = input.value.trim().toUpperCase();
+            if (!code) {
+                alert('Please enter a business code');
+                return;
+            }
+            const config = await loadBusiness(code);
+            if (!config) {
+                alert('❌ Business not found! Please check the code.');
+                return;
+            }
+
+            currentBusiness = code;
+            businessConfig = {
+                businessName: config.business_name,
+                totalStations: config.total_stations,
+                price: config.price,
+                phone: config.phone,
+                noodlePrice: config.noodle_price || 15,
+                deviceConfig: config.device_config || {}
+            };
+            localStorage.setItem(BUSINESS_KEY, code);
+
+            const deviceId = getDeviceId();
+
+            // Load user data from Supabase and cache locally
+            const userData = await getUserData(code, deviceId);
+            if (userData) {
+                saveUserDataLocal({
+                    isActive: userData.is_active || false,
+                    expiryDate: userData.expiry_date,
+                    revoked: userData.revoked || false
+                });
+            }
+
+            // Load sessions from LOCALSTORAGE
+            sessions = loadSessionsFromStorage();
+            noodleOrders = loadNoodleOrdersFromStorage();
+
+            const isActive = isRentalActive();
+
+            document.getElementById('setupScreen').style.display = 'none';
+            document.getElementById('lockScreen').style.display = 'block';
+            document.getElementById('lockBusinessName').textContent = '🏢 ' + businessConfig.businessName;
+            document.getElementById('appBusinessTag').textContent = code;
+            document.getElementById('priceDisplay').textContent = businessConfig.price + ' EGP';
+            document.getElementById('paymentCode').textContent = businessConfig.phone;
+
+            document.getElementById('lockFeatures').innerHTML = `
+                <li><span class="check">✅</span> ${businessConfig.totalStations} PlayStation stations</li>
+                <li><span class="check">✅</span> Session tracking & billing</li>
+                <li><span class="check">✅</span> Noodle/Indomi order tracking</li>
+                <li><span class="check">✅</span> Custom prices per device</li>
+                <li><span class="check">✅</span> All in EGP currency</li>
+                <li><span class="check">✅</span> 24/7 access</li>
+            `;
+
+            if (isActive) {
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.add('active');
+                window.scrollTo(0, 0);
+                if (!isMainAppInitialized) {
+                    renderMain();
+                    isMainAppInitialized = true;
+                }
+                updateLockScreen();
+            } else {
+                document.getElementById('mainApp').classList.remove('active');
+                isMainAppInitialized = false;
+                updateLockScreen();
+            }
+        }
+
+        function switchBusiness() {
+            if (confirm('Switch to a different business?\n\nCurrent: ' + currentBusiness)) {
+                // Save current state
+                saveSessionsToStorage();
+                saveNoodleOrdersToStorage();
+                document.getElementById('setupScreen').style.display = 'block';
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('active');
+                document.getElementById('businessCodeInput').value = '';
+                currentBusiness = null;
+                businessConfig = null;
+                isMainAppInitialized = false;
+                sessions = {};
+                noodleOrders = {};
+            }
+        }
+
+        // ============================================
+        // SETTINGS
+        // ============================================
+        function openSettings() {
+            const modal = document.getElementById('settingsModal');
+            const list = document.getElementById('settingsList');
+            document.getElementById('noodlePriceInput').value = getNoodlePrice();
+            const totalStations = businessConfig?.totalStations || 11;
+            let html = '';
+            for (let i = 1; i <= totalStations; i++) {
+                const config = deviceConfig[i] || { name: `PS ${i}`, rate: 25 };
+                const session = sessions[i];
+                const isActive = session && !session.completed;
+                const statusText = isActive ? '🔴 In Use' : '⚪ Available';
+                const statusClass = isActive ? 'in-use' : '';
+                html += `
+                    <div class="settings-device">
+                        <div class="device-header">
+                            <span class="device-num">${i}</span>
+                            <span class="device-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-group">
+                                <label>Name</label>
+                                <input type="text" id="settings_name_${i}" value="${config.name}" placeholder="PS ${i}" ${isActive ? 'disabled' : ''}>
+                                ${isActive ? '<div class="hint">⛔ Cannot rename while in use</div>' : ''}
+                            </div>
+                            <div class="settings-group">
+                                <label>Rate (EGP/hour)</label>
+                                <input type="number" id="settings_rate_${i}" value="${config.rate}" min="1" max="100" step="0.5" ${isActive ? 'disabled' : ''}>
+                                ${isActive ? '<div class="hint">⛔ Cannot change rate while in use</div>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            list.innerHTML = html;
+            modal.classList.add('show');
+        }
+
+        function closeSettings() {
+            const noodlePriceInput = document.getElementById('noodlePriceInput');
+            if (noodlePriceInput) {
+                const newPrice = parseFloat(noodlePriceInput.value);
+                if (!isNaN(newPrice) && newPrice > 0) noodlePrice = newPrice;
+            }
+            const totalStations = businessConfig?.totalStations || 11;
+            for (let i = 1; i <= totalStations; i++) {
+                const nameInput = document.getElementById(`settings_name_${i}`);
+                const rateInput = document.getElementById(`settings_rate_${i}`);
+                if (nameInput && !nameInput.disabled) {
+                    const newName = nameInput.value.trim() || `PS ${i}`;
+                    if (!deviceConfig[i]) deviceConfig[i] = {};
+                    deviceConfig[i].name = newName;
+                }
+                if (rateInput && !rateInput.disabled) {
+                    const newRate = parseFloat(rateInput.value);
+                    if (!isNaN(newRate) && newRate > 0) {
+                        if (!deviceConfig[i]) deviceConfig[i] = {};
+                        deviceConfig[i].rate = newRate;
+                    }
+                }
+            }
+            // Save device config to Supabase
+            if (currentBusiness) {
+                saveBusinessConfig(currentBusiness, {
+                    ...businessConfig,
+                    deviceConfig: deviceConfig
+                });
+            }
+            renderMain();
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        // ============================================
+        // ACTIVATE RENTAL
+        // ============================================
+        async function activateRental() {
+            const now = new Date();
+            const expiry = new Date(now);
+            expiry.setMonth(expiry.getMonth() + 1);
+            const data = { isActive: true, expiryDate: expiry.toISOString(), activatedAt: now.toISOString() };
+            saveUserDataLocal(data);
+            await saveUserData(currentBusiness, getDeviceId(), data);
+            document.getElementById('lockScreen').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+            window.scrollTo(0, 0);
+            if (!isMainAppInitialized) {
+                renderMain();
+                isMainAppInitialized = true;
+            }
+            updateLockScreen();
+            alert('✅ Payment verified! Your rental is active until ' + expiry.toLocaleDateString());
+        }
+
+        // ============================================
+        // VERIFICATION
+        // ============================================
+        async function verifyPayment() {
+            const deviceId = getDeviceId();
+            const code = prompt(
+                '📱 Enter verification code:\n\n' +
+                'Send ' + businessConfig.price + ' EGP to ' + businessConfig.phone + '\n\n' +
+                'Business: ' + businessConfig.businessName + '\n' +
+                'Device ID: ' + deviceId
+            );
+            if (code) {
+                const result = await verifyCode(currentBusiness, code);
+                if (result.valid) {
+                    activateRental();
+                } else {
+                    alert('❌ Invalid or already used code. Please contact the seller.');
+                }
+            }
+        }
+
+        // ============================================
+        // LOCK SCREEN
+        // ============================================
+        function updateLockScreen() {
+            const statusBadge = document.getElementById('statusBadge');
+            const daysLeft = document.getElementById('daysLeft');
+            const paymentStatus = document.getElementById('paymentStatus');
+            const deviceIdDisplay = document.getElementById('deviceIdDisplay');
+            deviceIdDisplay.textContent = getDeviceId();
+            const isActive = isRentalActive();
+            const days = getDaysRemaining();
+
+            if (isActive) {
+                statusBadge.textContent = '✅ Active';
+                statusBadge.className = 'status-badge active';
+                if (days <= 3) {
+                    statusBadge.textContent = '⚠️ Expiring Soon';
+                    statusBadge.className = 'status-badge expiring';
+                }
+                daysLeft.innerHTML = '📅 <strong>' + days + '</strong> days remaining';
+                paymentStatus.innerHTML = `
+                    <div style="color:#2ecc71;margin:8px 0;">✅ Access granted</div>
+                    <button class="btn btn-secondary" onclick="logout()" style="margin-top:4px;background:rgba(255,255,255,0.05);color:#8ba0c7;border:none;border-radius:12px;padding:10px;width:100%;cursor:pointer;">🚪 Logout</button>
+                `;
+            } else {
+                statusBadge.textContent = '🔒 Locked';
+                statusBadge.className = 'status-badge locked';
+                daysLeft.innerHTML = '💡 Pay ' + businessConfig.price + ' EGP to unlock for 30 days';
+                paymentStatus.innerHTML = `
+                    <button class="btn btn-pay" onclick="verifyPayment()">✅ I've Paid - Verify Now</button>
+                `;
+                document.getElementById('mainApp').classList.remove('active');
+                isMainAppInitialized = false;
+            }
+        }
+
+        async function logout() {
+            if (confirm('Logout and lock the app?')) {
+                const data = getUserDataLocal();
+                if (data) {
+                    data.isActive = false;
+                    data.expiryDate = null;
+                    saveUserDataLocal(data);
+                    await saveUserData(currentBusiness, getDeviceId(), data);
+                }
+                // Clear sessions on logout
+                sessions = {};
+                noodleOrders = {};
+                saveSessionsToStorage();
+                saveNoodleOrdersToStorage();
+                updateLockScreen();
+                document.getElementById('mainApp').classList.remove('active');
+                isMainAppInitialized = false;
+                document.getElementById('lockScreen').style.display = 'block';
+            }
+        }
+
+        // ============================================
+        // MAIN APP
+        // ============================================
+        function getRate(d) { return deviceConfig[d]?.rate || 25; }
+        function getDeviceName(d) { return deviceConfig[d]?.name || `PS ${d}`; }
+        function getNoodlePrice() { return noodlePrice || 15; }
+        function now() { return new Date(); }
+        function formatTime(date) { if (!date) return '--'; return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
+
+        function formatDuration(ms) {
+            if (ms < 0) return '0s';
+            const seconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const remainingSeconds = seconds % 60;
+            const remainingMinutes = minutes % 60;
+            if (hours > 0) return `${hours}h ${remainingMinutes}m ${remainingSeconds}s`;
+            if (minutes > 0) return `${minutes}m ${remainingSeconds}s`;
+            return `${seconds}s`;
+        }
+
+        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
+
+        function calculateAmount(startTime, endTime, rate) {
+            if (!startTime || !endTime) return 0;
+            const diffMs = endTime - startTime;
+            if (diffMs < 0) return 0;
+            const hours = diffMs / (1000 * 60 * 60);
+            return Math.round(hours * rate * 100) / 100;
+        }
+
+        function getTotalNoodles() {
+            let total = 0;
+            Object.values(noodleOrders).forEach(c => total += c || 0);
+            return total;
+        }
+
+        function getTotalNoodleRevenue() { return getTotalNoodles() * getNoodlePrice(); }
+        function getTotalSessionRevenue() {
+            let total = 0;
+            Object.values(sessions).forEach(s => { if (s.completed) total += s.amount || 0; });
+            return total;
+        }
+        function getGrandTotal() { return getTotalSessionRevenue() + getTotalNoodleRevenue(); }
+
+        function addNoodle(d) {
+            noodleOrders[d] = (noodleOrders[d] || 0) + 1;
+            saveNoodleOrdersToStorage();
+            updateNoodleDisplay(d);
+            updateFooterStats();
+        }
+
+        function removeNoodle(d) {
+            if ((noodleOrders[d] || 0) > 0) {
+                noodleOrders[d] = (noodleOrders[d] || 0) - 1;
+                saveNoodleOrdersToStorage();
+                updateNoodleDisplay(d);
+                updateFooterStats();
+            }
+        }
+
+        function updateNoodleDisplay(d) {
+            const count = noodleOrders[d] || 0;
+            const display = document.querySelector(`[data-noodle-count="${d}"]`);
+            if (display) display.textContent = count;
+            updateFooterStats();
+        }
+
+        // ============================================
+        // START SESSION
+        // ============================================
+        function startSession(d) {
+            if (sessions[d] && !sessions[d].completed) {
+                alert(`Station ${d} is already in use!`);
+                return;
+            }
+            const nowTime = now();
+            sessions[d] = {
+                startTime: nowTime,
+                endTime: null,
+                completed: false,
+                amount: 0,
+                duration: 0,
+                rate: getRate(d)
+            };
+            saveSessionsToStorage();
+            renderMain();
+            startPlayTimer(d);
+        }
+
+        // ============================================
+        // END SESSION - FIXED
+        // ============================================
+        function endSession(d) {
+            const session = sessions[d];
+            if (!session || session.completed) return;
+            
+            const endTime = now();
+            session.endTime = endTime;
+            session.completed = true;
+            session.duration = endTime.getTime() - session.startTime.getTime();
+            const hours = session.duration / (1000 * 60 * 60);
+            session.amount = Math.round(hours * session.rate * 100) / 100;
+            
+            // Save completed session
+            saveSessionsToStorage();
+            
+            // Show the modal
+            showSessionModal(d);
+            
+            // COMPLETELY REMOVE the session from the sessions object
+            delete sessions[d];
+            
+            // Save again after deletion
+            saveSessionsToStorage();
+            
+            // Reset noodles for this device
+            noodleOrders[d] = 0;
+            saveNoodleOrdersToStorage();
+            updateNoodleDisplay(d);
+            
+            // Stop timer and refresh UI
+            stopPlayTimer(d);
+            renderMain();
+            updateFooterStats();
+        }
+
+        function getActiveCount() { 
+            // Only count sessions that exist AND are NOT completed
+            return Object.keys(sessions).filter(k => sessions[k] && !sessions[k].completed).length; 
+        }
+
+        function getAvailableCount() { 
+            // Available = total stations - active sessions
+            const activeCount = getActiveCount();
+            const total = businessConfig.totalStations || 11;
+            return total - activeCount; 
+        }
+
+        // ============================================
+        // PLAY TIMER
+        // ============================================
+        function startPlayTimer(d) {
+            if (activeTimers[d]) return;
+            activeTimers[d] = setInterval(() => {
+                const session = sessions[d];
+                if (!session || session.completed) { stopPlayTimer(d); return; }
+                updateStationDisplay(d);
+            }, 1000);
+        }
+
+        function stopPlayTimer(d) {
+            if (activeTimers[d]) { clearInterval(activeTimers[d]); delete activeTimers[d]; }
+        }
+
+        // ============================================
+        // UPDATE STATION DISPLAY
+        // ============================================
+        function updateStationDisplay(d) {
+            const session = sessions[d];
+            if (!session) return;
+            const card = document.querySelector(`[data-device="${d}"]`);
+            if (!card) return;
+            const statusEl = card.querySelector('.status');
+            const durationEl = card.querySelector('.duration');
+            const startTimeEl = card.querySelector('.start-time');
+            if (!session.completed) {
+                const duration = Date.now() - session.startTime.getTime();
+                durationEl.textContent = formatDuration(duration);
+                statusEl.textContent = 'In Use';
+                statusEl.className = 'status active-text';
+                startTimeEl.textContent = `Started ${formatTime(session.startTime)}`;
+            }
+        }
+
+        function updateFooterStats() {
+            const footer = document.getElementById('footerText');
+            if (footer) {
+                const noodleCount = getTotalNoodles();
+                footer.textContent = `🍜 ${noodleCount} noodles · ${formatCurrency(getGrandTotal())} total · ${currentBusiness}`;
+            }
+        }
+
+        // ============================================
+        // RENDER MAIN - FIXED
+        // ============================================
+        function renderMain() {
+            if (!businessConfig) return;
+            const grid = document.getElementById('stationGrid');
+            if (!grid) return;
+            const totalStations = businessConfig.totalStations || 11;
+            const activeCount = getActiveCount();
+            const availableCount = getAvailableCount();
+            
+            document.getElementById('totalStations').textContent = totalStations;
+            document.getElementById('inUseCount').textContent = activeCount;
+            document.getElementById('availableCount').textContent = availableCount;
+            document.getElementById('currentTime').textContent = formatTime(now());
+
+            let html = '';
+            for (let i = 1; i <= totalStations; i++) {
+                const session = sessions[i];
+                const isActive = session && !session.completed;
+                const rate = getRate(i);
+                const name = getDeviceName(i);
+                const isSpecial = rate !== 25;
+                const noodleCount = noodleOrders[i] || 0;
+                let statusText = 'Available';
+                let statusClass = '';
+                let durationText = '';
+                let startTimeText = '';
+                let buttonHtml = '';
+                let cardClass = 'station-card';
+
+                if (isActive) {
+                    statusText = 'In Use';
+                    statusClass = 'active-text';
+                    const duration = Date.now() - session.startTime.getTime();
+                    durationText = formatDuration(duration);
+                    startTimeText = `Started ${formatTime(session.startTime)}`;
+                    cardClass += ' active';
+                    buttonHtml = `<button class="btn btn-end" onclick="endSession(${i})">End Session</button>`;
+                } else {
+                    buttonHtml = `<button class="btn btn-start" onclick="startSession(${i})">Start</button>`;
+                }
+
+                const rateLabel = isSpecial ? `${rate} EGP/hr` : '';
+                const rateClass = isSpecial ? 'rate-badge special' : 'rate-badge';
+
+                html += `
+                    <div class="${cardClass}" data-device="${i}">
+                        <div class="info">
+                            <div class="name">${name}</div>
+                            <div class="status ${statusClass}">${statusText}</div>
+                            ${isActive ? `<div class="duration">${durationText}</div>` : ''}
+                            ${isActive ? `<div class="start-time">${startTimeText}</div>` : ''}
+                        </div>
+                        <div class="right">
+                            ${isSpecial ? `<span class="${rateClass}">${rate} EGP/hr</span>` : ''}
+                            <div class="noodle-section">
+                                <span class="noodle-icon">🍜</span>
+                                <button class="noodle-btn minus" onclick="removeNoodle(${i})">−</button>
+                                <span class="noodle-count" data-noodle-count="${i}">${noodleCount}</span>
+                                <button class="noodle-btn plus" onclick="addNoodle(${i})">+</button>
+                            </div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                                ${buttonHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+            updateFooterStats();
+        }
+
+        // ============================================
+        // SESSION MODAL
+        // ============================================
+        function showSessionModal(d) {
+            const session = sessions[d];
+            if (!session) return;
+            const noodleCount = noodleOrders[d] || 0;
+            const price = getNoodlePrice();
+            const noodleTotal = noodleCount * price;
+            const sessionTotal = session.amount || 0;
+            const grandTotal = sessionTotal + noodleTotal;
+            document.getElementById('modalSub').textContent = getDeviceName(d);
+            document.getElementById('modalDuration').textContent = formatDuration(session.duration || 0);
+            document.getElementById('modalTimePrice').textContent = formatCurrency(sessionTotal);
+            const noodleRow = document.getElementById('noodleRow');
+            if (noodleCount > 0) {
+                noodleRow.style.display = 'flex';
+                document.getElementById('modalNoodles').textContent =
+                    `${noodleCount} × ${price.toFixed(2)} EGP = ${noodleTotal.toFixed(2)} EGP`;
+            } else {
+                noodleRow.style.display = 'none';
+            }
+            document.getElementById('modalTotal').textContent = formatCurrency(grandTotal);
+            document.getElementById('sessionModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('sessionModal').classList.remove('show');
+        }
+
+        document.getElementById('sessionModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+        document.getElementById('settingsModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeSettings();
+        });
+
+        // ============================================
+        // AUTO-VERIFY ON PAGE LOAD/RELOAD
+        // ============================================
+        async function initializeApp() {
+            const savedBusiness = localStorage.getItem(BUSINESS_KEY);
+            if (savedBusiness) {
+                const config = await loadBusiness(savedBusiness);
+                if (config) {
+                    document.getElementById('businessCodeInput').value = savedBusiness;
+                    await enterBusiness();
+                    return;
+                } else {
+                    localStorage.removeItem(BUSINESS_KEY);
+                }
+            }
+            document.getElementById('setupScreen').style.display = 'block';
+            document.getElementById('lockScreen').style.display = 'none';
+            document.getElementById('mainApp').classList.remove('active');
+            isMainAppInitialized = false;
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.getElementById('demoDeviceId').textContent = 'Device: ' + getDeviceId();
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        setInterval(() => {
+            document.getElementById('currentTime').textContent = formatTime(now());
+            Object.keys(sessions).forEach(key => {
+                if (!sessions[key].completed) updateStationDisplay(parseInt(key));
+            });
+        }, 1000);
+
+        setInterval(() => {
+            saveSessionsToStorage();
+            saveNoodleOrdersToStorage();
+        }, 5000);
+
+        console.log('========================================');
+        console.log('🎮 PS Rental Pro - v' + APP_VERSION);
+        console.log('✅ Connected to Supabase for business data');
+        console.log('✅ Sessions stored in localStorage');
+        console.log('========================================');
+    </script>
+</body>
+</html>
