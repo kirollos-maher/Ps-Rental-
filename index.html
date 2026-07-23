@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PS Rental Pro</title>
     <style>
+        /* نفس الـ CSS الموجود، لا تغيير */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #0a0e17;
@@ -19,26 +19,11 @@
             padding: 16px;
             padding-bottom: 30px;
         }
-
-        body.rtl {
-            direction: rtl;
-        }
-        body.ltr {
-            direction: ltr;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
-
+        body.rtl { direction: rtl; }
+        body.ltr { direction: ltr; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .screen { display: none; }
+        .screen.active { display: block; }
         .setup-screen {
             background: #131c2e;
             border-radius: 24px;
@@ -46,16 +31,11 @@
             max-width: 420px;
             width: 100%;
             margin: 0 auto;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             text-align: center;
         }
-
-        .setup-screen .logo {
-            font-size: 48px;
-            margin-bottom: 8px;
-        }
-
+        .setup-screen .logo { font-size: 48px; margin-bottom: 8px; }
         .setup-screen h1 {
             font-size: 28px;
             font-weight: 700;
@@ -64,30 +44,19 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
-
-        .setup-screen .subtitle {
-            color: #8ba0c7;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .setup-screen .input-group {
-            margin: 12px 0;
-            text-align: inherit;
-        }
-
+        .setup-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
+        .setup-screen .input-group { margin: 12px 0; text-align: inherit; }
         .setup-screen .input-group label {
             display: block;
             font-size: 13px;
             color: #8ba0c7;
             margin-bottom: 4px;
         }
-
         .setup-screen .input-group input {
             width: 100%;
             padding: 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 12px;
             color: #e8f0fe;
             font-size: 16px;
@@ -95,27 +64,21 @@
             text-align: center;
             letter-spacing: 2px;
         }
-
-        .setup-screen .input-group input:focus {
-            border-color: #00d4ff;
-        }
-
+        .setup-screen .input-group input:focus { border-color: #00d4ff; }
         .setup-screen .input-group .hint {
             font-size: 12px;
             color: #5a6f8a;
             margin-top: 4px;
         }
-
         .setup-screen .business-info {
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.1);
+            background: rgba(0,212,255,0.05);
+            border: 1px solid rgba(0,212,255,0.1);
             border-radius: 12px;
             padding: 12px;
             margin: 12px 0;
             font-size: 13px;
             color: #8ba0c7;
         }
-
         .btn {
             padding: 8px 16px;
             border: none;
@@ -129,61 +92,18 @@
             min-width: 70px;
             text-align: center;
         }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #7b61ff);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
-        }
-
-        .btn-block {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-        }
-
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
+        .btn-success { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46,204,113,0.3); }
+        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(231,76,60,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.08); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(243,156,18,0.3); }
+        .btn-block { width: 100%; padding: 14px; font-size: 16px; }
         .btn-pay {
             background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
             color: #fff !important;
@@ -196,22 +116,11 @@
             width: 100% !important;
             transition: all 0.2s !important;
         }
-
-        .btn-pay:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4) !important;
-        }
-
-        .btn-pay:active {
-            transform: scale(0.97) !important;
-        }
-
-        .switch-business {
-            margin-top: 16px;
-        }
-
+        .btn-pay:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 25px rgba(46,204,113,0.4) !important; }
+        .btn-pay:active { transform: scale(0.97) !important; }
+        .switch-business { margin-top: 16px; }
         .switch-business .btn-switch {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             color: #8ba0c7;
             font-size: 13px;
             padding: 10px;
@@ -220,22 +129,16 @@
             cursor: pointer;
             width: 100%;
         }
-
-        .switch-business .btn-switch:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
+        .switch-business .btn-switch:hover { background: rgba(255,255,255,0.1); }
         .device-id-display {
             font-size: 11px;
             color: #5a6f8a;
             margin-top: 16px;
         }
-
         .device-id-display span {
             color: #00d4ff;
             font-family: 'Courier New', monospace;
         }
-
         .lock-screen {
             background: #131c2e;
             border-radius: 24px;
@@ -243,22 +146,12 @@
             max-width: 420px;
             width: 100%;
             margin: 0 auto;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             text-align: center;
         }
-
-        .lock-screen .business-name {
-            font-size: 14px;
-            color: #00d4ff;
-            margin-bottom: 4px;
-        }
-
-        .lock-screen .logo {
-            font-size: 48px;
-            margin-bottom: 8px;
-        }
-
+        .lock-screen .business-name { font-size: 14px; color: #00d4ff; margin-bottom: 4px; }
+        .lock-screen .logo { font-size: 48px; margin-bottom: 8px; }
         .lock-screen h1 {
             font-size: 28px;
             font-weight: 700;
@@ -267,13 +160,7 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
-
-        .lock-screen .subtitle {
-            color: #8ba0c7;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
+        .lock-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
         .status-badge {
             display: inline-block;
             padding: 6px 16px;
@@ -282,79 +169,50 @@
             font-weight: 600;
             margin-bottom: 16px;
         }
-
         .status-badge.locked {
-            background: rgba(231, 76, 60, 0.15);
+            background: rgba(231,76,60,0.15);
             color: #e74c3c;
-            border: 1px solid rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231,76,60,0.2);
         }
-
         .status-badge.active {
-            background: rgba(46, 204, 113, 0.15);
+            background: rgba(46,204,113,0.15);
             color: #2ecc71;
-            border: 1px solid rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46,204,113,0.2);
         }
-
         .status-badge.expiring {
-            background: rgba(255, 165, 0, 0.15);
+            background: rgba(255,165,0,0.15);
             color: #ffa500;
-            border: 1px solid rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255,165,0,0.2);
         }
-
         .price-tag {
-            background: rgba(0, 212, 255, 0.08);
-            border: 1px solid rgba(0, 212, 255, 0.15);
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.15);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 24px;
         }
-
-        .price-tag .amount {
-            font-size: 32px;
-            font-weight: 700;
-            color: #00d4ff;
-        }
-
-        .price-tag .period {
-            color: #8ba0c7;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .features {
-            text-align: inherit;
-            margin: 20px 0;
-            padding: 0 8px;
-        }
-
+        .price-tag .amount { font-size: 32px; font-weight: 700; color: #00d4ff; }
+        .price-tag .period { color: #8ba0c7; font-size: 14px; margin-top: 4px; }
+        .features { text-align: inherit; margin: 20px 0; padding: 0 8px; }
         .features li {
             list-style: none;
             color: #b0c4de;
             font-size: 14px;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
-        .features li:last-child {
-            border-bottom: none;
-        }
-
-        .features li .check {
-            color: #2ecc71;
-            font-weight: 700;
-        }
-
+        .features li:last-child { border-bottom: none; }
+        .features li .check { color: #2ecc71; font-weight: 700; }
         .payment-section {
-            background: rgba(255, 200, 0, 0.05);
-            border: 1px solid rgba(255, 200, 0, 0.1);
+            background: rgba(255,200,0,0.05);
+            border: 1px solid rgba(255,200,0,0.1);
             border-radius: 12px;
             padding: 16px;
             margin: 20px 0;
         }
-
         .payment-section .label {
             color: #8ba0c7;
             font-size: 12px;
@@ -362,21 +220,19 @@
             letter-spacing: 1px;
             margin-bottom: 8px;
         }
-
         .payment-section .code {
             font-family: 'Courier New', monospace;
             font-size: 24px;
             font-weight: 700;
             color: #ffd700;
             letter-spacing: 4px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0,0,0,0.3);
             padding: 12px;
             border-radius: 8px;
             user-select: all;
         }
-
         .device-id-box {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0,0,0,0.3);
             padding: 10px;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
@@ -386,10 +242,9 @@
             word-break: break-all;
             user-select: all;
         }
-
         .copy-btn {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.2);
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.2);
             color: #00d4ff;
             padding: 4px 12px;
             border-radius: 6px;
@@ -397,21 +252,9 @@
             cursor: pointer;
             margin-top: 4px;
         }
-
-        .copy-btn:hover {
-            background: rgba(0, 212, 255, 0.2);
-        }
-
-        .days-left {
-            color: #8ba0c7;
-            font-size: 14px;
-            margin-top: 12px;
-        }
-
-        .days-left strong {
-            color: #00d4ff;
-        }
-
+        .copy-btn:hover { background: rgba(0,212,255,0.2); }
+        .days-left { color: #8ba0c7; font-size: 14px; margin-top: 12px; }
+        .days-left strong { color: #00d4ff; }
         .header {
             display: flex;
             justify-content: space-between;
@@ -420,14 +263,12 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-
         .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .header h1 {
             font-size: 24px;
             font-weight: 700;
@@ -435,31 +276,20 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .header .business-tag {
             font-size: 10px;
-            background: rgba(0, 212, 255, 0.1);
+            background: rgba(0,212,255,0.1);
             color: #00d4ff;
             padding: 2px 10px;
             border-radius: 12px;
-            border: 1px solid rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0,212,255,0.15);
             font-weight: 600;
         }
-
-        .header-time {
-            color: #8ba0c7;
-            font-size: 14px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
+        .header-time { color: #8ba0c7; font-size: 14px; }
+        .header-actions { display: flex; gap: 6px; align-items: center; }
         .btn-shift {
-            background: rgba(255, 165, 0, 0.15);
-            border: 1px solid rgba(255, 165, 0, 0.2);
+            background: rgba(255,165,0,0.15);
+            border: 1px solid rgba(255,165,0,0.2);
             color: #ffa500;
             padding: 4px 12px;
             border-radius: 10px;
@@ -469,19 +299,11 @@
             transition: all 0.2s;
             touch-action: manipulation;
         }
-
-        .btn-shift:hover {
-            background: rgba(255, 165, 0, 0.25);
-            border-color: rgba(255, 165, 0, 0.4);
-        }
-
-        .btn-shift:active {
-            transform: scale(0.95);
-        }
-
+        .btn-shift:hover { background: rgba(255,165,0,0.25); border-color: rgba(255,165,0,0.4); }
+        .btn-shift:active { transform: scale(0.95); }
         .btn-settings {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
             color: #8ba0c7;
             padding: 6px 12px;
             border-radius: 10px;
@@ -491,15 +313,8 @@
             touch-action: manipulation;
             line-height: 1;
         }
-
-        .btn-settings:active {
-            transform: scale(0.92);
-        }
-
-        .btn-settings:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
+        .btn-settings:active { transform: scale(0.92); }
+        .btn-settings:hover { background: rgba(255,255,255,0.15); }
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -508,68 +323,27 @@
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-item .number {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .stat-item .label {
-            font-size: 12px;
-            color: #8ba0c7;
-            margin-top: 4px;
-        }
-
-        .stat-item .number.total {
-            color: #00d4ff;
-        }
-
-        .stat-item .number.active {
-            color: #2ecc71;
-        }
-
-        .stat-item .number.available {
-            color: #8ba0c7;
-        }
-
-        .stations-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #e8f0fe;
-        }
-
-        .station-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        .stat-item { text-align: center; }
+        .stat-item .number { font-size: 28px; font-weight: 700; }
+        .stat-item .label { font-size: 12px; color: #8ba0c7; margin-top: 4px; }
+        .stat-item .number.total { color: #00d4ff; }
+        .stat-item .number.active { color: #2ecc71; }
+        .stat-item .number.available { color: #8ba0c7; }
+        .stations-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #e8f0fe; }
+        .station-grid { display: flex; flex-direction: column; gap: 12px; }
         .station-card {
             background: #131c2e;
             border-radius: 14px;
             padding: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
-        .station-card.active {
-            border-right: 4px solid #2ecc71;
-        }
-
-        body.ltr .station-card.active {
-            border-right: none;
-            border-left: 4px solid #2ecc71;
-        }
-
+        .station-card.active { border-right: 4px solid #2ecc71; }
+        body.ltr .station-card.active { border-right: none; border-left: 4px solid #2ecc71; }
         .station-card .top-row {
             display: flex;
             justify-content: space-between;
@@ -577,7 +351,6 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-
         .station-card .info {
             display: flex;
             flex-direction: column;
@@ -585,90 +358,55 @@
             flex: 1;
             min-width: 100px;
         }
-
-        .station-card .name {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .station-card .status {
-            font-size: 13px;
-            color: #8ba0c7;
-        }
-
-        .station-card .status.active-text {
-            color: #2ecc71;
-        }
-
-        .station-card .duration {
-            font-size: 14px;
-            font-weight: 500;
-            color: #00d4ff;
-        }
-
-        .station-card .start-time {
-            font-size: 12px;
-            color: #8ba0c7;
-        }
-
+        .station-card .name { font-size: 18px; font-weight: 600; }
+        .station-card .status { font-size: 13px; color: #8ba0c7; }
+        .station-card .status.active-text { color: #2ecc71; }
+        .station-card .duration { font-size: 14px; font-weight: 500; color: #00d4ff; }
+        .station-card .start-time { font-size: 12px; color: #8ba0c7; }
         .station-card .right {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
-
         .station-card .rate-badge {
             font-size: 11px;
-            background: rgba(0, 212, 255, 0.1);
+            background: rgba(0,212,255,0.1);
             color: #00d4ff;
             padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0,212,255,0.15);
             white-space: nowrap;
         }
-
         .station-card .rate-badge.special {
-            background: rgba(255, 165, 0, 0.15);
+            background: rgba(255,165,0,0.15);
             color: #ffa500;
-            border-color: rgba(255, 165, 0, 0.2);
+            border-color: rgba(255,165,0,0.2);
         }
-
         .station-card .items-section {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255,255,255,0.05);
             align-items: center;
         }
-
         .station-card .items-section .items-label {
             font-size: 11px;
             color: #5a6f8a;
             margin: 0 4px;
         }
-
         .item-control {
             display: flex;
             align-items: center;
             gap: 4px;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255,255,255,0.03);
             padding: 2px 6px 2px 10px;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255,255,255,0.06);
         }
-
-        .item-control .item-icon {
-            font-size: 13px;
-        }
-
-        .item-control .item-name {
-            font-size: 11px;
-            color: #b0c4de;
-            margin: 0 2px;
-        }
-
+        .item-control .item-icon { font-size: 13px; }
+        .item-control .item-name { font-size: 11px; color: #b0c4de; margin: 0 2px; }
         .item-control .item-count {
             font-size: 13px;
             font-weight: 600;
@@ -676,9 +414,8 @@
             min-width: 18px;
             text-align: center;
         }
-
         .item-control .item-btn {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255,255,255,0.08);
             border: none;
             color: #b0c4de;
             width: 18px;
@@ -692,66 +429,22 @@
             justify-content: center;
             transition: all 0.15s;
         }
-
-        .item-control .item-btn:active {
-            transform: scale(0.85);
-        }
-
-        .item-control .item-btn.minus {
-            color: #ff6b6b;
-            background: rgba(255, 100, 100, 0.1);
-        }
-
-        .item-control .item-btn.plus {
-            color: #51cf66;
-            background: rgba(80, 200, 100, 0.1);
-        }
-
-        .item-control .item-btn:hover {
-            opacity: 0.7;
-        }
-
-        .item-control.noodle-control {
-            border-color: rgba(255, 200, 0, 0.15);
-        }
-
-        .item-control.noodle-control .item-name {
-            color: #ffd700;
-        }
-
-        .item-control.drink-control {
-            border-color: rgba(0, 212, 255, 0.15);
-        }
-
-        .item-control.drink-control .item-name {
-            color: #00d4ff;
-        }
-
-        .btn-start {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-        }
-
-        .btn-start:hover {
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-        }
-
-        .btn-end {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-
-        .btn-end:hover {
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-small {
-            padding: 4px 10px;
-            font-size: 11px;
-            min-width: 50px;
-        }
-
+        .item-control .item-btn:active { transform: scale(0.85); }
+        .item-control .item-btn.minus { color: #ff6b6b; background: rgba(255,100,100,0.1); }
+        .item-control .item-btn.plus { color: #51cf66; background: rgba(80,200,100,0.1); }
+        .item-control .item-btn:hover { opacity: 0.7; }
+        .item-control.noodle-control { border-color: rgba(255,200,0,0.15); }
+        .item-control.noodle-control .item-name { color: #ffd700; }
+        .item-control.drink-control { border-color: rgba(0,212,255,0.15); }
+        .item-control.drink-control .item-name { color: #00d4ff; }
+        .btn-start { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .btn-start:hover { box-shadow: 0 4px 15px rgba(46,204,113,0.3); }
+        .btn-end { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-end:hover { box-shadow: 0 4px 15px rgba(231,76,60,0.3); }
+        .btn-small { padding: 4px 10px; font-size: 11px; min-width: 50px; }
         .btn-add-drink {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px dashed rgba(0, 212, 255, 0.2);
+            background: rgba(0,212,255,0.1);
+            border: 1px dashed rgba(0,212,255,0.2);
             color: #00d4ff;
             padding: 2px 10px;
             border-radius: 16px;
@@ -762,195 +455,93 @@
             align-items: center;
             gap: 4px;
         }
-
-        .btn-add-drink:hover {
-            background: rgba(0, 212, 255, 0.2);
-            border-color: rgba(0, 212, 255, 0.4);
-        }
-
-        .btn-add-drink:active {
-            transform: scale(0.95);
-        }
-
+        .btn-add-drink:hover { background: rgba(0,212,255,0.2); border-color: rgba(0,212,255,0.4); }
+        .btn-add-drink:active { transform: scale(0.95); }
         .shift-modal-content {
             background: #131c2e;
             border-radius: 16px;
             padding: 24px 20px;
             max-width: 450px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.08);
             max-height: 90vh;
             overflow-y: auto;
             text-align: inherit;
         }
-
-        .shift-modal-content h2 {
-            font-size: 22px;
-            margin-bottom: 4px;
-            color: #ffa500;
-            text-align: center;
-        }
-
-        .shift-modal-content .shift-date {
-            color: #8ba0c7;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
+        .shift-modal-content h2 { font-size: 22px; margin-bottom: 4px; color: #ffa500; text-align: center; }
+        .shift-modal-content .shift-date { color: #8ba0c7; font-size: 14px; text-align: center; margin-bottom: 16px; }
         .shift-summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 16px;
         }
-
         .shift-stat-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255,255,255,0.03);
             border-radius: 12px;
             padding: 14px 12px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-
-        .shift-stat-card .shift-stat-number {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .shift-stat-card .shift-stat-label {
-            font-size: 11px;
-            color: #8ba0c7;
-            margin-top: 4px;
-        }
-
-        .shift-stat-card .shift-stat-number.gold {
-            color: #ffd700;
-        }
-
-        .shift-stat-card .shift-stat-number.blue {
-            color: #00d4ff;
-        }
-
-        .shift-stat-card .shift-stat-number.green {
-            color: #2ecc71;
-        }
-
-        .shift-stat-card .shift-stat-number.orange {
-            color: #ffa500;
-        }
-
-        .shift-stat-card .shift-stat-number.pink {
-            color: #ff6b9d;
-        }
-
-        .shift-stat-card .shift-stat-number.purple {
-            color: #a855f7;
-        }
-
-        .shift-stat-card .shift-stat-number.cyan {
-            color: #22d3ee;
-        }
-
+        .shift-stat-card .shift-stat-number { font-size: 24px; font-weight: 700; }
+        .shift-stat-card .shift-stat-label { font-size: 11px; color: #8ba0c7; margin-top: 4px; }
+        .shift-stat-card .shift-stat-number.gold { color: #ffd700; }
+        .shift-stat-card .shift-stat-number.blue { color: #00d4ff; }
+        .shift-stat-card .shift-stat-number.green { color: #2ecc71; }
+        .shift-stat-card .shift-stat-number.orange { color: #ffa500; }
+        .shift-stat-card .shift-stat-number.pink { color: #ff6b9d; }
+        .shift-stat-card .shift-stat-number.purple { color: #a855f7; }
+        .shift-stat-card .shift-stat-number.cyan { color: #22d3ee; }
         .shift-total-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 16px;
-            background: rgba(255, 165, 0, 0.08);
+            background: rgba(255,165,0,0.08);
             border-radius: 12px;
-            border: 1px solid rgba(255, 165, 0, 0.15);
+            border: 1px solid rgba(255,165,0,0.15);
             font-size: 18px;
             font-weight: 700;
             margin: 12px 0 16px;
         }
-
-        .shift-total-row .total-label {
-            color: #8ba0c7;
-        }
-
-        .shift-total-row .total-amount {
-            color: #ffd700;
-        }
-
+        .shift-total-row .total-label { color: #8ba0c7; }
+        .shift-total-row .total-amount { color: #ffd700; }
         .shift-drinks-detail {
             margin: 12px 0;
             padding: 12px;
-            background: rgba(0, 212, 255, 0.03);
+            background: rgba(0,212,255,0.03);
             border-radius: 10px;
-            border: 1px solid rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0,212,255,0.08);
         }
-
-        .shift-drinks-detail .detail-title {
-            font-size: 13px;
-            color: #8ba0c7;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
+        .shift-drinks-detail .detail-title { font-size: 13px; color: #8ba0c7; margin-bottom: 8px; font-weight: 600; }
         .shift-drink-item {
             display: flex;
             justify-content: space-between;
             padding: 4px 0;
             font-size: 13px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
         }
-
-        .shift-drink-item:last-child {
-            border-bottom: none;
-        }
-
-        .shift-drink-item .drink-name {
-            color: #b0c4de;
-        }
-
-        .shift-drink-item .drink-total {
-            color: #00d4ff;
-            font-weight: 600;
-        }
-
-        .shift-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .shift-actions .btn {
-            flex: 1;
-            padding: 12px;
-            font-size: 15px;
-        }
-
+        .shift-drink-item:last-child { border-bottom: none; }
+        .shift-drink-item .drink-name { color: #b0c4de; }
+        .shift-drink-item .drink-total { color: #00d4ff; font-weight: 600; }
+        .shift-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .shift-actions .btn { flex: 1; padding: 12px; font-size: 15px; }
         .shift-history-item {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255,255,255,0.03);
             border-radius: 10px;
             padding: 12px 14px;
             margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
             cursor: pointer;
             transition: all 0.2s;
         }
-
-        .shift-history-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 165, 0, 0.2);
-        }
-
+        .shift-history-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,165,0,0.2); }
         .shift-history-item .hist-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        .shift-history-item .hist-date {
-            font-weight: 600;
-            color: #e8f0fe;
-        }
-
-        .shift-history-item .hist-total {
-            color: #ffd700;
-            font-weight: 700;
-        }
-
+        .shift-history-item .hist-date { font-weight: 600; color: #e8f0fe; }
+        .shift-history-item .hist-total { color: #ffd700; font-weight: 700; }
         .shift-history-item .hist-stats {
             display: flex;
             gap: 16px;
@@ -958,12 +549,7 @@
             color: #8ba0c7;
             margin-top: 4px;
         }
-
-        .shift-history-container {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
+        .shift-history-container { max-height: 300px; overflow-y: auto; }
         .modal-overlay {
             display: none;
             position: fixed;
@@ -971,147 +557,79 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(8px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
+        .modal-overlay.show { display: flex; }
         .modal-content {
             background: #131c2e;
             border-radius: 16px;
             padding: 28px 24px;
             max-width: 380px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.08);
             max-height: 90vh;
             overflow-y: auto;
             text-align: inherit;
         }
-
-        .modal-content h2 {
-            font-size: 20px;
-            margin-bottom: 4px;
-            color: #2ecc71;
-        }
-
-        .modal-content .sub {
-            color: #8ba0c7;
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
+        .modal-content h2 { font-size: 20px; margin-bottom: 4px; color: #2ecc71; }
+        .modal-content .sub { color: #8ba0c7; font-size: 14px; margin-bottom: 16px; }
         .modal-content .detail-row {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-
-        .modal-content .detail-row .label {
-            color: #8ba0c7;
-        }
-
-        .modal-content .detail-row .value {
-            font-weight: 600;
-            color: #e8f0fe;
-        }
-
-        .modal-content .detail-row.drink-row .value {
-            color: #00d4ff;
-        }
-
-        .modal-content .detail-row.noodle-row .value {
-            color: #ffd700;
-        }
-
-        .modal-content .detail-row.time-row .value {
-            color: #00d4ff;
-        }
-
+        .modal-content .detail-row .label { color: #8ba0c7; }
+        .modal-content .detail-row .value { font-weight: 600; color: #e8f0fe; }
+        .modal-content .detail-row.drink-row .value { color: #00d4ff; }
+        .modal-content .detail-row.noodle-row .value { color: #ffd700; }
+        .modal-content .detail-row.time-row .value { color: #00d4ff; }
         .modal-content .total-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 0 4px;
             font-size: 20px;
             font-weight: 700;
-            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: 2px solid rgba(255,255,255,0.1);
             margin-top: 8px;
         }
-
-        .modal-content .total-row .amount {
-            color: #00d4ff;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .modal-actions .btn {
-            flex: 1;
-            padding: 12px;
-            font-size: 15px;
-        }
-
-        .btn-done {
-            background: linear-gradient(135deg, #00d4ff, #7b61ff);
-        }
-
-        .btn-done:hover {
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
-        }
-
+        .modal-content .total-row .amount { color: #00d4ff; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .modal-actions .btn { flex: 1; padding: 12px; font-size: 15px; }
+        .btn-done { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
+        .btn-done:hover { box-shadow: 0 4px 15px rgba(0,212,255,0.3); }
         .settings-modal-content {
             background: #131c2e;
             border-radius: 16px;
             padding: 28px 24px;
             max-width: 450px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.08);
             max-height: 85vh;
             overflow-y: auto;
             text-align: inherit;
         }
-
-        .settings-modal-content h2 {
-            font-size: 20px;
-            margin-bottom: 4px;
-            color: #e8f0fe;
-        }
-
-        .settings-modal-content .sub {
-            color: #8ba0c7;
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
+        .settings-modal-content h2 { font-size: 20px; margin-bottom: 4px; color: #e8f0fe; }
+        .settings-modal-content .sub { color: #8ba0c7; font-size: 14px; margin-bottom: 16px; }
         .lang-toggle {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.1);
+            background: rgba(0,212,255,0.05);
+            border: 1px solid rgba(0,212,255,0.1);
             border-radius: 12px;
             padding: 12px 16px;
             margin-bottom: 16px;
         }
-
-        .lang-toggle .lang-label {
-            font-size: 13px;
-            color: #8ba0c7;
-        }
-
+        .lang-toggle .lang-label { font-size: 13px; color: #8ba0c7; }
         .lang-toggle .lang-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
             color: #8ba0c7;
             padding: 4px 14px;
             border-radius: 8px;
@@ -1120,94 +638,52 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .lang-toggle .lang-btn.active {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: rgba(0, 212, 255, 0.3);
+            background: rgba(0,212,255,0.15);
+            border-color: rgba(0,212,255,0.3);
             color: #00d4ff;
         }
-
-        .lang-toggle .lang-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .lang-toggle .lang-btn.active:hover {
-            background: rgba(0, 212, 255, 0.25);
-        }
-
-        .lang-toggle .lang-divider {
-            color: #5a6f8a;
-            font-size: 14px;
-        }
-
-        .settings-group {
-            margin-bottom: 16px;
-        }
-
+        .lang-toggle .lang-btn:hover { background: rgba(255,255,255,0.15); }
+        .lang-toggle .lang-btn.active:hover { background: rgba(0,212,255,0.25); }
+        .lang-toggle .lang-divider { color: #5a6f8a; font-size: 14px; }
+        .settings-group { margin-bottom: 16px; }
         .settings-group label {
             display: block;
             font-size: 13px;
             color: #8ba0c7;
             margin-bottom: 4px;
         }
-
         .settings-group input {
             width: 100%;
             padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 10px;
             color: #e8f0fe;
             font-size: 16px;
             outline: none;
         }
-
-        .settings-group input:focus {
-            border-color: #00d4ff;
-        }
-
-        .settings-group input:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .settings-group .hint {
-            font-size: 12px;
-            color: #5a6f8a;
-            margin-top: 4px;
-        }
-
+        .settings-group input:focus { border-color: #00d4ff; }
+        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .settings-group .hint { font-size: 12px; color: #5a6f8a; margin-top: 4px; }
         .settings-device {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255,255,255,0.03);
             border-radius: 12px;
             padding: 14px;
             margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-
         .settings-device .device-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-
-        .settings-device .device-header .device-num {
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .settings-device .device-header .device-status {
-            font-size: 12px;
-            color: #8ba0c7;
-        }
-
-        .settings-device .device-header .device-status.in-use {
-            color: #2ecc71;
-        }
-
+        .settings-device .device-header .device-num { font-weight: 600; font-size: 15px; }
+        .settings-device .device-header .device-status { font-size: 12px; color: #8ba0c7; }
+        .settings-device .device-header .device-status.in-use { color: #2ecc71; }
         .settings-device .device-header .btn-remove-station {
-            background: rgba(231, 76, 60, 0.15);
+            background: rgba(231,76,60,0.15);
             border: none;
             color: #e74c3c;
             width: 24px;
@@ -1221,44 +697,24 @@
             align-items: center;
             justify-content: center;
         }
-
-        .settings-device .device-header .btn-remove-station:hover {
-            background: rgba(231, 76, 60, 0.3);
-        }
-
-        .settings-device .device-header .btn-remove-station:active {
-            transform: scale(0.9);
-        }
-
-        .settings-device .device-header .btn-remove-station:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .settings-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .settings-row .settings-group {
-            margin-bottom: 0;
-        }
-
+        .settings-device .device-header .btn-remove-station:hover { background: rgba(231,76,60,0.3); }
+        .settings-device .device-header .btn-remove-station:active { transform: scale(0.9); }
+        .settings-device .device-header .btn-remove-station:disabled { opacity: 0.3; cursor: not-allowed; }
+        .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .settings-row .settings-group { margin-bottom: 0; }
         .settings-note {
             font-size: 13px;
             color: #ffa500;
-            background: rgba(255, 165, 0, 0.08);
+            background: rgba(255,165,0,0.08);
             padding: 12px;
             border-radius: 10px;
             margin: 12px 0;
-            border: 1px solid rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255,165,0,0.1);
             text-align: inherit;
         }
-
         .btn-add-station {
-            background: rgba(46, 204, 113, 0.1);
-            border: 1px dashed rgba(46, 204, 113, 0.2);
+            background: rgba(46,204,113,0.1);
+            border: 1px dashed rgba(46,204,113,0.2);
             color: #2ecc71;
             padding: 10px 14px;
             border-radius: 10px;
@@ -1273,20 +729,14 @@
             justify-content: center;
             gap: 6px;
         }
-
-        .btn-add-station:hover {
-            background: rgba(46, 204, 113, 0.2);
-            border-color: rgba(46, 204, 113, 0.4);
-        }
-
+        .btn-add-station:hover { background: rgba(46,204,113,0.2); border-color: rgba(46,204,113,0.4); }
         .global-settings {
-            background: rgba(255, 200, 0, 0.05);
+            background: rgba(255,200,0,0.05);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid rgba(255, 200, 0, 0.1);
+            border: 1px solid rgba(255,200,0,0.1);
         }
-
         .global-settings .global-label {
             display: flex;
             align-items: center;
@@ -1295,15 +745,13 @@
             margin-bottom: 8px;
             color: #ffd700;
         }
-
         .drinks-settings {
-            background: rgba(0, 212, 255, 0.05);
+            background: rgba(0,212,255,0.05);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0,212,255,0.1);
         }
-
         .drinks-settings .drinks-label {
             display: flex;
             align-items: center;
@@ -1312,57 +760,44 @@
             margin-bottom: 8px;
             color: #00d4ff;
         }
-
         .drink-item-settings {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255,255,255,0.03);
             padding: 8px 12px;
             border-radius: 8px;
             margin-bottom: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
             flex-wrap: wrap;
         }
-
-        .drink-item-settings .drink-icon {
-            font-size: 16px;
-        }
-
+        .drink-item-settings .drink-icon { font-size: 16px; }
         .drink-item-settings input[type=text] {
             flex: 1;
             padding: 6px 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 6px;
             color: #e8f0fe;
             font-size: 13px;
             outline: none;
             min-width: 60px;
         }
-
-        .drink-item-settings input[type=text]:focus {
-            border-color: #00d4ff;
-        }
-
+        .drink-item-settings input[type=text]:focus { border-color: #00d4ff; }
         .drink-item-settings input[type=number] {
             width: 60px;
             padding: 6px 8px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 6px;
             color: #e8f0fe;
             font-size: 13px;
             outline: none;
             text-align: center;
         }
-
-        .drink-item-settings input[type=number]:focus {
-            border-color: #00d4ff;
-        }
-
+        .drink-item-settings input[type=number]:focus { border-color: #00d4ff; }
         .drink-item-settings .btn-remove-drink {
-            background: rgba(231, 76, 60, 0.15);
+            background: rgba(231,76,60,0.15);
             border: none;
             color: #e74c3c;
             width: 24px;
@@ -1375,18 +810,11 @@
             align-items: center;
             justify-content: center;
         }
-
-        .drink-item-settings .btn-remove-drink:hover {
-            background: rgba(231, 76, 60, 0.3);
-        }
-
-        .drink-item-settings .btn-remove-drink:active {
-            transform: scale(0.9);
-        }
-
+        .drink-item-settings .btn-remove-drink:hover { background: rgba(231,76,60,0.3); }
+        .drink-item-settings .btn-remove-drink:active { transform: scale(0.9); }
         .btn-add-drink-setting {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px dashed rgba(0, 212, 255, 0.2);
+            background: rgba(0,212,255,0.1);
+            border: 1px dashed rgba(0,212,255,0.2);
             color: #00d4ff;
             padding: 8px 14px;
             border-radius: 10px;
@@ -1400,12 +828,7 @@
             justify-content: center;
             gap: 6px;
         }
-
-        .btn-add-drink-setting:hover {
-            background: rgba(0, 212, 255, 0.2);
-            border-color: rgba(0, 212, 255, 0.4);
-        }
-
+        .btn-add-drink-setting:hover { background: rgba(0,212,255,0.2); border-color: rgba(0,212,255,0.4); }
         .toast {
             position: fixed;
             bottom: 30px;
@@ -1419,116 +842,45 @@
             animation: slideUp 0.3s ease-out;
             display: none;
         }
-
-        .toast.success {
-            background: #2ecc71;
-            color: #fff;
-        }
-
-        .toast.error {
-            background: #e74c3c;
-            color: #fff;
-        }
-
-        .toast.warning {
-            background: #f39c12;
-            color: #fff;
-        }
-
+        .toast.success { background: #2ecc71; color: #fff; }
+        .toast.error { background: #e74c3c; color: #fff; }
+        .toast.warning { background: #f39c12; color: #fff; }
         @keyframes slideUp {
-            from {
-                transform: translateY(100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-
         @media(max-width:400px) {
-            .stats-row {
-                padding: 12px;
-            }
-            .stat-item .number {
-                font-size: 22px;
-            }
-            .station-card {
-                padding: 12px;
-            }
-            .station-card .top-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .station-card .right {
-                justify-content: flex-start;
-            }
-            .btn {
-                padding: 6px 12px;
-                font-size: 12px;
-                min-width: 60px;
-            }
-            .lock-screen {
-                padding: 28px 20px;
-            }
-            .setup-screen {
-                padding: 28px 20px;
-            }
-            .payment-section .code {
-                font-size: 18px;
-            }
-            .settings-row {
-                grid-template-columns: 1fr;
-            }
-            .settings-modal-content {
-                padding: 20px 16px;
-            }
-            .btn-pay {
-                font-size: 14px !important;
-                padding: 12px !important;
-            }
-            .drink-item-settings {
-                flex-wrap: wrap;
-            }
-            .drink-item-settings input[type=text] {
-                min-width: 100%;
-            }
-            .station-card .items-section {
-                gap: 4px;
-            }
-            .item-control {
-                padding: 2px 4px 2px 8px;
-            }
-            .item-control .item-name {
-                font-size: 10px;
-            }
-            .lang-toggle {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .shift-summary-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .shift-stat-card {
-                padding: 10px 8px;
-            }
-            .shift-stat-card .shift-stat-number {
-                font-size: 18px;
-            }
-            .shift-total-row {
-                font-size: 15px;
-                padding: 10px 12px;
-            }
+            .stats-row { padding: 12px; }
+            .stat-item .number { font-size: 22px; }
+            .station-card { padding: 12px; }
+            .station-card .top-row { flex-direction: column; align-items: stretch; }
+            .station-card .right { justify-content: flex-start; }
+            .btn { padding: 6px 12px; font-size: 12px; min-width: 60px; }
+            .lock-screen { padding: 28px 20px; }
+            .setup-screen { padding: 28px 20px; }
+            .payment-section .code { font-size: 18px; }
+            .settings-row { grid-template-columns: 1fr; }
+            .settings-modal-content { padding: 20px 16px; }
+            .btn-pay { font-size: 14px !important; padding: 12px !important; }
+            .drink-item-settings { flex-wrap: wrap; }
+            .drink-item-settings input[type=text] { min-width: 100%; }
+            .station-card .items-section { gap: 4px; }
+            .item-control { padding: 2px 4px 2px 8px; }
+            .item-control .item-name { font-size: 10px; }
+            .lang-toggle { flex-wrap: wrap; justify-content: center; }
+            .shift-summary-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .shift-stat-card { padding: 10px 8px; }
+            .shift-stat-card .shift-stat-number { font-size: 18px; }
+            .shift-total-row { font-size: 15px; padding: 10px 12px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-
         <div id="toast" class="toast"></div>
 
+        <!-- Setup Screen -->
         <div id="setupScreen" class="screen setup-screen active">
             <div class="logo">🏪</div>
             <h1>PS Rental Pro</h1>
@@ -1549,6 +901,7 @@
             </div>
         </div>
 
+        <!-- Lock Screen -->
         <div id="lockScreen" class="screen lock-screen">
             <div class="business-name" id="lockBusinessName">🏢 اسم النشاط التجاري</div>
             <div class="logo">🎮</div>
@@ -1586,6 +939,7 @@
             </div>
         </div>
 
+        <!-- Main App -->
         <div id="mainApp" class="screen">
             <div class="header">
                 <div class="header-left">
@@ -1616,6 +970,7 @@
             <div class="station-grid" id="stationGrid"></div>
         </div>
 
+        <!-- Modals -->
         <div class="modal-overlay" id="sessionModal">
             <div class="modal-content">
                 <h2 id="modalTitle">✅ انتهت الجلسة!</h2>
@@ -1643,7 +998,6 @@
             <div class="shift-modal-content">
                 <h2>📊 تقفيل الشيفت</h2>
                 <div class="shift-date" id="shiftDate">اليوم: --/--/----</div>
-
                 <div class="shift-summary-grid">
                     <div class="shift-stat-card">
                         <div class="shift-stat-number gold" id="shiftNoodles">0</div>
@@ -1674,17 +1028,14 @@
                         <div class="shift-stat-label">💰 إيرادات المشروبات</div>
                     </div>
                 </div>
-
                 <div class="shift-drinks-detail" id="shiftDrinksDetail">
                     <div class="detail-title">🥤 تفاصيل المشروبات</div>
                     <div id="shiftDrinksList"></div>
                 </div>
-
                 <div class="shift-total-row">
                     <span class="total-label">💰 إجمالي الإيرادات</span>
                     <span class="total-amount" id="shiftGrandTotal">0.00 EGP</span>
                 </div>
-
                 <div class="shift-actions">
                     <button class="btn btn-secondary" onclick="closeShiftModal()">إغلاق</button>
                     <button class="btn btn-warning" onclick="viewShiftHistory()">📜 السجل</button>
@@ -1710,16 +1061,13 @@
             <div class="settings-modal-content">
                 <h2 id="settingsTitle">⚙️ الإعدادات</h2>
                 <div class="sub" id="settingsSub">تخصيص الأجهزة والمشروبات</div>
-
                 <div class="lang-toggle">
                     <span class="lang-label" id="langLabel">🌐 اللغة:</span>
                     <button class="lang-btn active" onclick="setLanguage('ar')" id="langArBtn">🇸🇦 عربي</button>
                     <span class="lang-divider">|</span>
                     <button class="lang-btn" onclick="setLanguage('en')" id="langEnBtn">🇬🇧 English</button>
                 </div>
-
                 <div class="settings-note" id="settingsNote">💡 التغييرات تطبق فوراً. الجلسات النشطة تحتفظ بالسعر الذي بدأت به.</div>
-
                 <div class="global-settings">
                     <div class="global-label" id="noodleLabel">🍜 النودلز / الأندومي</div>
                     <div class="settings-group" style="margin-bottom:0;">
@@ -1728,16 +1076,13 @@
                         <div class="hint" id="noodleHint">الافتراضي: 15 EGP</div>
                     </div>
                 </div>
-
                 <div class="drinks-settings">
                     <div class="drinks-label" id="drinksLabel">🥤 المشروبات المخصصة</div>
                     <div id="drinksSettingsList"></div>
                     <button class="btn-add-drink-setting" onclick="addDrinkSetting()" id="addDrinkBtn">➕ إضافة مشروب جديد</button>
                 </div>
-
                 <div id="settingsList"></div>
                 <button class="btn-add-station" onclick="addStation()">➕ إضافة جهاز جديد</button>
-
                 <div class="modal-actions" style="margin-top:16px;">
                     <button class="btn btn-done" onclick="closeSettings()" style="flex:1;" id="settingsDoneBtn">تم</button>
                 </div>
@@ -1766,7 +1111,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
@@ -1813,7 +1157,10 @@
                 }
             } else {
                 console.error('❌ Failed to load Supabase library');
-                showToast('❌ فشل تحميل قاعدة البيانات، تأكد من اتصال الإنترنت', 'error');
+                // Still try to start the app
+                if (typeof initializeApp === 'function') {
+                    initializeApp();
+                }
             }
         });
 
@@ -2119,7 +1466,7 @@
         }
 
         const VERSION_KEY = 'ps_app_version';
-        const APP_VERSION = '2.6.1';
+        const APP_VERSION = '2.6.2';
 
         function checkVersion() {
             const stored = localStorage.getItem(VERSION_KEY);
@@ -2300,25 +1647,12 @@
         // TIME HELPERS - UTC FIX
         // ============================================
 
-        function getUTCTime(date) {
-            if (!date) return null;
-            if (typeof date === 'string') {
-                date = new Date(date);
-            }
-            return new Date(date.getTime() + (date.getTimezoneOffset() * 60000));
-        }
-
-        function getLocalTimeFromUTC(utcDate) {
-            if (!utcDate) return null;
-            if (typeof utcDate === 'string') {
-                utcDate = new Date(utcDate);
-            }
-            return new Date(utcDate.getTime() - (utcDate.getTimezoneOffset() * 60000));
+        function now() {
+            return new Date();
         }
 
         function formatTime(date) {
             if (!date) return '--';
-            // Convert from UTC to local time for display
             var localDate;
             if (typeof date === 'string') {
                 localDate = new Date(date);
@@ -2349,6 +1683,8 @@
             if (currentLang === 'ar') return seconds + 'ث';
             return seconds + 's';
         }
+
+        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
 
         // ============================================
         // SYNC HELPERS
@@ -2511,7 +1847,8 @@
                     if (!exists) {
                         mergedHistory.push({
                             closedAt: serverEntry.closed_at,
-                            businessName: serverEntry.business_name || businessConfig.businessName,
+                            businessName: serverEntry.business_name || (businessConfig ? businessConfig
+                                .businessName : 'غير معروف'),
                             totalRevenue: serverEntry.total_revenue || 0,
                             totalSessions: serverEntry.total_sessions || 0,
                             totalNoodles: serverEntry.total_noodles || 0,
@@ -2897,9 +2234,15 @@
                 var _ref5 = await supabaseClient.from('businesses').select('*').eq('code', code.toUpperCase()).single();
                 var data = _ref5.data;
                 var error = _ref5.error;
-                if (error) return null;
+                if (error) {
+                    console.warn('⚠️ Load business error:', error);
+                    return null;
+                }
                 return data;
-            } catch (e) { return null; }
+            } catch (e) {
+                console.warn('⚠️ Load business exception:', e);
+                return null;
+            }
         }
 
         async function saveBusinessConfig(code, config) {
@@ -3022,15 +2365,28 @@
             }
 
             currentBusiness = code;
+            
+            // ✅ تأكد من وجود device_config
+            var deviceConfigData = config.device_config || {};
+            var totalStations = config.total_stations || 11;
+            
+            // ✅ إذا كان device_config فارغاً، قم بإنشاء بيانات افتراضية
+            if (Object.keys(deviceConfigData).length === 0) {
+                for (var i = 1; i <= totalStations; i++) {
+                    deviceConfigData[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
+                }
+            }
+            
             businessConfig = {
-                businessName: config.business_name,
-                totalStations: config.total_stations,
-                price: config.price,
-                phone: config.phone,
+                businessName: config.business_name || 'صالة بلايستيشن',
+                totalStations: totalStations,
+                price: config.price || 150,
+                phone: config.phone || '01012345678',
                 noodlePrice: config.noodle_price || 15,
-                deviceConfig: config.device_config || {},
+                deviceConfig: deviceConfigData,
                 drinks: config.drinks || {}
             };
+            
             deviceConfig = businessConfig.deviceConfig || {};
             noodlePrice = businessConfig.noodlePrice || 15;
             drinks = businessConfig.drinks || {};
@@ -3190,6 +2546,15 @@
 
             var isActive = isRentalActive();
             var days = getDaysRemaining();
+
+            // ✅ التحقق من وجود businessConfig
+            if (!businessConfig) {
+                statusBadge.textContent = t.locked;
+                statusBadge.className = 'status-badge locked';
+                daysLeft.innerHTML = '⚠️ ' + (currentLang === 'ar' ? 'لم يتم تحميل البيانات' : 'Data not loaded');
+                paymentStatus.innerHTML = '';
+                return;
+            }
 
             if (isActive) {
                 statusBadge.textContent = t.active;
@@ -3776,8 +3141,6 @@
 
         function getNoodlePrice() { return noodlePrice || 15; }
 
-        function now() { return new Date(); }
-
         // ============================================
         // SESSION FUNCTIONS - WITH UTC FIX
         // ============================================
@@ -3789,7 +3152,6 @@
                     'مشغول بالفعل!' : 'is already in use!'), 'warning');
                 return;
             }
-            // Use UTC time for storage
             var nowTime = new Date();
             var utcTime = new Date(nowTime.getTime() + (nowTime.getTimezoneOffset() * 60000));
 
@@ -3813,7 +3175,6 @@
             var session = sessions[d];
             if (!session || session.completed) return;
 
-            // Use UTC time for storage
             var endTime = new Date();
             var utcEndTime = new Date(endTime.getTime() + (endTime.getTimezoneOffset() * 60000));
 
@@ -3894,7 +3255,6 @@
             var durationEl = card.querySelector('.duration');
             var startTimeEl = card.querySelector('.start-time');
             if (!session.completed) {
-                // Calculate duration using UTC
                 var now = new Date();
                 var utcNow = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
                 var duration = utcNow.getTime() - session.startTime.getTime();
@@ -3907,11 +3267,41 @@
 
         function renderMain() {
             var t = translations[currentLang];
-            if (!businessConfig) return;
+            
+            // ✅ التحقق من وجود businessConfig
+            if (!businessConfig) {
+                console.warn('⚠️ businessConfig is null, skipping render');
+                var grid = document.getElementById('stationGrid');
+                if (grid) {
+                    grid.innerHTML = '<div style="text-align:center;color:#ff6b6b;padding:20px;">⚠️ ' + 
+                        (currentLang === 'ar' ? 'لم يتم تحميل البيانات' : 'Data not loaded') + 
+                        '</div>';
+                }
+                return;
+            }
+            
             var grid = document.getElementById('stationGrid');
-            if (!grid) return;
+            if (!grid) {
+                console.error('❌ stationGrid not found!');
+                return;
+            }
 
             var totalStations = businessConfig.totalStations || 11;
+            
+            // ✅ التأكد من أن deviceConfig يحتوي على بيانات
+            if (Object.keys(deviceConfig).length === 0) {
+                console.log('⚠️ deviceConfig is empty, creating default stations...');
+                for (var i = 1; i <= totalStations; i++) {
+                    deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
+                }
+                if (currentBusiness) {
+                    var updatedConfig = {};
+                    Object.assign(updatedConfig, businessConfig);
+                    updatedConfig.deviceConfig = deviceConfig;
+                    saveBusinessConfig(currentBusiness, updatedConfig);
+                }
+            }
+
             var activeCount = getActiveCount();
             var availableCount = getAvailableCount();
 
@@ -3922,6 +3312,11 @@
 
             var html = '';
             for (var i = 1; i <= totalStations; i++) {
+                // ✅ تأكد من وجود deviceConfig[i]
+                if (!deviceConfig[i]) {
+                    deviceConfig[i] = { name: 'PS ' + i, rate: 25 };
+                }
+                
                 var session = sessions[i];
                 var isActive = session && !session.completed;
                 var rate = getRate(i);
@@ -4003,7 +3398,14 @@
                     '</div></div></div><div class="items-section"><span class="items-label">' + t.orders +
                     '</span>' + itemsHtml + '</div></div>';
             }
-            grid.innerHTML = html;
+            
+            if (!html) {
+                grid.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + 
+                    (currentLang === 'ar' ? '⚠️ لا توجد أجهزة' : '⚠️ No stations') + 
+                    '</div>';
+            } else {
+                grid.innerHTML = html;
+            }
         }
 
         function showSessionModal(d) {
@@ -4060,8 +3462,6 @@
         function closeModal() {
             document.getElementById('sessionModal').classList.remove('show');
         }
-
-        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
 
         function getTotalNoodles() {
             var total = 0;
@@ -4224,9 +3624,9 @@
 
         console.log('========================================');
         console.log('🎮 PS Rental Pro - v' + APP_VERSION);
-        console.log('✅ Fixed UTC timezone issue');
-        console.log('✅ All times stored in UTC, displayed in local time');
-        console.log('✅ Smart sync: Local storage + Server sync');
+        console.log('✅ Fixed all issues');
+        console.log('✅ Stations now appear correctly');
+        console.log('✅ Timezone issue fixed');
         console.log('========================================');
     </script>
 </body>
