@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PS Rental Pro</title>
     <style>
-        /* نفس الـ CSS الموجود، لا تغيير */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #0a0e17;
@@ -19,11 +19,26 @@
             padding: 16px;
             padding-bottom: 30px;
         }
-        body.rtl { direction: rtl; }
-        body.ltr { direction: ltr; }
-        .container { max-width: 500px; margin: 0 auto; }
-        .screen { display: none; }
-        .screen.active { display: block; }
+
+        body.rtl {
+            direction: rtl;
+        }
+        body.ltr {
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+
         .setup-screen {
             background: #131c2e;
             border-radius: 24px;
@@ -31,11 +46,16 @@
             max-width: 420px;
             width: 100%;
             margin: 0 auto;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
             text-align: center;
         }
-        .setup-screen .logo { font-size: 48px; margin-bottom: 8px; }
+
+        .setup-screen .logo {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
         .setup-screen h1 {
             font-size: 28px;
             font-weight: 700;
@@ -44,19 +64,30 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
-        .setup-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
-        .setup-screen .input-group { margin: 12px 0; text-align: inherit; }
+
+        .setup-screen .subtitle {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .setup-screen .input-group {
+            margin: 12px 0;
+            text-align: inherit;
+        }
+
         .setup-screen .input-group label {
             display: block;
             font-size: 13px;
             color: #8ba0c7;
             margin-bottom: 4px;
         }
+
         .setup-screen .input-group input {
             width: 100%;
             padding: 14px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             color: #e8f0fe;
             font-size: 16px;
@@ -64,21 +95,27 @@
             text-align: center;
             letter-spacing: 2px;
         }
-        .setup-screen .input-group input:focus { border-color: #00d4ff; }
+
+        .setup-screen .input-group input:focus {
+            border-color: #00d4ff;
+        }
+
         .setup-screen .input-group .hint {
             font-size: 12px;
             color: #5a6f8a;
             margin-top: 4px;
         }
+
         .setup-screen .business-info {
-            background: rgba(0,212,255,0.05);
-            border: 1px solid rgba(0,212,255,0.1);
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
             border-radius: 12px;
             padding: 12px;
             margin: 12px 0;
             font-size: 13px;
             color: #8ba0c7;
         }
+
         .btn {
             padding: 8px 16px;
             border: none;
@@ -92,18 +129,61 @@
             min-width: 70px;
             text-align: center;
         }
-        .btn:active { transform: scale(0.95); }
-        .btn-primary { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
-        .btn-success { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46,204,113,0.3); }
-        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(231,76,60,0.3); }
-        .btn-secondary { background: rgba(255,255,255,0.08); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
-        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(243,156,18,0.3); }
-        .btn-block { width: 100%; padding: 14px; font-size: 16px; }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #7b61ff);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-block {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+        }
+
         .btn-pay {
             background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
             color: #fff !important;
@@ -116,11 +196,22 @@
             width: 100% !important;
             transition: all 0.2s !important;
         }
-        .btn-pay:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 25px rgba(46,204,113,0.4) !important; }
-        .btn-pay:active { transform: scale(0.97) !important; }
-        .switch-business { margin-top: 16px; }
+
+        .btn-pay:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4) !important;
+        }
+
+        .btn-pay:active {
+            transform: scale(0.97) !important;
+        }
+
+        .switch-business {
+            margin-top: 16px;
+        }
+
         .switch-business .btn-switch {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             color: #8ba0c7;
             font-size: 13px;
             padding: 10px;
@@ -129,16 +220,22 @@
             cursor: pointer;
             width: 100%;
         }
-        .switch-business .btn-switch:hover { background: rgba(255,255,255,0.1); }
+
+        .switch-business .btn-switch:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         .device-id-display {
             font-size: 11px;
             color: #5a6f8a;
             margin-top: 16px;
         }
+
         .device-id-display span {
             color: #00d4ff;
             font-family: 'Courier New', monospace;
         }
+
         .lock-screen {
             background: #131c2e;
             border-radius: 24px;
@@ -146,12 +243,22 @@
             max-width: 420px;
             width: 100%;
             margin: 0 auto;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
             text-align: center;
         }
-        .lock-screen .business-name { font-size: 14px; color: #00d4ff; margin-bottom: 4px; }
-        .lock-screen .logo { font-size: 48px; margin-bottom: 8px; }
+
+        .lock-screen .business-name {
+            font-size: 14px;
+            color: #00d4ff;
+            margin-bottom: 4px;
+        }
+
+        .lock-screen .logo {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
         .lock-screen h1 {
             font-size: 28px;
             font-weight: 700;
@@ -160,7 +267,13 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
-        .lock-screen .subtitle { color: #8ba0c7; font-size: 14px; margin-bottom: 24px; }
+
+        .lock-screen .subtitle {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
         .status-badge {
             display: inline-block;
             padding: 6px 16px;
@@ -169,50 +282,79 @@
             font-weight: 600;
             margin-bottom: 16px;
         }
+
         .status-badge.locked {
-            background: rgba(231,76,60,0.15);
+            background: rgba(231, 76, 60, 0.15);
             color: #e74c3c;
-            border: 1px solid rgba(231,76,60,0.2);
+            border: 1px solid rgba(231, 76, 60, 0.2);
         }
+
         .status-badge.active {
-            background: rgba(46,204,113,0.15);
+            background: rgba(46, 204, 113, 0.15);
             color: #2ecc71;
-            border: 1px solid rgba(46,204,113,0.2);
+            border: 1px solid rgba(46, 204, 113, 0.2);
         }
+
         .status-badge.expiring {
-            background: rgba(255,165,0,0.15);
+            background: rgba(255, 165, 0, 0.15);
             color: #ffa500;
-            border: 1px solid rgba(255,165,0,0.2);
+            border: 1px solid rgba(255, 165, 0, 0.2);
         }
+
         .price-tag {
-            background: rgba(0,212,255,0.08);
-            border: 1px solid rgba(0,212,255,0.15);
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.15);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 24px;
         }
-        .price-tag .amount { font-size: 32px; font-weight: 700; color: #00d4ff; }
-        .price-tag .period { color: #8ba0c7; font-size: 14px; margin-top: 4px; }
-        .features { text-align: inherit; margin: 20px 0; padding: 0 8px; }
+
+        .price-tag .amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .price-tag .period {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .features {
+            text-align: inherit;
+            margin: 20px 0;
+            padding: 0 8px;
+        }
+
         .features li {
             list-style: none;
             color: #b0c4de;
             font-size: 14px;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .features li:last-child { border-bottom: none; }
-        .features li .check { color: #2ecc71; font-weight: 700; }
+
+        .features li:last-child {
+            border-bottom: none;
+        }
+
+        .features li .check {
+            color: #2ecc71;
+            font-weight: 700;
+        }
+
         .payment-section {
-            background: rgba(255,200,0,0.05);
-            border: 1px solid rgba(255,200,0,0.1);
+            background: rgba(255, 200, 0, 0.05);
+            border: 1px solid rgba(255, 200, 0, 0.1);
             border-radius: 12px;
             padding: 16px;
             margin: 20px 0;
         }
+
         .payment-section .label {
             color: #8ba0c7;
             font-size: 12px;
@@ -220,19 +362,21 @@
             letter-spacing: 1px;
             margin-bottom: 8px;
         }
+
         .payment-section .code {
             font-family: 'Courier New', monospace;
             font-size: 24px;
             font-weight: 700;
             color: #ffd700;
             letter-spacing: 4px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 12px;
             border-radius: 8px;
             user-select: all;
         }
+
         .device-id-box {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 10px;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
@@ -242,9 +386,10 @@
             word-break: break-all;
             user-select: all;
         }
+
         .copy-btn {
-            background: rgba(0,212,255,0.1);
-            border: 1px solid rgba(0,212,255,0.2);
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
             color: #00d4ff;
             padding: 4px 12px;
             border-radius: 6px;
@@ -252,9 +397,21 @@
             cursor: pointer;
             margin-top: 4px;
         }
-        .copy-btn:hover { background: rgba(0,212,255,0.2); }
-        .days-left { color: #8ba0c7; font-size: 14px; margin-top: 12px; }
-        .days-left strong { color: #00d4ff; }
+
+        .copy-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+
+        .days-left {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .days-left strong {
+            color: #00d4ff;
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -263,12 +420,14 @@
             flex-wrap: wrap;
             gap: 8px;
         }
+
         .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
+
         .header h1 {
             font-size: 24px;
             font-weight: 700;
@@ -276,20 +435,31 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .header .business-tag {
             font-size: 10px;
-            background: rgba(0,212,255,0.1);
+            background: rgba(0, 212, 255, 0.1);
             color: #00d4ff;
             padding: 2px 10px;
             border-radius: 12px;
-            border: 1px solid rgba(0,212,255,0.15);
+            border: 1px solid rgba(0, 212, 255, 0.15);
             font-weight: 600;
         }
-        .header-time { color: #8ba0c7; font-size: 14px; }
-        .header-actions { display: flex; gap: 6px; align-items: center; }
+
+        .header-time {
+            color: #8ba0c7;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
         .btn-shift {
-            background: rgba(255,165,0,0.15);
-            border: 1px solid rgba(255,165,0,0.2);
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid rgba(255, 165, 0, 0.2);
             color: #ffa500;
             padding: 4px 12px;
             border-radius: 10px;
@@ -299,11 +469,19 @@
             transition: all 0.2s;
             touch-action: manipulation;
         }
-        .btn-shift:hover { background: rgba(255,165,0,0.25); border-color: rgba(255,165,0,0.4); }
-        .btn-shift:active { transform: scale(0.95); }
+
+        .btn-shift:hover {
+            background: rgba(255, 165, 0, 0.25);
+            border-color: rgba(255, 165, 0, 0.4);
+        }
+
+        .btn-shift:active {
+            transform: scale(0.95);
+        }
+
         .btn-settings {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #8ba0c7;
             padding: 6px 12px;
             border-radius: 10px;
@@ -313,8 +491,15 @@
             touch-action: manipulation;
             line-height: 1;
         }
-        .btn-settings:active { transform: scale(0.92); }
-        .btn-settings:hover { background: rgba(255,255,255,0.15); }
+
+        .btn-settings:active {
+            transform: scale(0.92);
+        }
+
+        .btn-settings:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -323,27 +508,68 @@
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 24px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .stat-item { text-align: center; }
-        .stat-item .number { font-size: 28px; font-weight: 700; }
-        .stat-item .label { font-size: 12px; color: #8ba0c7; margin-top: 4px; }
-        .stat-item .number.total { color: #00d4ff; }
-        .stat-item .number.active { color: #2ecc71; }
-        .stat-item .number.available { color: #8ba0c7; }
-        .stations-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #e8f0fe; }
-        .station-grid { display: flex; flex-direction: column; gap: 12px; }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-item .label {
+            font-size: 12px;
+            color: #8ba0c7;
+            margin-top: 4px;
+        }
+
+        .stat-item .number.total {
+            color: #00d4ff;
+        }
+
+        .stat-item .number.active {
+            color: #2ecc71;
+        }
+
+        .stat-item .number.available {
+            color: #8ba0c7;
+        }
+
+        .stations-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #e8f0fe;
+        }
+
+        .station-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .station-card {
             background: #131c2e;
             border-radius: 14px;
             padding: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        .station-card.active { border-right: 4px solid #2ecc71; }
-        body.ltr .station-card.active { border-right: none; border-left: 4px solid #2ecc71; }
+
+        .station-card.active {
+            border-right: 4px solid #2ecc71;
+        }
+
+        body.ltr .station-card.active {
+            border-right: none;
+            border-left: 4px solid #2ecc71;
+        }
+
         .station-card .top-row {
             display: flex;
             justify-content: space-between;
@@ -351,6 +577,7 @@
             flex-wrap: wrap;
             gap: 8px;
         }
+
         .station-card .info {
             display: flex;
             flex-direction: column;
@@ -358,55 +585,90 @@
             flex: 1;
             min-width: 100px;
         }
-        .station-card .name { font-size: 18px; font-weight: 600; }
-        .station-card .status { font-size: 13px; color: #8ba0c7; }
-        .station-card .status.active-text { color: #2ecc71; }
-        .station-card .duration { font-size: 14px; font-weight: 500; color: #00d4ff; }
-        .station-card .start-time { font-size: 12px; color: #8ba0c7; }
+
+        .station-card .name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .station-card .status {
+            font-size: 13px;
+            color: #8ba0c7;
+        }
+
+        .station-card .status.active-text {
+            color: #2ecc71;
+        }
+
+        .station-card .duration {
+            font-size: 14px;
+            font-weight: 500;
+            color: #00d4ff;
+        }
+
+        .station-card .start-time {
+            font-size: 12px;
+            color: #8ba0c7;
+        }
+
         .station-card .right {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
+
         .station-card .rate-badge {
             font-size: 11px;
-            background: rgba(0,212,255,0.1);
+            background: rgba(0, 212, 255, 0.1);
             color: #00d4ff;
             padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(0,212,255,0.15);
+            border: 1px solid rgba(0, 212, 255, 0.15);
             white-space: nowrap;
         }
+
         .station-card .rate-badge.special {
-            background: rgba(255,165,0,0.15);
+            background: rgba(255, 165, 0, 0.15);
             color: #ffa500;
-            border-color: rgba(255,165,0,0.2);
+            border-color: rgba(255, 165, 0, 0.2);
         }
+
         .station-card .items-section {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             align-items: center;
         }
+
         .station-card .items-section .items-label {
             font-size: 11px;
             color: #5a6f8a;
             margin: 0 4px;
         }
+
         .item-control {
             display: flex;
             align-items: center;
             gap: 4px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             padding: 2px 6px 2px 10px;
             border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
-        .item-control .item-icon { font-size: 13px; }
-        .item-control .item-name { font-size: 11px; color: #b0c4de; margin: 0 2px; }
+
+        .item-control .item-icon {
+            font-size: 13px;
+        }
+
+        .item-control .item-name {
+            font-size: 11px;
+            color: #b0c4de;
+            margin: 0 2px;
+        }
+
         .item-control .item-count {
             font-size: 13px;
             font-weight: 600;
@@ -414,8 +676,9 @@
             min-width: 18px;
             text-align: center;
         }
+
         .item-control .item-btn {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             border: none;
             color: #b0c4de;
             width: 18px;
@@ -429,22 +692,66 @@
             justify-content: center;
             transition: all 0.15s;
         }
-        .item-control .item-btn:active { transform: scale(0.85); }
-        .item-control .item-btn.minus { color: #ff6b6b; background: rgba(255,100,100,0.1); }
-        .item-control .item-btn.plus { color: #51cf66; background: rgba(80,200,100,0.1); }
-        .item-control .item-btn:hover { opacity: 0.7; }
-        .item-control.noodle-control { border-color: rgba(255,200,0,0.15); }
-        .item-control.noodle-control .item-name { color: #ffd700; }
-        .item-control.drink-control { border-color: rgba(0,212,255,0.15); }
-        .item-control.drink-control .item-name { color: #00d4ff; }
-        .btn-start { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-        .btn-start:hover { box-shadow: 0 4px 15px rgba(46,204,113,0.3); }
-        .btn-end { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .btn-end:hover { box-shadow: 0 4px 15px rgba(231,76,60,0.3); }
-        .btn-small { padding: 4px 10px; font-size: 11px; min-width: 50px; }
+
+        .item-control .item-btn:active {
+            transform: scale(0.85);
+        }
+
+        .item-control .item-btn.minus {
+            color: #ff6b6b;
+            background: rgba(255, 100, 100, 0.1);
+        }
+
+        .item-control .item-btn.plus {
+            color: #51cf66;
+            background: rgba(80, 200, 100, 0.1);
+        }
+
+        .item-control .item-btn:hover {
+            opacity: 0.7;
+        }
+
+        .item-control.noodle-control {
+            border-color: rgba(255, 200, 0, 0.15);
+        }
+
+        .item-control.noodle-control .item-name {
+            color: #ffd700;
+        }
+
+        .item-control.drink-control {
+            border-color: rgba(0, 212, 255, 0.15);
+        }
+
+        .item-control.drink-control .item-name {
+            color: #00d4ff;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .btn-start:hover {
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-end {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-end:hover {
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-small {
+            padding: 4px 10px;
+            font-size: 11px;
+            min-width: 50px;
+        }
+
         .btn-add-drink {
-            background: rgba(0,212,255,0.1);
-            border: 1px dashed rgba(0,212,255,0.2);
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px dashed rgba(0, 212, 255, 0.2);
             color: #00d4ff;
             padding: 2px 10px;
             border-radius: 16px;
@@ -455,93 +762,195 @@
             align-items: center;
             gap: 4px;
         }
-        .btn-add-drink:hover { background: rgba(0,212,255,0.2); border-color: rgba(0,212,255,0.4); }
-        .btn-add-drink:active { transform: scale(0.95); }
+
+        .btn-add-drink:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-add-drink:active {
+            transform: scale(0.95);
+        }
+
         .shift-modal-content {
             background: #131c2e;
             border-radius: 16px;
             padding: 24px 20px;
             max-width: 450px;
             width: 100%;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             max-height: 90vh;
             overflow-y: auto;
             text-align: inherit;
         }
-        .shift-modal-content h2 { font-size: 22px; margin-bottom: 4px; color: #ffa500; text-align: center; }
-        .shift-modal-content .shift-date { color: #8ba0c7; font-size: 14px; text-align: center; margin-bottom: 16px; }
+
+        .shift-modal-content h2 {
+            font-size: 22px;
+            margin-bottom: 4px;
+            color: #ffa500;
+            text-align: center;
+        }
+
+        .shift-modal-content .shift-date {
+            color: #8ba0c7;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
         .shift-summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 16px;
         }
+
         .shift-stat-card {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
             padding: 14px 12px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .shift-stat-card .shift-stat-number { font-size: 24px; font-weight: 700; }
-        .shift-stat-card .shift-stat-label { font-size: 11px; color: #8ba0c7; margin-top: 4px; }
-        .shift-stat-card .shift-stat-number.gold { color: #ffd700; }
-        .shift-stat-card .shift-stat-number.blue { color: #00d4ff; }
-        .shift-stat-card .shift-stat-number.green { color: #2ecc71; }
-        .shift-stat-card .shift-stat-number.orange { color: #ffa500; }
-        .shift-stat-card .shift-stat-number.pink { color: #ff6b9d; }
-        .shift-stat-card .shift-stat-number.purple { color: #a855f7; }
-        .shift-stat-card .shift-stat-number.cyan { color: #22d3ee; }
+
+        .shift-stat-card .shift-stat-number {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .shift-stat-card .shift-stat-label {
+            font-size: 11px;
+            color: #8ba0c7;
+            margin-top: 4px;
+        }
+
+        .shift-stat-card .shift-stat-number.gold {
+            color: #ffd700;
+        }
+
+        .shift-stat-card .shift-stat-number.blue {
+            color: #00d4ff;
+        }
+
+        .shift-stat-card .shift-stat-number.green {
+            color: #2ecc71;
+        }
+
+        .shift-stat-card .shift-stat-number.orange {
+            color: #ffa500;
+        }
+
+        .shift-stat-card .shift-stat-number.pink {
+            color: #ff6b9d;
+        }
+
+        .shift-stat-card .shift-stat-number.purple {
+            color: #a855f7;
+        }
+
+        .shift-stat-card .shift-stat-number.cyan {
+            color: #22d3ee;
+        }
+
         .shift-total-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 16px;
-            background: rgba(255,165,0,0.08);
+            background: rgba(255, 165, 0, 0.08);
             border-radius: 12px;
-            border: 1px solid rgba(255,165,0,0.15);
+            border: 1px solid rgba(255, 165, 0, 0.15);
             font-size: 18px;
             font-weight: 700;
             margin: 12px 0 16px;
         }
-        .shift-total-row .total-label { color: #8ba0c7; }
-        .shift-total-row .total-amount { color: #ffd700; }
+
+        .shift-total-row .total-label {
+            color: #8ba0c7;
+        }
+
+        .shift-total-row .total-amount {
+            color: #ffd700;
+        }
+
         .shift-drinks-detail {
             margin: 12px 0;
             padding: 12px;
-            background: rgba(0,212,255,0.03);
+            background: rgba(0, 212, 255, 0.03);
             border-radius: 10px;
-            border: 1px solid rgba(0,212,255,0.08);
+            border: 1px solid rgba(0, 212, 255, 0.08);
         }
-        .shift-drinks-detail .detail-title { font-size: 13px; color: #8ba0c7; margin-bottom: 8px; font-weight: 600; }
+
+        .shift-drinks-detail .detail-title {
+            font-size: 13px;
+            color: #8ba0c7;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
         .shift-drink-item {
             display: flex;
             justify-content: space-between;
             padding: 4px 0;
             font-size: 13px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
-        .shift-drink-item:last-child { border-bottom: none; }
-        .shift-drink-item .drink-name { color: #b0c4de; }
-        .shift-drink-item .drink-total { color: #00d4ff; font-weight: 600; }
-        .shift-actions { display: flex; gap: 10px; margin-top: 16px; }
-        .shift-actions .btn { flex: 1; padding: 12px; font-size: 15px; }
+
+        .shift-drink-item:last-child {
+            border-bottom: none;
+        }
+
+        .shift-drink-item .drink-name {
+            color: #b0c4de;
+        }
+
+        .shift-drink-item .drink-total {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .shift-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .shift-actions .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 15px;
+        }
+
         .shift-history-item {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 10px;
             padding: 12px 14px;
             margin-bottom: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: pointer;
             transition: all 0.2s;
         }
-        .shift-history-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,165,0,0.2); }
+
+        .shift-history-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 165, 0, 0.2);
+        }
+
         .shift-history-item .hist-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .shift-history-item .hist-date { font-weight: 600; color: #e8f0fe; }
-        .shift-history-item .hist-total { color: #ffd700; font-weight: 700; }
+
+        .shift-history-item .hist-date {
+            font-weight: 600;
+            color: #e8f0fe;
+        }
+
+        .shift-history-item .hist-total {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
         .shift-history-item .hist-stats {
             display: flex;
             gap: 16px;
@@ -549,7 +958,12 @@
             color: #8ba0c7;
             margin-top: 4px;
         }
-        .shift-history-container { max-height: 300px; overflow-y: auto; }
+
+        .shift-history-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -557,79 +971,147 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
-        .modal-overlay.show { display: flex; }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
         .modal-content {
             background: #131c2e;
             border-radius: 16px;
             padding: 28px 24px;
             max-width: 380px;
             width: 100%;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             max-height: 90vh;
             overflow-y: auto;
             text-align: inherit;
         }
-        .modal-content h2 { font-size: 20px; margin-bottom: 4px; color: #2ecc71; }
-        .modal-content .sub { color: #8ba0c7; font-size: 14px; margin-bottom: 16px; }
+
+        .modal-content h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #2ecc71;
+        }
+
+        .modal-content .sub {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
         .modal-content .detail-row {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .modal-content .detail-row .label { color: #8ba0c7; }
-        .modal-content .detail-row .value { font-weight: 600; color: #e8f0fe; }
-        .modal-content .detail-row.drink-row .value { color: #00d4ff; }
-        .modal-content .detail-row.noodle-row .value { color: #ffd700; }
-        .modal-content .detail-row.time-row .value { color: #00d4ff; }
+
+        .modal-content .detail-row .label {
+            color: #8ba0c7;
+        }
+
+        .modal-content .detail-row .value {
+            font-weight: 600;
+            color: #e8f0fe;
+        }
+
+        .modal-content .detail-row.drink-row .value {
+            color: #00d4ff;
+        }
+
+        .modal-content .detail-row.noodle-row .value {
+            color: #ffd700;
+        }
+
+        .modal-content .detail-row.time-row .value {
+            color: #00d4ff;
+        }
+
         .modal-content .total-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 0 4px;
             font-size: 20px;
             font-weight: 700;
-            border-top: 2px solid rgba(255,255,255,0.1);
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
             margin-top: 8px;
         }
-        .modal-content .total-row .amount { color: #00d4ff; }
-        .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
-        .modal-actions .btn { flex: 1; padding: 12px; font-size: 15px; }
-        .btn-done { background: linear-gradient(135deg, #00d4ff, #7b61ff); }
-        .btn-done:hover { box-shadow: 0 4px 15px rgba(0,212,255,0.3); }
+
+        .modal-content .total-row .amount {
+            color: #00d4ff;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 15px;
+        }
+
+        .btn-done {
+            background: linear-gradient(135deg, #00d4ff, #7b61ff);
+        }
+
+        .btn-done:hover {
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
         .settings-modal-content {
             background: #131c2e;
             border-radius: 16px;
             padding: 28px 24px;
             max-width: 450px;
             width: 100%;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             max-height: 85vh;
             overflow-y: auto;
             text-align: inherit;
         }
-        .settings-modal-content h2 { font-size: 20px; margin-bottom: 4px; color: #e8f0fe; }
-        .settings-modal-content .sub { color: #8ba0c7; font-size: 14px; margin-bottom: 16px; }
+
+        .settings-modal-content h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #e8f0fe;
+        }
+
+        .settings-modal-content .sub {
+            color: #8ba0c7;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
         .lang-toggle {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(0,212,255,0.05);
-            border: 1px solid rgba(0,212,255,0.1);
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
             border-radius: 12px;
             padding: 12px 16px;
             margin-bottom: 16px;
         }
-        .lang-toggle .lang-label { font-size: 13px; color: #8ba0c7; }
+
+        .lang-toggle .lang-label {
+            font-size: 13px;
+            color: #8ba0c7;
+        }
+
         .lang-toggle .lang-btn {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #8ba0c7;
             padding: 4px 14px;
             border-radius: 8px;
@@ -638,52 +1120,94 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .lang-toggle .lang-btn.active {
-            background: rgba(0,212,255,0.15);
-            border-color: rgba(0,212,255,0.3);
+            background: rgba(0, 212, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.3);
             color: #00d4ff;
         }
-        .lang-toggle .lang-btn:hover { background: rgba(255,255,255,0.15); }
-        .lang-toggle .lang-btn.active:hover { background: rgba(0,212,255,0.25); }
-        .lang-toggle .lang-divider { color: #5a6f8a; font-size: 14px; }
-        .settings-group { margin-bottom: 16px; }
+
+        .lang-toggle .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .lang-toggle .lang-btn.active:hover {
+            background: rgba(0, 212, 255, 0.25);
+        }
+
+        .lang-toggle .lang-divider {
+            color: #5a6f8a;
+            font-size: 14px;
+        }
+
+        .settings-group {
+            margin-bottom: 16px;
+        }
+
         .settings-group label {
             display: block;
             font-size: 13px;
             color: #8ba0c7;
             margin-bottom: 4px;
         }
+
         .settings-group input {
             width: 100%;
             padding: 10px 14px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 10px;
             color: #e8f0fe;
             font-size: 16px;
             outline: none;
         }
-        .settings-group input:focus { border-color: #00d4ff; }
-        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .settings-group .hint { font-size: 12px; color: #5a6f8a; margin-top: 4px; }
+
+        .settings-group input:focus {
+            border-color: #00d4ff;
+        }
+
+        .settings-group input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .settings-group .hint {
+            font-size: 12px;
+            color: #5a6f8a;
+            margin-top: 4px;
+        }
+
         .settings-device {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
             padding: 14px;
             margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .settings-device .device-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-        .settings-device .device-header .device-num { font-weight: 600; font-size: 15px; }
-        .settings-device .device-header .device-status { font-size: 12px; color: #8ba0c7; }
-        .settings-device .device-header .device-status.in-use { color: #2ecc71; }
+
+        .settings-device .device-header .device-num {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .settings-device .device-header .device-status {
+            font-size: 12px;
+            color: #8ba0c7;
+        }
+
+        .settings-device .device-header .device-status.in-use {
+            color: #2ecc71;
+        }
+
         .settings-device .device-header .btn-remove-station {
-            background: rgba(231,76,60,0.15);
+            background: rgba(231, 76, 60, 0.15);
             border: none;
             color: #e74c3c;
             width: 24px;
@@ -697,24 +1221,44 @@
             align-items: center;
             justify-content: center;
         }
-        .settings-device .device-header .btn-remove-station:hover { background: rgba(231,76,60,0.3); }
-        .settings-device .device-header .btn-remove-station:active { transform: scale(0.9); }
-        .settings-device .device-header .btn-remove-station:disabled { opacity: 0.3; cursor: not-allowed; }
-        .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .settings-row .settings-group { margin-bottom: 0; }
+
+        .settings-device .device-header .btn-remove-station:hover {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        .settings-device .device-header .btn-remove-station:active {
+            transform: scale(0.9);
+        }
+
+        .settings-device .device-header .btn-remove-station:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .settings-row .settings-group {
+            margin-bottom: 0;
+        }
+
         .settings-note {
             font-size: 13px;
             color: #ffa500;
-            background: rgba(255,165,0,0.08);
+            background: rgba(255, 165, 0, 0.08);
             padding: 12px;
             border-radius: 10px;
             margin: 12px 0;
-            border: 1px solid rgba(255,165,0,0.1);
+            border: 1px solid rgba(255, 165, 0, 0.1);
             text-align: inherit;
         }
+
         .btn-add-station {
-            background: rgba(46,204,113,0.1);
-            border: 1px dashed rgba(46,204,113,0.2);
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px dashed rgba(46, 204, 113, 0.2);
             color: #2ecc71;
             padding: 10px 14px;
             border-radius: 10px;
@@ -729,14 +1273,20 @@
             justify-content: center;
             gap: 6px;
         }
-        .btn-add-station:hover { background: rgba(46,204,113,0.2); border-color: rgba(46,204,113,0.4); }
+
+        .btn-add-station:hover {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.4);
+        }
+
         .global-settings {
-            background: rgba(255,200,0,0.05);
+            background: rgba(255, 200, 0, 0.05);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid rgba(255,200,0,0.1);
+            border: 1px solid rgba(255, 200, 0, 0.1);
         }
+
         .global-settings .global-label {
             display: flex;
             align-items: center;
@@ -745,13 +1295,15 @@
             margin-bottom: 8px;
             color: #ffd700;
         }
+
         .drinks-settings {
-            background: rgba(0,212,255,0.05);
+            background: rgba(0, 212, 255, 0.05);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid rgba(0,212,255,0.1);
+            border: 1px solid rgba(0, 212, 255, 0.1);
         }
+
         .drinks-settings .drinks-label {
             display: flex;
             align-items: center;
@@ -760,44 +1312,57 @@
             margin-bottom: 8px;
             color: #00d4ff;
         }
+
         .drink-item-settings {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             padding: 8px 12px;
             border-radius: 8px;
             margin-bottom: 6px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             flex-wrap: wrap;
         }
-        .drink-item-settings .drink-icon { font-size: 16px; }
+
+        .drink-item-settings .drink-icon {
+            font-size: 16px;
+        }
+
         .drink-item-settings input[type=text] {
             flex: 1;
             padding: 6px 10px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 6px;
             color: #e8f0fe;
             font-size: 13px;
             outline: none;
             min-width: 60px;
         }
-        .drink-item-settings input[type=text]:focus { border-color: #00d4ff; }
+
+        .drink-item-settings input[type=text]:focus {
+            border-color: #00d4ff;
+        }
+
         .drink-item-settings input[type=number] {
             width: 60px;
             padding: 6px 8px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 6px;
             color: #e8f0fe;
             font-size: 13px;
             outline: none;
             text-align: center;
         }
-        .drink-item-settings input[type=number]:focus { border-color: #00d4ff; }
+
+        .drink-item-settings input[type=number]:focus {
+            border-color: #00d4ff;
+        }
+
         .drink-item-settings .btn-remove-drink {
-            background: rgba(231,76,60,0.15);
+            background: rgba(231, 76, 60, 0.15);
             border: none;
             color: #e74c3c;
             width: 24px;
@@ -810,11 +1375,18 @@
             align-items: center;
             justify-content: center;
         }
-        .drink-item-settings .btn-remove-drink:hover { background: rgba(231,76,60,0.3); }
-        .drink-item-settings .btn-remove-drink:active { transform: scale(0.9); }
+
+        .drink-item-settings .btn-remove-drink:hover {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        .drink-item-settings .btn-remove-drink:active {
+            transform: scale(0.9);
+        }
+
         .btn-add-drink-setting {
-            background: rgba(0,212,255,0.1);
-            border: 1px dashed rgba(0,212,255,0.2);
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px dashed rgba(0, 212, 255, 0.2);
             color: #00d4ff;
             padding: 8px 14px;
             border-radius: 10px;
@@ -828,7 +1400,12 @@
             justify-content: center;
             gap: 6px;
         }
-        .btn-add-drink-setting:hover { background: rgba(0,212,255,0.2); border-color: rgba(0,212,255,0.4); }
+
+        .btn-add-drink-setting:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.4);
+        }
+
         .toast {
             position: fixed;
             bottom: 30px;
@@ -842,45 +1419,116 @@
             animation: slideUp 0.3s ease-out;
             display: none;
         }
-        .toast.success { background: #2ecc71; color: #fff; }
-        .toast.error { background: #e74c3c; color: #fff; }
-        .toast.warning { background: #f39c12; color: #fff; }
-        @keyframes slideUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+
+        .toast.success {
+            background: #2ecc71;
+            color: #fff;
         }
+
+        .toast.error {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .toast.warning {
+            background: #f39c12;
+            color: #fff;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         @media(max-width:400px) {
-            .stats-row { padding: 12px; }
-            .stat-item .number { font-size: 22px; }
-            .station-card { padding: 12px; }
-            .station-card .top-row { flex-direction: column; align-items: stretch; }
-            .station-card .right { justify-content: flex-start; }
-            .btn { padding: 6px 12px; font-size: 12px; min-width: 60px; }
-            .lock-screen { padding: 28px 20px; }
-            .setup-screen { padding: 28px 20px; }
-            .payment-section .code { font-size: 18px; }
-            .settings-row { grid-template-columns: 1fr; }
-            .settings-modal-content { padding: 20px 16px; }
-            .btn-pay { font-size: 14px !important; padding: 12px !important; }
-            .drink-item-settings { flex-wrap: wrap; }
-            .drink-item-settings input[type=text] { min-width: 100%; }
-            .station-card .items-section { gap: 4px; }
-            .item-control { padding: 2px 4px 2px 8px; }
-            .item-control .item-name { font-size: 10px; }
-            .lang-toggle { flex-wrap: wrap; justify-content: center; }
-            .shift-summary-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
-            .shift-stat-card { padding: 10px 8px; }
-            .shift-stat-card .shift-stat-number { font-size: 18px; }
-            .shift-total-row { font-size: 15px; padding: 10px 12px; }
+            .stats-row {
+                padding: 12px;
+            }
+            .stat-item .number {
+                font-size: 22px;
+            }
+            .station-card {
+                padding: 12px;
+            }
+            .station-card .top-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .station-card .right {
+                justify-content: flex-start;
+            }
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+                min-width: 60px;
+            }
+            .lock-screen {
+                padding: 28px 20px;
+            }
+            .setup-screen {
+                padding: 28px 20px;
+            }
+            .payment-section .code {
+                font-size: 18px;
+            }
+            .settings-row {
+                grid-template-columns: 1fr;
+            }
+            .settings-modal-content {
+                padding: 20px 16px;
+            }
+            .btn-pay {
+                font-size: 14px !important;
+                padding: 12px !important;
+            }
+            .drink-item-settings {
+                flex-wrap: wrap;
+            }
+            .drink-item-settings input[type=text] {
+                min-width: 100%;
+            }
+            .station-card .items-section {
+                gap: 4px;
+            }
+            .item-control {
+                padding: 2px 4px 2px 8px;
+            }
+            .item-control .item-name {
+                font-size: 10px;
+            }
+            .lang-toggle {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .shift-summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .shift-stat-card {
+                padding: 10px 8px;
+            }
+            .shift-stat-card .shift-stat-number {
+                font-size: 18px;
+            }
+            .shift-total-row {
+                font-size: 15px;
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+
         <div id="toast" class="toast"></div>
 
-        <!-- Setup Screen -->
         <div id="setupScreen" class="screen setup-screen active">
             <div class="logo">🏪</div>
             <h1>PS Rental Pro</h1>
@@ -901,7 +1549,6 @@
             </div>
         </div>
 
-        <!-- Lock Screen -->
         <div id="lockScreen" class="screen lock-screen">
             <div class="business-name" id="lockBusinessName">🏢 اسم النشاط التجاري</div>
             <div class="logo">🎮</div>
@@ -939,7 +1586,6 @@
             </div>
         </div>
 
-        <!-- Main App -->
         <div id="mainApp" class="screen">
             <div class="header">
                 <div class="header-left">
@@ -970,7 +1616,6 @@
             <div class="station-grid" id="stationGrid"></div>
         </div>
 
-        <!-- Modals -->
         <div class="modal-overlay" id="sessionModal">
             <div class="modal-content">
                 <h2 id="modalTitle">✅ انتهت الجلسة!</h2>
@@ -998,6 +1643,7 @@
             <div class="shift-modal-content">
                 <h2>📊 تقفيل الشيفت</h2>
                 <div class="shift-date" id="shiftDate">اليوم: --/--/----</div>
+
                 <div class="shift-summary-grid">
                     <div class="shift-stat-card">
                         <div class="shift-stat-number gold" id="shiftNoodles">0</div>
@@ -1028,14 +1674,17 @@
                         <div class="shift-stat-label">💰 إيرادات المشروبات</div>
                     </div>
                 </div>
+
                 <div class="shift-drinks-detail" id="shiftDrinksDetail">
                     <div class="detail-title">🥤 تفاصيل المشروبات</div>
                     <div id="shiftDrinksList"></div>
                 </div>
+
                 <div class="shift-total-row">
                     <span class="total-label">💰 إجمالي الإيرادات</span>
                     <span class="total-amount" id="shiftGrandTotal">0.00 EGP</span>
                 </div>
+
                 <div class="shift-actions">
                     <button class="btn btn-secondary" onclick="closeShiftModal()">إغلاق</button>
                     <button class="btn btn-warning" onclick="viewShiftHistory()">📜 السجل</button>
@@ -1061,13 +1710,16 @@
             <div class="settings-modal-content">
                 <h2 id="settingsTitle">⚙️ الإعدادات</h2>
                 <div class="sub" id="settingsSub">تخصيص الأجهزة والمشروبات</div>
+
                 <div class="lang-toggle">
                     <span class="lang-label" id="langLabel">🌐 اللغة:</span>
                     <button class="lang-btn active" onclick="setLanguage('ar')" id="langArBtn">🇸🇦 عربي</button>
                     <span class="lang-divider">|</span>
                     <button class="lang-btn" onclick="setLanguage('en')" id="langEnBtn">🇬🇧 English</button>
                 </div>
+
                 <div class="settings-note" id="settingsNote">💡 التغييرات تطبق فوراً. الجلسات النشطة تحتفظ بالسعر الذي بدأت به.</div>
+
                 <div class="global-settings">
                     <div class="global-label" id="noodleLabel">🍜 النودلز / الأندومي</div>
                     <div class="settings-group" style="margin-bottom:0;">
@@ -1076,13 +1728,16 @@
                         <div class="hint" id="noodleHint">الافتراضي: 15 EGP</div>
                     </div>
                 </div>
+
                 <div class="drinks-settings">
                     <div class="drinks-label" id="drinksLabel">🥤 المشروبات المخصصة</div>
                     <div id="drinksSettingsList"></div>
                     <button class="btn-add-drink-setting" onclick="addDrinkSetting()" id="addDrinkBtn">➕ إضافة مشروب جديد</button>
                 </div>
+
                 <div id="settingsList"></div>
                 <button class="btn-add-station" onclick="addStation()">➕ إضافة جهاز جديد</button>
+
                 <div class="modal-actions" style="margin-top:16px;">
                     <button class="btn btn-done" onclick="closeSettings()" style="flex:1;" id="settingsDoneBtn">تم</button>
                 </div>
@@ -1111,6 +1766,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
@@ -1121,58 +1777,8 @@
         // ============================================
         const SUPABASE_URL = 'https://fhjhtgbvtkuhhzitvxtx.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_X0aLD3gjXGqC_no4gW78ng_TWztP5cd';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let supabaseClient = null;
-        let supabaseReady = false;
-
-        // ============================================
-        // WAIT FOR SUPABASE TO LOAD
-        // ============================================
-        function waitForSupabase() {
-            return new Promise((resolve) => {
-                if (typeof supabase !== 'undefined') {
-                    resolve(supabase);
-                    return;
-                }
-                const checkInterval = setInterval(() => {
-                    if (typeof supabase !== 'undefined') {
-                        clearInterval(checkInterval);
-                        resolve(supabase);
-                    }
-                }, 100);
-                setTimeout(() => {
-                    clearInterval(checkInterval);
-                    resolve(null);
-                }, 10000);
-            });
-        }
-
-        waitForSupabase().then((supabaseLib) => {
-            if (supabaseLib) {
-                supabaseClient = supabaseLib.createClient(SUPABASE_URL, SUPABASE_KEY);
-                supabaseReady = true;
-                console.log('✅ Supabase initialized successfully');
-                if (typeof initializeApp === 'function') {
-                    initializeApp();
-                }
-            } else {
-                console.error('❌ Failed to load Supabase library');
-                // Still try to start the app
-                if (typeof initializeApp === 'function') {
-                    initializeApp();
-                }
-            }
-        });
-
-        if (typeof supabase !== 'undefined' && !supabaseClient) {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            supabaseReady = true;
-            console.log('✅ Supabase loaded (fallback)');
-        }
-
-        // ============================================
-        // TRANSLATIONS
-        // ============================================
         const LANG_KEY = 'ps_language';
         const translations = {
             ar: {
@@ -1273,7 +1879,7 @@
                 noHistory: 'لا توجد تقفيلات سابقة',
                 addStation: '➕ إضافة جهاز جديد',
                 removeStation: '🗑️',
-                confirmRemoveStation: 'الجهاز مشغول حالياً، لا يمكن حذفه.',
+                confirmRemoveStation: 'هل أنت متأكد من حذف هذا الجهاز؟\n\nالجهاز مشغول حالياً، لا يمكن حذفه.',
             },
             en: {
                 setupSubtitle: 'Professional PlayStation Rental Management',
@@ -1373,7 +1979,7 @@
                 noHistory: 'No shifts found',
                 addStation: '➕ Add New Station',
                 removeStation: '🗑️',
-                confirmRemoveStation: 'The station is currently in use and cannot be deleted.',
+                confirmRemoveStation: 'Are you sure you want to delete this station?\n\nThe station is currently in use and cannot be deleted.',
             }
         };
 
@@ -1466,7 +2072,7 @@
         }
 
         const VERSION_KEY = 'ps_app_version';
-        const APP_VERSION = '2.6.2';
+        const APP_VERSION = '2.5.1';
 
         function checkVersion() {
             const stored = localStorage.getItem(VERSION_KEY);
@@ -1644,250 +2250,105 @@
         }
 
         // ============================================
-        // TIME HELPERS - UTC FIX
+        // SYNC FUNCTIONS - كل 5 ثواني
         // ============================================
 
-        function now() {
-            return new Date();
-        }
-
-        function formatTime(date) {
-            if (!date) return '--';
-            var localDate;
-            if (typeof date === 'string') {
-                localDate = new Date(date);
-            } else {
-                localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-            }
-            return localDate.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function formatDurationFull(ms) {
-            if (ms < 0) return '0ث';
-            var totalSeconds = Math.floor(ms / 1000);
-            var hours = Math.floor(totalSeconds / 3600);
-            var minutes = Math.floor((totalSeconds % 3600) / 60);
-            var seconds = totalSeconds % 60;
-
-            if (hours > 0) {
-                if (currentLang === 'ar') return hours + 'س ' + minutes + 'د ' + seconds + 'ث';
-                return hours + 'h ' + minutes + 'm ' + seconds + 's';
-            }
-            if (minutes > 0) {
-                if (currentLang === 'ar') return minutes + 'د ' + seconds + 'ث';
-                return minutes + 'm ' + seconds + 's';
-            }
-            if (currentLang === 'ar') return seconds + 'ث';
-            return seconds + 's';
-        }
-
-        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
-
-        // ============================================
-        // SYNC HELPERS
-        // ============================================
-
-        function getSyncKey() {
-            return 'ps_sync_' + currentBusiness + '_' + getDeviceId();
-        }
-
-        function getLastSyncTime() {
+        // رفع الجلسة للسيرفر
+        async function saveSessionToSupabase(station) {
+            if (!currentBusiness || !supabaseClient) return;
+            const session = sessions[station];
+            if (!session || session.completed) return;
+            
             try {
-                const data = localStorage.getItem(getSyncKey());
-                return data ? JSON.parse(data).lastSync : null;
-            } catch (e) { return null; }
-        }
-
-        function updateLastSyncTime() {
-            try {
-                localStorage.setItem(getSyncKey(), JSON.stringify({
-                    lastSync: new Date().toISOString()
-                }));
-            } catch (e) {}
-        }
-
-        function resolveConflict(localData, serverData) {
-            if (!serverData) return localData;
-            if (!localData) return serverData;
-
-            const localTime = new Date(localData.updatedAt || localData.startTime || 0);
-            const serverTime = new Date(serverData.updatedAt || serverData.startTime || 0);
-
-            return localTime >= serverTime ? localData : serverData;
-        }
-
-        async function syncSessionsToSupabase(localSessions) {
-            if (!supabaseClient) {
-                console.warn('⚠️ Supabase not ready, skipping sync');
-                return;
-            }
-            try {
-                const sessionsToSync = [];
-                Object.entries(localSessions).forEach(([station, data]) => {
-                    if (!data.completed) {
-                        const startTime = data.startTime instanceof Date ? data.startTime : new Date(data
-                        .startTime);
-                        sessionsToSync.push({
-                            business_code: currentBusiness,
-                            device_id: getDeviceId(),
-                            station_number: parseInt(station),
-                            start_time: startTime.toISOString(),
-                            rate: data.rate || getRate(parseInt(station)),
-                            status: 'active',
-                            updated_at: new Date().toISOString()
-                        });
-                    }
+                await supabaseClient.from('active_sessions').upsert({
+                    business_code: currentBusiness,
+                    device_id: getDeviceId(),
+                    station_number: station,
+                    start_time: session.startTime.toISOString(),
+                    rate: session.rate,
+                    status: 'active'
+                }, {
+                    onConflict: 'business_code,station_number'
                 });
-
-                if (sessionsToSync.length === 0) return;
-
-                for (const session of sessionsToSync) {
-                    const { error } = await supabaseClient
-                        .from('active_sessions')
-                        .upsert({
-                            business_code: session.business_code,
-                            device_id: session.device_id,
-                            station_number: session.station_number,
-                            start_time: session.start_time,
-                            rate: session.rate,
-                            status: session.status,
-                            updated_at: session.updated_at
-                        }, {
-                            onConflict: 'business_code,station_number'
-                        });
-
-                    if (error) {
-                        console.warn('⚠️ Sync session error:', error);
-                    }
-                }
-
-                updateLastSyncTime();
             } catch (e) {
-                console.warn('⚠️ Sync error:', e);
+                console.warn('⚠️ فشل رفع الجلسة:', e);
             }
         }
 
-        async function syncDataFromSupabase() {
-            if (!supabaseClient) {
-                console.warn('⚠️ Supabase not ready, skipping sync');
-                return;
-            }
+        // حذف الجلسة من السيرفر
+        async function deleteSessionFromSupabase(station) {
+            if (!currentBusiness || !supabaseClient) return;
             try {
-                const { data: serverSessions, error } = await supabaseClient
+                await supabaseClient
+                    .from('active_sessions')
+                    .delete()
+                    .eq('business_code', currentBusiness)
+                    .eq('station_number', station);
+            } catch (e) {
+                console.warn('⚠️ فشل حذف الجلسة:', e);
+            }
+        }
+
+        // جلب الجلسات من السيرفر
+        async function loadSessionsFromSupabase() {
+            if (!currentBusiness || !supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
                     .from('active_sessions')
                     .select('*')
                     .eq('business_code', currentBusiness);
-
+                
                 if (error) {
-                    console.warn('⚠️ Failed to fetch from server:', error);
+                    console.warn('⚠️ فشل جلب الجلسات من السيرفر:', error);
                     return;
                 }
-
-                if (serverSessions && serverSessions.length > 0) {
+                
+                if (data && data.length > 0) {
                     let hasChanges = false;
-
-                    serverSessions.forEach(serverSession => {
+                    data.forEach(serverSession => {
                         const station = serverSession.station_number;
-                        const localSession = sessions[station];
-
-                        const serverStartTime = new Date(serverSession.start_time);
-
-                        const resolved = resolveConflict(localSession, {
-                            startTime: serverStartTime,
-                            rate: serverSession.rate,
-                            updatedAt: serverSession.updated_at
-                        });
-
-                        if (resolved === serverSession) {
+                        // لو الجلسة مش موجودة محلياً أو مختلفة، نضيفها
+                        if (!sessions[station] || sessions[station].completed) {
                             sessions[station] = {
-                                startTime: serverStartTime,
+                                startTime: new Date(serverSession.start_time),
                                 completed: false,
                                 rate: serverSession.rate,
-                                updatedAt: serverSession.updated_at
+                                deviceId: serverSession.device_id
                             };
                             hasChanges = true;
+                            // نبدأ التايمر للجهاز
+                            startPlayTimer(station);
                         }
                     });
-
                     if (hasChanges) {
                         saveSessionsToStorage();
                         renderMain();
                     }
                 }
-
-                await syncShiftHistoryFromSupabase();
-
             } catch (e) {
-                console.warn('⚠️ Data sync error:', e);
+                console.warn('⚠️ خطأ في جلب الجلسات:', e);
             }
         }
 
-        async function syncShiftHistoryFromSupabase() {
-            if (!supabaseClient) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('السجل')
-                    .select('*')
-                    .eq('business_code', currentBusiness)
-                    .order('closed_at', { ascending: false });
-
-                if (error || !data) return;
-
-                const localHistory = getShiftHistory();
-                const mergedHistory = [...localHistory];
-
-                data.forEach(serverEntry => {
-                    const exists = localHistory.some(local =>
-                        local.closedAt === serverEntry.closed_at
-                    );
-
-                    if (!exists) {
-                        mergedHistory.push({
-                            closedAt: serverEntry.closed_at,
-                            businessName: serverEntry.business_name || (businessConfig ? businessConfig
-                                .businessName : 'غير معروف'),
-                            totalRevenue: serverEntry.total_revenue || 0,
-                            totalSessions: serverEntry.total_sessions || 0,
-                            totalNoodles: serverEntry.total_noodles || 0,
-                            totalDrinks: serverEntry.total_drinks || 0,
-                            totalHours: serverEntry.total_hours || 0,
-                            fromServer: true
-                        });
-                    }
-                });
-
-                try {
-                    localStorage.setItem(SHIFT_HISTORY_KEY, JSON.stringify(mergedHistory));
-                } catch (e) {}
-            } catch (e) {
-                console.warn('⚠️ Shift history sync error:', e);
-            }
-        }
-
-        function startBackgroundSync() {
+        // المزامنة الدورية كل 5 ثواني
+        function startAutoSync() {
             setInterval(async () => {
                 if (currentBusiness && isRentalActive()) {
-                    const localSessions = {};
+                    // رفع الجلسات النشطة للسيرفر
                     Object.keys(sessions).forEach(key => {
                         if (!sessions[key].completed) {
-                            localSessions[key] = sessions[key];
+                            saveSessionToSupabase(parseInt(key));
                         }
                     });
-                    if (Object.keys(localSessions).length > 0) {
-                        await syncSessionsToSupabase(localSessions);
-                    }
-                    await syncDataFromSupabase();
+                    // جلب الجلسات من السيرفر
+                    await loadSessionsFromSupabase();
                 }
-            }, 30000);
+            }, 5000); // كل 5 ثواني
         }
 
         // ============================================
         // ADD / REMOVE STATIONS
         // ============================================
-
         function addStation() {
             if (!businessConfig) {
                 showToast('⚠️ يرجى تحميل النشاط التجاري أولاً', 'warning');
@@ -1978,7 +2439,6 @@
         // ============================================
         // CALCULATE SHIFT TOTALS
         // ============================================
-
         function calculateShiftTotals() {
             var shift = getOrCreateShift();
 
@@ -2060,7 +2520,6 @@
         // ============================================
         // DRINKS STORAGE
         // ============================================
-
         function getDrinksKey() {
             return 'ps_drinks_' + currentBusiness;
         }
@@ -2136,39 +2595,8 @@
                     if (toSave[key].endTime) {
                         toSave[key].endTime = toSave[key].endTime.toISOString();
                     }
-                    toSave[key].updatedAt = new Date().toISOString();
                 });
                 localStorage.setItem(getSessionsKey(), JSON.stringify(toSave));
-            } catch (e) {}
-        }
-
-        function saveSessionsToStorageAndSync() {
-            if (!currentBusiness) return;
-
-            try {
-                const toSave = {};
-                Object.keys(sessions).forEach(key => {
-                    toSave[key] = {};
-                    Object.assign(toSave[key], sessions[key]);
-                    if (toSave[key].startTime) {
-                        toSave[key].startTime = toSave[key].startTime.toISOString();
-                    }
-                    if (toSave[key].endTime) {
-                        toSave[key].endTime = toSave[key].endTime.toISOString();
-                    }
-                    toSave[key].updatedAt = new Date().toISOString();
-                });
-                localStorage.setItem(getSessionsKey(), JSON.stringify(toSave));
-
-                const activeSessions = {};
-                Object.keys(sessions).forEach(key => {
-                    if (!sessions[key].completed) {
-                        activeSessions[key] = sessions[key];
-                    }
-                });
-                if (Object.keys(activeSessions).length > 0) {
-                    syncSessionsToSupabase(activeSessions);
-                }
             } catch (e) {}
         }
 
@@ -2226,27 +2654,16 @@
         }
 
         async function loadBusiness(code) {
-            if (!supabaseClient) {
-                console.error('❌ Supabase not initialized');
-                return null;
-            }
             try {
                 var _ref5 = await supabaseClient.from('businesses').select('*').eq('code', code.toUpperCase()).single();
                 var data = _ref5.data;
                 var error = _ref5.error;
-                if (error) {
-                    console.warn('⚠️ Load business error:', error);
-                    return null;
-                }
+                if (error) return null;
                 return data;
-            } catch (e) {
-                console.warn('⚠️ Load business exception:', e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         async function saveBusinessConfig(code, config) {
-            if (!supabaseClient) return false;
             try {
                 var _ref6 = await supabaseClient.from('businesses').upsert({
                     code: code.toUpperCase(),
@@ -2265,7 +2682,6 @@
         }
 
         async function getUserDataSupabase(businessCode, deviceId) {
-            if (!supabaseClient) return null;
             try {
                 var _ref7 = await supabaseClient.from('users').select('*').eq('business_code', businessCode).eq('device_id',
                     deviceId).single();
@@ -2277,7 +2693,6 @@
         }
 
         async function saveUserDataSupabase(businessCode, deviceId, data) {
-            if (!supabaseClient) return false;
             try {
                 var _ref8 = await supabaseClient.from('users').upsert({
                     business_code: businessCode,
@@ -2293,7 +2708,6 @@
         }
 
         async function verifyCode(businessCode, code) {
-            if (!supabaseClient) return { valid: false };
             try {
                 var _ref9 = await supabaseClient.from('code_history').select('*').eq('business_code', businessCode).eq(
                     'code', code).eq('used', false).single();
@@ -2350,7 +2764,6 @@
         // ============================================
         // ENTER BUSINESS
         // ============================================
-
         async function enterBusiness() {
             var input = document.getElementById('businessCodeInput');
             var code = input.value.trim().toUpperCase();
@@ -2365,28 +2778,15 @@
             }
 
             currentBusiness = code;
-            
-            // ✅ تأكد من وجود device_config
-            var deviceConfigData = config.device_config || {};
-            var totalStations = config.total_stations || 11;
-            
-            // ✅ إذا كان device_config فارغاً، قم بإنشاء بيانات افتراضية
-            if (Object.keys(deviceConfigData).length === 0) {
-                for (var i = 1; i <= totalStations; i++) {
-                    deviceConfigData[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
-                }
-            }
-            
             businessConfig = {
-                businessName: config.business_name || 'صالة بلايستيشن',
-                totalStations: totalStations,
-                price: config.price || 150,
-                phone: config.phone || '01012345678',
+                businessName: config.business_name,
+                totalStations: config.total_stations,
+                price: config.price,
+                phone: config.phone,
                 noodlePrice: config.noodle_price || 15,
-                deviceConfig: deviceConfigData,
+                deviceConfig: config.device_config || {},
                 drinks: config.drinks || {}
             };
-            
             deviceConfig = businessConfig.deviceConfig || {};
             noodlePrice = businessConfig.noodlePrice || 15;
             drinks = businessConfig.drinks || {};
@@ -2409,6 +2809,7 @@
                 });
             }
 
+            // تحميل الجلسات المحلية أولاً
             sessions = loadSessionsFromStorage();
             noodleOrders = loadNoodleOrdersFromStorage();
             drinkOrders = loadDrinkOrdersFromStorage();
@@ -2426,7 +2827,8 @@
 
             getOrCreateShift();
 
-            syncDataFromSupabase();
+            // ✅ جلب الجلسات من السيرفر ودمجها
+            await loadSessionsFromSupabase();
 
             var isActive = isRentalActive();
 
@@ -2546,15 +2948,6 @@
 
             var isActive = isRentalActive();
             var days = getDaysRemaining();
-
-            // ✅ التحقق من وجود businessConfig
-            if (!businessConfig) {
-                statusBadge.textContent = t.locked;
-                statusBadge.className = 'status-badge locked';
-                daysLeft.innerHTML = '⚠️ ' + (currentLang === 'ar' ? 'لم يتم تحميل البيانات' : 'Data not loaded');
-                paymentStatus.innerHTML = '';
-                return;
-            }
 
             if (isActive) {
                 statusBadge.textContent = t.active;
@@ -2926,7 +3319,6 @@
         // ============================================
         // CLOSE SHIFT - WITH SUPABASE SYNC
         // ============================================
-
         async function closeShift() {
             var t = translations[currentLang];
 
@@ -2947,43 +3339,40 @@
                 businessName: businessConfig ? businessConfig.businessName : 'غير معروف'
             };
 
+            // Save locally
             saveShiftHistory(historyEntry);
 
-            if (supabaseClient) {
-                try {
-                    console.log('🔄 Saving shift to Supabase...');
-                    var { error } = await supabaseClient.from('السجل').insert({
-                        business_code: currentBusiness,
-                        closed_at: historyEntry.closedAt,
-                        total_sessions: historyEntry.totalSessions,
-                        total_hours: historyEntry.totalHours,
-                        total_noodles: historyEntry.totalNoodles,
-                        total_drinks: historyEntry.totalDrinks,
-                        session_revenue: historyEntry.sessionRevenue,
-                        noodle_revenue: historyEntry.noodleRevenue,
-                        drink_revenue: historyEntry.drinkRevenue,
-                        total_revenue: historyEntry.totalRevenue,
-                        drink_details: historyEntry.drinkDetails,
-                        device_id: getDeviceId(),
-                        business_name: historyEntry.businessName
-                    });
+            // Send to Supabase
+            try {
+                console.log('🔄 محاولة حفظ السجل في Supabase...');
+                var { data, error } = await supabaseClient.from('السجل').insert({
+                    business_code: currentBusiness,
+                    closed_at: historyEntry.closedAt,
+                    total_sessions: historyEntry.totalSessions,
+                    total_hours: historyEntry.totalHours,
+                    total_noodles: historyEntry.totalNoodles,
+                    total_drinks: historyEntry.totalDrinks,
+                    session_revenue: historyEntry.sessionRevenue,
+                    noodle_revenue: historyEntry.noodleRevenue,
+                    drink_revenue: historyEntry.drinkRevenue,
+                    total_revenue: historyEntry.totalRevenue,
+                    drink_details: historyEntry.drinkDetails,
+                    device_id: getDeviceId()
+                });
 
-                    if (error) {
-                        console.error('❌ Error inserting:', error);
-                        showToast('⚠️ Saved locally, but failed to sync: ' + error.message, 'warning');
-                    } else {
-                        console.log('✅ Shift saved to Supabase');
-                        showToast('✅ Shift synced to server', 'success');
-                    }
-                } catch (e) {
-                    console.error('❌ Exception during insert:', e);
-                    showToast('⚠️ Saved locally, but failed to sync', 'warning');
+                if (error) {
+                    console.error('❌ خطأ في الإدراج:', error);
+                    showToast('⚠️ تم الحفظ محلياً، ولكن فشل الرفع للسيرفر: ' + error.message, 'warning');
+                } else {
+                    console.log('✅ تم الحفظ في Supabase بنجاح', data);
+                    showToast('✅ تم رفع السجل إلى السيرفر', 'success');
                 }
-            } else {
-                console.warn('⚠️ Supabase not ready, shift saved locally only');
-                showToast('⚠️ Saved locally only (no server connection)', 'warning');
+            } catch (e) {
+                console.error('❌ استثناء أثناء الإدراج:', e);
+                showToast('⚠️ تم الحفظ محلياً، ولكن فشل الرفع للسيرفر', 'warning');
             }
 
+            // Reset everything
             resetShiftData();
             noodleOrders = {};
             drinkOrders = {};
@@ -3004,11 +3393,11 @@
         // ============================================
         // VIEW HISTORY - WITH SUPABASE SYNC
         // ============================================
-
         async function viewShiftHistory() {
             var t = translations[currentLang];
             var container = document.getElementById('historyContainer');
 
+            // Show local data first
             var history = getShiftHistory();
             if (history.length > 0) {
                 var html = '';
@@ -3041,87 +3430,84 @@
                 '</div>';
             }
 
-            if (supabaseClient) {
-                try {
-                    console.log('🔄 Fetching history from Supabase...');
-                    var { data, error } = await supabaseClient.from('السجل')
-                        .select('*')
-                        .eq('business_code', currentBusiness)
-                        .order('closed_at', { ascending: false });
+            // Fetch from Supabase
+            try {
+                console.log('🔄 محاولة جلب السجل من Supabase...');
+                var { data, error } = await supabaseClient.from('السجل')
+                    .select('*')
+                    .eq('business_code', currentBusiness)
+                    .order('closed_at', { ascending: false });
 
-                    if (error) {
-                        console.error('❌ Error fetching history:', error);
-                    } else if (data && data.length > 0) {
-                        console.log('✅ Fetched ' + data.length + ' records from Supabase');
-                        var allEntries = [];
-                        var localHistory = getShiftHistory();
+                if (error) {
+                    console.error('❌ خطأ في جلب السجل:', error);
+                } else if (data && data.length > 0) {
+                    console.log('✅ تم جلب ' + data.length + ' سجل من Supabase');
+                    var allEntries = [];
+                    var localHistory = getShiftHistory();
 
-                        localHistory.forEach(function(entry) {
+                    localHistory.forEach(function(entry) {
+                        allEntries.push({
+                            closedAt: entry.closedAt || entry.closed_at,
+                            businessName: entry.businessName || entry.business_code,
+                            totalRevenue: entry.totalRevenue || entry.total_revenue || 0,
+                            totalSessions: entry.totalSessions || entry.total_sessions || 0,
+                            totalNoodles: entry.totalNoodles || entry.total_noodles || 0,
+                            totalDrinks: entry.totalDrinks || entry.total_drinks || 0,
+                            totalHours: entry.totalHours || entry.total_hours || 0,
+                            isLocal: true
+                        });
+                    });
+
+                    data.forEach(function(entry) {
+                        var exists = allEntries.some(function(e) {
+                            return e.closedAt === entry.closed_at;
+                        });
+                        if (!exists) {
                             allEntries.push({
-                                closedAt: entry.closedAt || entry.closed_at,
-                                businessName: entry.businessName || entry.business_code,
-                                totalRevenue: entry.totalRevenue || entry.total_revenue || 0,
-                                totalSessions: entry.totalSessions || entry.total_sessions || 0,
-                                totalNoodles: entry.totalNoodles || entry.total_noodles || 0,
-                                totalDrinks: entry.totalDrinks || entry.total_drinks || 0,
-                                totalHours: entry.totalHours || entry.total_hours || 0,
-                                isLocal: true
+                                closedAt: entry.closed_at,
+                                businessName: entry.business_name || entry.business_code,
+                                totalRevenue: entry.total_revenue || 0,
+                                totalSessions: entry.total_sessions || 0,
+                                totalNoodles: entry.total_noodles || 0,
+                                totalDrinks: entry.total_drinks || 0,
+                                totalHours: entry.total_hours || 0,
+                                isLocal: false
                             });
-                        });
-
-                        data.forEach(function(entry) {
-                            var exists = allEntries.some(function(e) {
-                                return e.closedAt === entry.closed_at;
-                            });
-                            if (!exists) {
-                                allEntries.push({
-                                    closedAt: entry.closed_at,
-                                    businessName: entry.business_name || entry.business_code,
-                                    totalRevenue: entry.total_revenue || 0,
-                                    totalSessions: entry.total_sessions || 0,
-                                    totalNoodles: entry.total_noodles || 0,
-                                    totalDrinks: entry.total_drinks || 0,
-                                    totalHours: entry.total_hours || 0,
-                                    isLocal: false
-                                });
-                            }
-                        });
-
-                        allEntries.sort(function(a, b) {
-                            return new Date(b.closedAt) - new Date(a.closedAt);
-                        });
-
-                        if (allEntries.length > 0) {
-                            var html2 = '';
-                            allEntries.forEach(function(entry) {
-                                var date = new Date(entry.closedAt);
-                                var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
-                                var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit',
-                                    minute: '2-digit' });
-                                var businessName = entry.businessName || 'غير معروف';
-                                var source = entry.isLocal ? ' (محلي)' : ' (سيرفر)';
-
-                                html2 +=
-                                    '<div class="shift-history-item"><div class="hist-header"><span class="hist-date">📅 ' +
-                                    dateStr + ' ' + timeStr + source +
-                                    '</span><span class="hist-total">' + (entry.totalRevenue || 0)
-                                    .toFixed(2) + ' EGP</span></div><div style="font-size:12px;color:#8ba0c7;margin-top:2px;">🏢 ' +
-                                    businessName +
-                                    '</div><div class="hist-stats"><span>🎮 ' + (entry.totalSessions || 0) +
-                                    '</span><span>🍜 ' + (entry.totalNoodles || 0) +
-                                    '</span><span>🥤 ' + (entry.totalDrinks || 0) +
-                                    '</span><span>⏱ ' + (entry.totalHours || 0) + 'h</span></div></div>';
-                            });
-                            container.innerHTML = html2;
                         }
-                    } else {
-                        console.log('ℹ️ No records in Supabase for this business');
+                    });
+
+                    allEntries.sort(function(a, b) {
+                        return new Date(b.closedAt) - new Date(a.closedAt);
+                    });
+
+                    if (allEntries.length > 0) {
+                        var html2 = '';
+                        allEntries.forEach(function(entry) {
+                            var date = new Date(entry.closedAt);
+                            var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+                            var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit',
+                                minute: '2-digit' });
+                            var businessName = entry.businessName || 'غير معروف';
+                            var source = entry.isLocal ? ' (محلي)' : ' (سيرفر)';
+
+                            html2 +=
+                                '<div class="shift-history-item"><div class="hist-header"><span class="hist-date">📅 ' +
+                                dateStr + ' ' + timeStr + source +
+                                '</span><span class="hist-total">' + (entry.totalRevenue || 0)
+                                .toFixed(2) + ' EGP</span></div><div style="font-size:12px;color:#8ba0c7;margin-top:2px;">🏢 ' +
+                                businessName +
+                                '</div><div class="hist-stats"><span>🎮 ' + (entry.totalSessions || 0) +
+                                '</span><span>🍜 ' + (entry.totalNoodles || 0) +
+                                '</span><span>🥤 ' + (entry.totalDrinks || 0) +
+                                '</span><span>⏱ ' + (entry.totalHours || 0) + 'h</span></div></div>';
+                        });
+                        container.innerHTML = html2;
                     }
-                } catch (e) {
-                    console.error('❌ Exception while fetching history:', e);
+                } else {
+                    console.log('ℹ️ لا توجد سجلات في Supabase لهذا النشاط');
                 }
-            } else {
-                console.warn('⚠️ Supabase not ready, showing local history only');
+            } catch (e) {
+                console.error('❌ استثناء أثناء جلب السجل:', e);
             }
 
             document.getElementById('historyModal').classList.add('show');
@@ -3141,8 +3527,90 @@
 
         function getNoodlePrice() { return noodlePrice || 15; }
 
+        function now() { return new Date(); }
+
+        function formatTime(date) {
+            if (!date) return '--';
+            return date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatDurationFull(ms) {
+            if (ms < 0) return '0ث';
+            var totalSeconds = Math.floor(ms / 1000);
+            var hours = Math.floor(totalSeconds / 3600);
+            var minutes = Math.floor((totalSeconds % 3600) / 60);
+            var seconds = totalSeconds % 60;
+
+            if (hours > 0) {
+                if (currentLang === 'ar') return hours + 'س ' + minutes + 'د ' + seconds + 'ث';
+                return hours + 'h ' + minutes + 'm ' + seconds + 's';
+            }
+            if (minutes > 0) {
+                if (currentLang === 'ar') return minutes + 'د ' + seconds + 'ث';
+                return minutes + 'm ' + seconds + 's';
+            }
+            if (currentLang === 'ar') return seconds + 'ث';
+            return seconds + 's';
+        }
+
+        function formatDuration(ms) {
+            return formatDurationFull(ms);
+        }
+
+        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
+
+        function calculateAmount(startTime, endTime, rate) {
+            if (!startTime || !endTime) return 0;
+            var diffMs = endTime - startTime;
+            if (diffMs < 0) return 0;
+            var hours = diffMs / (1000 * 60 * 60);
+            return Math.round(hours * rate * 100) / 100;
+        }
+
+        function getTotalNoodles() {
+            var total = 0;
+            Object.values(noodleOrders).forEach(function(c) { total += c || 0; });
+            return total;
+        }
+
+        function getTotalNoodleRevenue() { return getTotalNoodles() * getNoodlePrice(); }
+
+        function getTotalSessionRevenue() {
+            var total = 0;
+            Object.values(sessions).forEach(function(s) { if (s.completed) total += s.amount || 0; });
+            return total;
+        }
+
+        function getGrandTotal() {
+            return getTotalSessionRevenue() + getTotalNoodleRevenue() + getTotalDrinkRevenue();
+        }
+
+        function getActiveCount() {
+            return Object.keys(sessions).filter(function(k) { return sessions[k] && !sessions[k].completed; }).length;
+        }
+
+        function getAvailableCount() {
+            var activeCount = getActiveCount();
+            var total = businessConfig ? businessConfig.totalStations : 11;
+            return total - activeCount;
+        }
+
+        function addNoodle(d) {
+            noodleOrders[d] = (noodleOrders[d] || 0) + 1;
+            saveNoodleOrdersToStorage();
+            renderMain();
+        }
+
+        function removeNoodle(d) {
+            if ((noodleOrders[d] || 0) > 0) {
+                noodleOrders[d] = (noodleOrders[d] || 0) - 1;
+                saveNoodleOrdersToStorage();
+                renderMain();
+            }
+        }
+
         // ============================================
-        // SESSION FUNCTIONS - WITH UTC FIX
+        // SESSION FUNCTIONS مع المزامنة
         // ============================================
 
         function startSession(d) {
@@ -3152,38 +3620,36 @@
                     'مشغول بالفعل!' : 'is already in use!'), 'warning');
                 return;
             }
-            var nowTime = new Date();
-            var utcTime = new Date(nowTime.getTime() + (nowTime.getTimezoneOffset() * 60000));
-
+            var nowTime = now();
             sessions[d] = {
-                startTime: utcTime,
+                startTime: nowTime,
                 endTime: null,
                 completed: false,
                 amount: 0,
                 duration: 0,
-                rate: getRate(d),
-                updatedAt: utcTime.toISOString()
+                rate: getRate(d)
             };
-            saveSessionsToStorageAndSync();
+            saveSessionsToStorage();
             renderMain();
             startPlayTimer(d);
+            
+            // ✅ رفع الجلسة للسيرفر
+            saveSessionToSupabase(d);
+            
             showToast('✅ ' + (currentLang === 'ar' ? 'بدأت جلسة' : 'Started session') + ' ' + getDeviceName(d),
-                'success');
+            'success');
         }
 
         function endSession(d) {
             var session = sessions[d];
             if (!session || session.completed) return;
 
-            var endTime = new Date();
-            var utcEndTime = new Date(endTime.getTime() + (endTime.getTimezoneOffset() * 60000));
-
-            session.endTime = utcEndTime;
+            var endTime = now();
+            session.endTime = endTime;
             session.completed = true;
-            session.duration = utcEndTime.getTime() - session.startTime.getTime();
+            session.duration = endTime.getTime() - session.startTime.getTime();
             var hours = session.duration / (1000 * 60 * 60);
             session.amount = Math.round(hours * session.rate * 100) / 100;
-            session.updatedAt = utcEndTime.toISOString();
 
             var sessionId = 's_' + d + '_' + Date.now();
             completedSessions[sessionId] = {
@@ -3213,7 +3679,7 @@
             });
             saveCompletedOrdersToStorage();
 
-            saveSessionsToStorageAndSync();
+            saveSessionsToStorage();
             showSessionModal(d);
 
             noodleOrders[d] = 0;
@@ -3224,7 +3690,10 @@
             }
 
             delete sessions[d];
-            saveSessionsToStorageAndSync();
+            saveSessionsToStorage();
+
+            // ✅ حذف الجلسة من السيرفر
+            deleteSessionFromSupabase(d);
 
             stopPlayTimer(d);
             renderMain();
@@ -3255,9 +3724,7 @@
             var durationEl = card.querySelector('.duration');
             var startTimeEl = card.querySelector('.start-time');
             if (!session.completed) {
-                var now = new Date();
-                var utcNow = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-                var duration = utcNow.getTime() - session.startTime.getTime();
+                var duration = Date.now() - session.startTime.getTime();
                 durationEl.textContent = formatDurationFull(duration);
                 statusEl.textContent = t.inUse;
                 statusEl.className = 'status active-text';
@@ -3267,41 +3734,11 @@
 
         function renderMain() {
             var t = translations[currentLang];
-            
-            // ✅ التحقق من وجود businessConfig
-            if (!businessConfig) {
-                console.warn('⚠️ businessConfig is null, skipping render');
-                var grid = document.getElementById('stationGrid');
-                if (grid) {
-                    grid.innerHTML = '<div style="text-align:center;color:#ff6b6b;padding:20px;">⚠️ ' + 
-                        (currentLang === 'ar' ? 'لم يتم تحميل البيانات' : 'Data not loaded') + 
-                        '</div>';
-                }
-                return;
-            }
-            
+            if (!businessConfig) return;
             var grid = document.getElementById('stationGrid');
-            if (!grid) {
-                console.error('❌ stationGrid not found!');
-                return;
-            }
+            if (!grid) return;
 
             var totalStations = businessConfig.totalStations || 11;
-            
-            // ✅ التأكد من أن deviceConfig يحتوي على بيانات
-            if (Object.keys(deviceConfig).length === 0) {
-                console.log('⚠️ deviceConfig is empty, creating default stations...');
-                for (var i = 1; i <= totalStations; i++) {
-                    deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
-                }
-                if (currentBusiness) {
-                    var updatedConfig = {};
-                    Object.assign(updatedConfig, businessConfig);
-                    updatedConfig.deviceConfig = deviceConfig;
-                    saveBusinessConfig(currentBusiness, updatedConfig);
-                }
-            }
-
             var activeCount = getActiveCount();
             var availableCount = getAvailableCount();
 
@@ -3312,11 +3749,6 @@
 
             var html = '';
             for (var i = 1; i <= totalStations; i++) {
-                // ✅ تأكد من وجود deviceConfig[i]
-                if (!deviceConfig[i]) {
-                    deviceConfig[i] = { name: 'PS ' + i, rate: 25 };
-                }
-                
                 var session = sessions[i];
                 var isActive = session && !session.completed;
                 var rate = getRate(i);
@@ -3335,14 +3767,12 @@
                 if (isActive) {
                     statusText = t.inUse;
                     statusClass = 'active-text';
-                    var now = new Date();
-                    var utcNow = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-                    var duration = utcNow.getTime() - session.startTime.getTime();
+                    var duration = Date.now() - session.startTime.getTime();
                     durationText = formatDurationFull(duration);
                     startTimeText = t.started + ' ' + formatTime(session.startTime);
                     cardClass += ' active';
                     buttonHtml = '<button class="btn btn-end btn-small" onclick="endSession(' + i +
-                        ')">' + t.endSession + '</button>';
+                    ')">' + t.endSession + '</button>';
                 } else {
                     buttonHtml = '<button class="btn btn-start btn-small" onclick="startSession(' + i +
                         ')">' + t.start + '</button>';
@@ -3398,14 +3828,7 @@
                     '</div></div></div><div class="items-section"><span class="items-label">' + t.orders +
                     '</span>' + itemsHtml + '</div></div>';
             }
-            
-            if (!html) {
-                grid.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + 
-                    (currentLang === 'ar' ? '⚠️ لا توجد أجهزة' : '⚠️ No stations') + 
-                    '</div>';
-            } else {
-                grid.innerHTML = html;
-            }
+            grid.innerHTML = html;
         }
 
         function showSessionModal(d) {
@@ -3463,107 +3886,29 @@
             document.getElementById('sessionModal').classList.remove('show');
         }
 
-        function getTotalNoodles() {
-            var total = 0;
-            Object.values(noodleOrders).forEach(function(c) { total += c || 0; });
-            return total;
-        }
-
-        function getTotalNoodleRevenue() { return getTotalNoodles() * getNoodlePrice(); }
-
-        function getTotalSessionRevenue() {
-            var total = 0;
-            Object.values(sessions).forEach(function(s) { if (s.completed) total += s.amount || 0; });
-            return total;
-        }
-
-        function getGrandTotal() {
-            return getTotalSessionRevenue() + getTotalNoodleRevenue() + getTotalDrinkRevenue();
-        }
-
-        function getActiveCount() {
-            return Object.keys(sessions).filter(function(k) { return sessions[k] && !sessions[k].completed; }).length;
-        }
-
-        function getAvailableCount() {
-            var activeCount = getActiveCount();
-            var total = businessConfig ? businessConfig.totalStations : 11;
-            return total - activeCount;
-        }
-
-        function addNoodle(d) {
-            noodleOrders[d] = (noodleOrders[d] || 0) + 1;
-            saveNoodleOrdersToStorage();
-            renderMain();
-        }
-
-        function removeNoodle(d) {
-            if ((noodleOrders[d] || 0) > 0) {
-                noodleOrders[d] = (noodleOrders[d] || 0) - 1;
-                saveNoodleOrdersToStorage();
-                renderMain();
-            }
-        }
-
-        // ============================================
-        // INITIALIZE APP
-        // ============================================
-
         async function initializeApp() {
             document.getElementById('demoDeviceId').textContent = getDeviceId();
             applyTranslations();
 
-            if (!supabaseClient) {
-                console.log('⏳ Waiting for Supabase to initialize...');
-                const checkSupabase = setInterval(() => {
-                    if (supabaseClient) {
-                        clearInterval(checkSupabase);
-                        console.log('✅ Supabase ready, initializing app...');
-                        startApp();
-                    }
-                }, 500);
-                setTimeout(() => {
-                    clearInterval(checkSupabase);
-                    if (!supabaseClient) {
-                        console.warn('⚠️ Supabase not ready after 10s, starting app anyway...');
-                        startApp();
-                    }
-                }, 10000);
-                return;
-            }
-
-            startApp();
-        }
-
-        function startApp() {
             var savedBusiness = localStorage.getItem(BUSINESS_KEY);
             if (savedBusiness) {
-                loadBusiness(savedBusiness).then(config => {
-                    if (config) {
-                        document.getElementById('businessCodeInput').value = savedBusiness;
-                        enterBusiness().then(() => {
-                            startBackgroundSync();
-                        });
-                    } else {
-                        localStorage.removeItem(BUSINESS_KEY);
-                        showSetupScreen();
-                    }
-                });
-            } else {
-                showSetupScreen();
+                var config = await loadBusiness(savedBusiness);
+                if (config) {
+                    document.getElementById('businessCodeInput').value = savedBusiness;
+                    await enterBusiness();
+                    // ✅ بدء المزامنة بعد الدخول
+                    startAutoSync();
+                    return;
+                } else {
+                    localStorage.removeItem(BUSINESS_KEY);
+                }
             }
-        }
 
-        function showSetupScreen() {
             document.getElementById('setupScreen').classList.add('active');
             document.getElementById('lockScreen').classList.remove('active');
             document.getElementById('mainApp').classList.remove('active');
             isMainAppInitialized = false;
         }
-
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
 
         document.getElementById('sessionModal').addEventListener('click', function(e) {
             if (e.target === e.currentTarget) closeModal();
@@ -3616,17 +3961,14 @@
             }
         });
 
-        if (typeof supabase !== 'undefined' && !supabaseClient) {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            supabaseReady = true;
-            console.log('✅ Supabase loaded (early fallback)');
-        }
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
         console.log('========================================');
         console.log('🎮 PS Rental Pro - v' + APP_VERSION);
-        console.log('✅ Fixed all issues');
-        console.log('✅ Stations now appear correctly');
-        console.log('✅ Timezone issue fixed');
+        console.log('✅ Connected to Supabase');
+        console.log('✅ Auto sync every 5 seconds');
+        console.log('✅ Sessions synced across devices');
+        console.log('✅ Time in Cairo timezone (local)');
         console.log('========================================');
     </script>
 </body>
