@@ -480,12 +480,49 @@
         const SUPABASE_KEY = 'sb_publishable_X0aLD3gjXGqC_no4gW78ng_TWztP5cd';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        console.log('🚀 بدء التطبيق...');
+        console.log('🔗 Supabase URL:', SUPABASE_URL);
+        console.log('🔑 Supabase Key:', SUPABASE_KEY ? '✅ موجود' : '❌ غير موجود');
+
         // ============================================
-        // TRANSLATIONS
+        // TRANSLATIONS (مختصرة)
         // ============================================
-        const LANG_KEY = 'ps_language';
         const translations = {
             ar: {
+                available: 'متاح',
+                inUse: 'قيد اللعب',
+                started: 'بدأ',
+                endSession: 'إنهاء',
+                start: 'بدء',
+                orders: '🛒 الطلبات:',
+                addDrink: '➕ إضافة مشروب',
+                noodles: 'نودلز',
+                total: 'إجمالي',
+                drinks: 'مشروب',
+                daysRemaining: 'أيام متبقية',
+                payToUnlock: '💡 ادفع ',
+                active: '✅ نشط',
+                locked: '🔒 مقفل',
+                expiring: '⚠️ ينتهي قريباً',
+                toastCopied: '📋 تم نسخ المعرف: ',
+                toastActive: '✅ تم تفعيل الاشتراك حتى ',
+                toastInvalidCode: '❌ كود غير صحيح أو مستخدم مسبقاً',
+                toastSaved: '✅ تم حفظ الإعدادات',
+                toastLogout: '🔒 تم تسجيل الخروج',
+                toastDrinkAdded: '✅ تم إضافة ',
+                toastDrinkRemoved: '✅ تم حذف المشروب',
+                toastShiftClosed: '✅ تم تقفيل الشيفت بنجاح!',
+                confirmSwitch: 'تغيير النشاط التجاري؟\n\nالحالي: ',
+                confirmLogout: 'تسجيل الخروج وقفل التطبيق؟',
+                confirmDeleteDrink: 'هل تريد حذف هذا المشروب؟',
+                confirmCreateBusiness: 'هذا الكود موجود بالفعل!',
+                codeMinLength: 'كود النشاط التجاري يجب أن يكون 3 أحرف على الأقل',
+                shiftCloseConfirm: 'هل أنت متأكد من تقفيل الشيفت؟',
+                confirmRemoveStation: '⚠️ لا يمكن حذف جهاز أثناء الاستخدام',
+                cannotCloseShift: '⚠️ لا يمكن تقفيل الشيفت، الأجهزة التالية لا تزال مشغولة: ',
+                addStation: '➕ إضافة جهاز جديد',
+                removeStation: '🗑️',
+                noHistory: 'لا توجد تقفيلات سابقة',
                 setupSubtitle: 'إدارة صالات البلايستيشن باحترافية',
                 setupInfo: '🔑 أدخل كود النشاط التجاري للوصول إلى نظامك',
                 setupCodeLabel: '🏢 كود النشاط التجاري',
@@ -511,9 +548,6 @@
                 statInUseLabel: 'مشغولة',
                 statAvailableLabel: 'متاحة',
                 stationsTitle: 'الأجهزة',
-                locked: '🔒 مقفل',
-                active: '✅ نشط',
-                expiring: '⚠️ ينتهي قريباً',
                 modalTitle: '✅ انتهت الجلسة!',
                 modalDurationLabel: '⏱ المدة',
                 modalTimeLabel: '💰 تكلفة الوقت',
@@ -521,7 +555,7 @@
                 modalDoneBtn: 'تم',
                 settingsTitle: '⚙️ الإعدادات',
                 settingsSub: 'تخصيص الأجهزة والمشروبات',
-                settingsNote: '💡 التغييرات تطبق فوراً. الجلسات النشطة تحتفظ بالسعر الذي بدأت به.',
+                settingsNote: '💡 التغييرات تطبق فوراً',
                 noodleLabel: '🍜 النودلز / الأندومي',
                 noodlePriceLabel: 'سعر العلبة (EGP)',
                 noodleHint: 'الافتراضي: 15 EGP',
@@ -538,32 +572,7 @@
                 langLabel: '🌐 اللغة:',
                 langAr: '🇸🇦 عربي',
                 langEn: '🇬🇧 English',
-                toastCopied: '📋 تم نسخ المعرف: ',
                 toastSwitch: '✅ تم تغيير النشاط التجاري',
-                toastActive: '✅ تم تفعيل الاشتراك حتى ',
-                toastInvalidCode: '❌ كود غير صحيح أو مستخدم مسبقاً',
-                toastSaved: '✅ تم حفظ الإعدادات',
-                toastLogout: '🔒 تم تسجيل الخروج',
-                toastDrinkAdded: '✅ تم إضافة ',
-                toastDrinkRemoved: '✅ تم حذف المشروب',
-                toastShiftClosed: '✅ تم تقفيل الشيفت بنجاح!',
-                available: 'متاح',
-                inUse: 'قيد اللعب',
-                started: 'بدأ',
-                endSession: 'إنهاء',
-                start: 'بدء',
-                orders: '🛒 الطلبات:',
-                addDrink: '➕ إضافة مشروب',
-                noodles: 'نودلز',
-                total: 'إجمالي',
-                drinks: 'مشروب',
-                daysRemaining: 'أيام متبقية',
-                payToUnlock: '💡 ادفع ',
-                confirmSwitch: 'تغيير النشاط التجاري؟\n\nالحالي: ',
-                confirmLogout: 'تسجيل الخروج وقفل التطبيق؟',
-                confirmDeleteDrink: 'هل تريد حذف هذا المشروب؟',
-                confirmCreateBusiness: 'هذا الكود موجود بالفعل!',
-                codeMinLength: 'كود النشاط التجاري يجب أن يكون 3 أحرف على الأقل',
                 shiftTitle: '📊 تقفيل الشيفت',
                 shiftDate: 'اليوم: ',
                 shiftNoodles: '🍜 نودلز',
@@ -576,17 +585,43 @@
                 shiftGrandTotal: '💰 إجمالي الإيرادات',
                 shiftClose: '✅ تقفيل',
                 shiftHistory: '📜 السجل',
-                shiftNoHistory: 'لا توجد تقفيلات سابقة',
                 shiftDrinksDetail: '🥤 تفاصيل المشروبات',
-                shiftCloseConfirm: 'هل أنت متأكد من تقفيل الشيفت؟\n\nسيتم حفظ جميع البيانات وبدء شيفت جديد.',
-                shiftClosed: '✅ تم تقفيل الشيفت!',
-                noHistory: 'لا توجد تقفيلات سابقة',
-                addStation: '➕ إضافة جهاز جديد',
-                removeStation: '🗑️',
-                confirmRemoveStation: '⚠️ لا يمكن حذف جهاز أثناء الاستخدام',
-                cannotCloseShift: '⚠️ لا يمكن تقفيل الشيفت، الأجهزة التالية لا تزال مشغولة: ',
             },
             en: {
+                available: 'Available',
+                inUse: 'In Use',
+                started: 'Started',
+                endSession: 'End',
+                start: 'Start',
+                orders: '🛒 Orders:',
+                addDrink: '➕ Add Drink',
+                noodles: 'Noodles',
+                total: 'Total',
+                drinks: 'Drinks',
+                daysRemaining: 'days remaining',
+                payToUnlock: '💡 Pay ',
+                active: '✅ Active',
+                locked: '🔒 Locked',
+                expiring: '⚠️ Expiring Soon',
+                toastCopied: '📋 Device ID copied: ',
+                toastActive: '✅ Subscription activated until ',
+                toastInvalidCode: '❌ Invalid or already used code',
+                toastSaved: '✅ Settings saved',
+                toastLogout: '🔒 Logged out',
+                toastDrinkAdded: '✅ Added ',
+                toastDrinkRemoved: '✅ Drink removed',
+                toastShiftClosed: '✅ Shift closed successfully!',
+                confirmSwitch: 'Switch business?\n\nCurrent: ',
+                confirmLogout: 'Logout and lock the app?',
+                confirmDeleteDrink: 'Delete this drink?',
+                confirmCreateBusiness: 'Business code already exists!',
+                codeMinLength: 'Business code must be at least 3 characters',
+                shiftCloseConfirm: 'Are you sure you want to close the shift?',
+                confirmRemoveStation: '⚠️ Cannot delete station while in use',
+                cannotCloseShift: '⚠️ Cannot close shift, the following stations are still in use: ',
+                addStation: '➕ Add New Station',
+                removeStation: '🗑️',
+                noHistory: 'No shifts found',
                 setupSubtitle: 'Professional PlayStation Rental Management',
                 setupInfo: '🔑 Enter your business code to access your system',
                 setupCodeLabel: '🏢 Business Code',
@@ -612,9 +647,6 @@
                 statInUseLabel: 'In Use',
                 statAvailableLabel: 'Available',
                 stationsTitle: 'STATIONS',
-                locked: '🔒 Locked',
-                active: '✅ Active',
-                expiring: '⚠️ Expiring Soon',
                 modalTitle: '✅ Session Complete!',
                 modalDurationLabel: '⏱ Duration',
                 modalTimeLabel: '💰 Time Price',
@@ -622,8 +654,8 @@
                 modalDoneBtn: 'Done',
                 settingsTitle: '⚙️ Settings',
                 settingsSub: 'Customize each PlayStation station',
-                settingsNote: '💡 Changes apply immediately. Active sessions keep the rate they started with.',
-                noodleLabel: '🍜 Noodle / Indomi Settings',
+                settingsNote: '💡 Changes apply immediately',
+                noodleLabel: '🍜 Noodle Settings',
                 noodlePriceLabel: 'Price per Noodle (EGP)',
                 noodleHint: 'Default: 15 EGP',
                 drinksLabel: '🥤 Custom Drinks',
@@ -639,32 +671,7 @@
                 langLabel: '🌐 Language:',
                 langAr: '🇸🇦 عربي',
                 langEn: '🇬🇧 English',
-                toastCopied: '📋 Device ID copied: ',
                 toastSwitch: '✅ Business switched',
-                toastActive: '✅ Subscription activated until ',
-                toastInvalidCode: '❌ Invalid or already used code',
-                toastSaved: '✅ Settings saved',
-                toastLogout: '🔒 Logged out',
-                toastDrinkAdded: '✅ Added ',
-                toastDrinkRemoved: '✅ Drink removed',
-                toastShiftClosed: '✅ Shift closed successfully!',
-                available: 'Available',
-                inUse: 'In Use',
-                started: 'Started',
-                endSession: 'End',
-                start: 'Start',
-                orders: '🛒 Orders:',
-                addDrink: '➕ Add Drink',
-                noodles: 'Noodles',
-                total: 'Total',
-                drinks: 'Drinks',
-                daysRemaining: 'days remaining',
-                payToUnlock: '💡 Pay ',
-                confirmSwitch: 'Switch business?\n\nCurrent: ',
-                confirmLogout: 'Logout and lock the app?',
-                confirmDeleteDrink: 'Delete this drink?',
-                confirmCreateBusiness: 'Business code already exists!',
-                codeMinLength: 'Business code must be at least 3 characters',
                 shiftTitle: '📊 Shift Summary',
                 shiftDate: 'Date: ',
                 shiftNoodles: '🍜 Noodles',
@@ -677,95 +684,50 @@
                 shiftGrandTotal: '💰 Total Revenue',
                 shiftClose: '✅ Close Shift',
                 shiftHistory: '📜 History',
-                shiftNoHistory: 'No shifts found',
                 shiftDrinksDetail: '🥤 Drink Details',
-                shiftCloseConfirm: 'Are you sure you want to close the shift?\n\nAll data will be saved and a new shift will start.',
-                shiftClosed: '✅ Shift closed!',
-                noHistory: 'No shifts found',
-                addStation: '➕ Add New Station',
-                removeStation: '🗑️',
-                confirmRemoveStation: '⚠️ Cannot delete station while in use',
-                cannotCloseShift: '⚠️ Cannot close shift, the following stations are still in use: ',
             }
         };
 
         let currentLang = 'ar';
+        let currentBusiness = null;
+        let businessConfig = null;
+        let deviceConfig = {};
+        let sessions = {};
+        let noodleOrders = {};
+        let drinkOrders = {};
+        let drinks = {};
+        let noodlePrice = 15;
+        let activeTimers = {};
+        let isMainAppInitialized = false;
+        let drinkIdCounter = 0;
+        let completedSessions = {};
+        let completedOrders = { noodles: {}, drinks: {} };
+        let realtimeChannel = null;
+        let isSyncing = false;
 
-        function getLang() {
-            const saved = localStorage.getItem(LANG_KEY);
-            if (saved && translations[saved]) return saved;
-            return 'ar';
-        }
+        // ============================================
+        // HELPERS
+        // ============================================
+        function getLang() { return localStorage.getItem('ps_language') || 'ar'; }
 
         function setLanguage(lang) {
-            if (!translations[lang]) return;
             currentLang = lang;
-            localStorage.setItem(LANG_KEY, lang);
+            localStorage.setItem('ps_language', lang);
             document.body.className = lang === 'ar' ? 'rtl' : 'ltr';
-            document.getElementById('langArBtn').className = 'lang-btn' + (lang === 'ar' ? ' active' : '');
-            document.getElementById('langEnBtn').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
             applyTranslations();
             renderMain();
             updateLockScreen();
             renderDrinksSettings();
-            showToast('✅ ' + (lang === 'ar' ? 'تم تغيير اللغة' : 'Language changed'), 'success');
         }
 
         function applyTranslations() {
             const t = translations[currentLang];
             if (!t) return;
-            document.getElementById('setupSubtitle').textContent = t.setupSubtitle;
-            document.getElementById('setupInfo').textContent = t.setupInfo;
-            document.getElementById('setupCodeLabel').textContent = t.setupCodeLabel;
-            document.getElementById('setupCodeHint').textContent = t.setupCodeHint;
-            document.getElementById('setupEnterBtn').textContent = t.setupEnterBtn;
-            document.getElementById('setupNewBizLabel').textContent = t.setupNewBizLabel;
-            document.getElementById('setupNewBizBtn').textContent = t.setupNewBizBtn;
-            document.getElementById('lockSubtitle').textContent = t.lockSubtitle;
-            document.getElementById('pricePeriod').textContent = t.pricePeriod;
-            document.getElementById('feature1').textContent = t.feature1;
-            document.getElementById('feature2').textContent = t.feature2;
-            document.getElementById('feature3').textContent = t.feature3;
-            document.getElementById('feature4').textContent = t.feature4;
-            document.getElementById('feature5').textContent = t.feature5;
-            document.getElementById('feature6').textContent = t.feature6;
-            document.getElementById('paymentLabel').textContent = t.paymentLabel;
-            document.getElementById('paymentMethod').textContent = t.paymentMethod;
-            document.getElementById('deviceIdLabel').textContent = t.deviceIdLabel;
-            document.getElementById('copyDeviceBtn').textContent = t.copyDeviceBtn;
-            document.getElementById('verifyPayBtn').textContent = t.verifyPayBtn;
-            document.getElementById('switchBizBtn').textContent = t.switchBizBtn;
-            document.getElementById('statTotalLabel').textContent = t.statTotalLabel;
-            document.getElementById('statInUseLabel').textContent = t.statInUseLabel;
-            document.getElementById('statAvailableLabel').textContent = t.statAvailableLabel;
-            document.getElementById('stationsTitle').textContent = t.stationsTitle;
-            document.getElementById('settingsTitle').textContent = t.settingsTitle;
-            document.getElementById('settingsSub').textContent = t.settingsSub;
-            document.getElementById('settingsNote').textContent = t.settingsNote;
-            document.getElementById('noodleLabel').textContent = t.noodleLabel;
-            document.getElementById('noodlePriceLabel').textContent = t.noodlePriceLabel;
-            document.getElementById('noodleHint').textContent = t.noodleHint;
-            document.getElementById('drinksLabel').textContent = t.drinksLabel;
-            document.getElementById('addDrinkBtn').textContent = t.addDrinkBtn;
-            document.getElementById('settingsDoneBtn').textContent = t.settingsDoneBtn;
-            document.getElementById('addDrinkTitle').textContent = t.addDrinkTitle;
-            document.getElementById('addDrinkSub').textContent = t.addDrinkSub;
-            document.getElementById('addDrinkNameLabel').textContent = t.addDrinkNameLabel;
-            document.getElementById('addDrinkPriceLabel').textContent = t.addDrinkPriceLabel;
-            document.getElementById('addDrinkIconLabel').textContent = t.addDrinkIconLabel;
-            document.getElementById('addDrinkCancelBtn').textContent = t.addDrinkCancelBtn;
-            document.getElementById('addDrinkConfirmBtn').textContent = t.addDrinkConfirmBtn;
-            document.getElementById('modalTitle').textContent = t.modalTitle;
-            document.getElementById('modalDurationLabel').textContent = t.modalDurationLabel;
-            document.getElementById('modalTimeLabel').textContent = t.modalTimeLabel;
-            document.getElementById('modalTotalLabel').textContent = t.modalTotalLabel;
-            document.getElementById('modalDoneBtn').textContent = t.modalDoneBtn;
-            document.getElementById('langLabel').textContent = t.langLabel;
-            document.getElementById('langArBtn').textContent = t.langAr;
-            document.getElementById('langEnBtn').textContent = t.langEn;
-            var addStationBtn = document.querySelector('.btn-add-station');
-            if (addStationBtn) addStationBtn.textContent = t.addStation;
-            updateLockScreen();
+            // تطبيق الترجمات الأساسية
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (t[key]) el.textContent = t[key];
+            });
         }
 
         function showToast(message, type) {
@@ -775,218 +737,427 @@
             toast.className = 'toast ' + type;
             toast.style.display = 'block';
             clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(function() { toast.style.display = 'none'; }, 3500);
+            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3500);
         }
-
-        const VERSION_KEY = 'ps_app_version';
-        const APP_VERSION = '3.0.0';
-
-        function checkVersion() {
-            const stored = localStorage.getItem(VERSION_KEY);
-            if (stored && stored !== APP_VERSION) {
-                localStorage.setItem(VERSION_KEY, APP_VERSION);
-                location.reload();
-                return true;
-            }
-            if (!stored) localStorage.setItem(VERSION_KEY, APP_VERSION);
-            return false;
-        }
-        setInterval(function() {
-            const stored = localStorage.getItem(VERSION_KEY);
-            if (stored && stored !== APP_VERSION) {
-                localStorage.setItem(VERSION_KEY, APP_VERSION);
-                location.reload();
-            }
-        }, 30000);
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) checkVersion();
-        });
-        checkVersion();
-
-        const DEVICE_ID_KEY = 'ps_device_id';
 
         function getDeviceId() {
-            var deviceId = localStorage.getItem(DEVICE_ID_KEY);
-            if (!deviceId) {
-                var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-                var result = 'PS-';
-                for (var i = 0; i < 8; i++) {
-                    result += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                deviceId = result;
-                localStorage.setItem(DEVICE_ID_KEY, deviceId);
+            let id = localStorage.getItem('ps_device_id');
+            if (!id) {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                id = 'PS-';
+                for (let i = 0; i < 8; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+                localStorage.setItem('ps_device_id', id);
             }
-            return deviceId;
+            return id;
         }
 
         function copyDeviceId() {
-            var deviceId = getDeviceId();
-            var t = translations[currentLang];
-            navigator.clipboard.writeText(deviceId).then(function() {
-                showToast(t.toastCopied + deviceId);
-            }).catch(function() {
-                var input = document.createElement('input');
-                input.value = deviceId;
+            const id = getDeviceId();
+            navigator.clipboard.writeText(id).then(() => {
+                showToast(translations[currentLang].toastCopied + id);
+            }).catch(() => {
+                const input = document.createElement('input');
+                input.value = id;
                 document.body.appendChild(input);
                 input.select();
                 document.execCommand('copy');
                 document.body.removeChild(input);
-                showToast(t.toastCopied + deviceId);
+                showToast(translations[currentLang].toastCopied + id);
             });
         }
 
-        currentLang = getLang();
-        document.body.className = currentLang === 'ar' ? 'rtl' : 'ltr';
-        document.getElementById('langArBtn').className = 'lang-btn' + (currentLang === 'ar' ? ' active' : '');
-        document.getElementById('langEnBtn').className = 'lang-btn' + (currentLang === 'en' ? ' active' : '');
+        function now() { return new Date(); }
 
-        const BUSINESS_KEY = 'ps_business_code';
+        function formatTime(date) {
+            if (!date) return '--';
+            return date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+        }
 
-        var currentBusiness = null;
-        var businessConfig = null;
-        var deviceConfig = {};
-        var sessions = {};
-        var noodleOrders = {};
-        var drinkOrders = {};
-        var drinks = {};
-        var noodlePrice = 15;
-        var activeTimers = {};
-        var isMainAppInitialized = false;
-        var drinkIdCounter = 0;
+        function formatDurationFull(ms) {
+            if (ms < 0) return '0ث';
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            if (hours > 0) return currentLang === 'ar' ? hours + 'س ' + minutes + 'د' : hours + 'h ' + minutes + 'm';
+            if (minutes > 0) return currentLang === 'ar' ? minutes + 'د ' + seconds + 'ث' : minutes + 'm ' + seconds + 's';
+            return currentLang === 'ar' ? seconds + 'ث' : seconds + 's';
+        }
 
-        var completedSessions = {};
-        var completedOrders = { noodles: {}, drinks: {} };
-        var realtimeChannel = null;
+        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
+
+        function getRate(d) { return deviceConfig[d] ? deviceConfig[d].rate : 25; }
+
+        function getDeviceName(d) { return deviceConfig[d] ? deviceConfig[d].name : 'PS ' + d; }
+
+        function getNoodlePrice() { return noodlePrice || 15; }
+
+        function getTotalStations() {
+            const total = Object.keys(deviceConfig).length;
+            if (total === 0 && businessConfig) {
+                return businessConfig.totalStations || 11;
+            }
+            return total;
+        }
+
+        function getActiveCount() {
+            return Object.keys(sessions).filter(k => sessions[k] && !sessions[k].completed).length;
+        }
+
+        function getAvailableCount() {
+            return Math.max(0, getTotalStations() - getActiveCount());
+        }
+
+        function getStationKeys() {
+            let keys = Object.keys(deviceConfig);
+            if (keys.length === 0) {
+                const total = businessConfig ? businessConfig.totalStations : 11;
+                for (let i = 1; i <= total; i++) {
+                    keys.push(i.toString());
+                    if (!deviceConfig[i]) {
+                        deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
+                    }
+                }
+            }
+            keys.sort((a, b) => parseInt(a) - parseInt(b));
+            return keys;
+        }
+
+        function getDeviceDrinkOrders(deviceId) {
+            return drinkOrders[deviceId] || {};
+        }
 
         // ============================================
-        // SUPABASE STORAGE FUNCTIONS
+        // SUPABASE FUNCTIONS
         // ============================================
 
-        async function saveSessionToSupabase(businessCode, stationNumber, startTime, rate, deviceId) {
+        async function loadBusiness(code) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('businesses')
+                    .select('*')
+                    .eq('code', code.toUpperCase())
+                    .single();
+                if (error) return null;
+                return data;
+            } catch (e) { console.error('loadBusiness error:', e); return null; }
+        }
+
+        async function saveBusinessConfig(code, config) {
+            try {
+                const { error } = await supabaseClient
+                    .from('businesses')
+                    .upsert({
+                        code: code.toUpperCase(),
+                        business_name: config.businessName,
+                        total_stations: config.totalStations,
+                        price: config.price,
+                        phone: config.phone,
+                        noodle_price: config.noodlePrice || 15,
+                        device_config: config.deviceConfig || {},
+                        drinks: config.drinks || {}
+                    });
+                if (error) { console.error('saveBusinessConfig error:', error); return false; }
+                return true;
+            } catch (e) { console.error(e); return false; }
+        }
+
+        async function getUserDataSupabase(businessCode, deviceId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('business_code', businessCode)
+                    .eq('device_id', deviceId)
+                    .single();
+                if (error && error.code !== 'PGRST116') return null;
+                return data;
+            } catch (e) { return null; }
+        }
+
+        async function saveUserDataSupabase(businessCode, deviceId, data) {
+            try {
+                const { error } = await supabaseClient
+                    .from('users')
+                    .upsert({
+                        business_code: businessCode,
+                        device_id: deviceId,
+                        is_active: data.isActive || false,
+                        expiry_date: data.expiryDate,
+                        revoked: data.revoked || false
+                    });
+                if (error) { console.error('saveUserDataSupabase error:', error); return false; }
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function verifyCode(businessCode, code) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('code_history')
+                    .select('*')
+                    .eq('business_code', businessCode)
+                    .eq('code', code)
+                    .eq('used', false)
+                    .single();
+                if (error || !data) return { valid: false };
+                await supabaseClient.from('code_history').update({ used: true }).eq('id', data.id);
+                return { valid: true };
+            } catch (e) { return { valid: false }; }
+        }
+
+        // ============================================
+        // REALTIME SYNC - المفتاح السحري للتزامن
+        // ============================================
+
+        async function syncAllData() {
+            if (!currentBusiness || isSyncing) return;
+            isSyncing = true;
+            console.log('🔄 جاري مزامنة البيانات...');
+
+            try {
+                // 1. تحميل الجلسات النشطة
+                const { data: sessionsData, error: sessionsError } = await supabaseClient
+                    .from('active_sessions')
+                    .select('*')
+                    .eq('business_code', currentBusiness);
+
+                if (sessionsError) {
+                    console.error('❌ خطأ في تحميل الجلسات:', sessionsError);
+                } else {
+                    const newSessions = {};
+                    sessionsData.forEach(row => {
+                        newSessions[row.station_number] = {
+                            startTime: new Date(row.start_time),
+                            endTime: null,
+                            completed: false,
+                            amount: 0,
+                            duration: 0,
+                            rate: row.rate
+                        };
+                    });
+                    sessions = newSessions;
+                    console.log('✅ تم تحميل', Object.keys(sessions).length, 'جلسة');
+                }
+
+                // 2. تحميل طلبات النودلز
+                const { data: noodlesData, error: noodlesError } = await supabaseClient
+                    .from('noodle_orders')
+                    .select('*')
+                    .eq('business_code', currentBusiness);
+
+                if (noodlesError) {
+                    console.error('❌ خطأ في تحميل النودلز:', noodlesError);
+                } else {
+                    const newNoodles = {};
+                    noodlesData.forEach(row => {
+                        newNoodles[row.station_number] = row.count;
+                    });
+                    noodleOrders = newNoodles;
+                    console.log('✅ تم تحميل طلبات النودلز');
+                }
+
+                // 3. تحميل طلبات المشروبات
+                const { data: drinksData, error: drinksError } = await supabaseClient
+                    .from('drink_orders')
+                    .select('*')
+                    .eq('business_code', currentBusiness);
+
+                if (drinksError) {
+                    console.error('❌ خطأ في تحميل المشروبات:', drinksError);
+                } else {
+                    const newDrinks = {};
+                    drinksData.forEach(row => {
+                        if (!newDrinks[row.station_number]) newDrinks[row.station_number] = {};
+                        newDrinks[row.station_number][row.drink_id] = row.count;
+                    });
+                    drinkOrders = newDrinks;
+                    console.log('✅ تم تحميل طلبات المشروبات');
+                }
+
+                // 4. تحميل إعدادات الأجهزة
+                const { data: stationsData, error: stationsError } = await supabaseClient
+                    .from('stations_config')
+                    .select('*')
+                    .eq('business_code', currentBusiness);
+
+                if (stationsError) {
+                    console.error('❌ خطأ في تحميل الأجهزة:', stationsError);
+                } else if (stationsData.length > 0) {
+                    const newDevices = {};
+                    stationsData.forEach(row => {
+                        newDevices[row.station_number] = {
+                            name: row.name,
+                            rate: row.rate
+                        };
+                    });
+                    deviceConfig = newDevices;
+                    if (businessConfig) {
+                        businessConfig.totalStations = Object.keys(deviceConfig).length;
+                    }
+                    console.log('✅ تم تحميل', Object.keys(deviceConfig).length, 'جهاز');
+                }
+
+                // إعادة تشغيل المؤقتات
+                Object.keys(activeTimers).forEach(k => { clearInterval(activeTimers[k]);
+                    delete activeTimers[k]; });
+                Object.keys(sessions).forEach(key => {
+                    if (sessions[key] && !sessions[key].completed) {
+                        startPlayTimer(parseInt(key));
+                    }
+                });
+
+                renderMain();
+                console.log('✅ تمت المزامنة بنجاح');
+
+            } catch (e) {
+                console.error('❌ خطأ في المزامنة:', e);
+            }
+
+            isSyncing = false;
+        }
+
+        function subscribeToRealtime(businessCode) {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+                realtimeChannel = null;
+            }
+
+            console.log('🔌 جاري الاشتراك في Realtime...');
+
+            realtimeChannel = supabaseClient
+                .channel('ps-realtime-' + businessCode)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'active_sessions',
+                        filter: 'business_code=eq.' + businessCode
+                    },
+                    (payload) => {
+                        console.log('🔄 تغيير في الجلسات:', payload);
+                        syncAllData();
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'noodle_orders',
+                        filter: 'business_code=eq.' + businessCode
+                    },
+                    (payload) => {
+                        console.log('🔄 تغيير في النودلز:', payload);
+                        syncAllData();
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'drink_orders',
+                        filter: 'business_code=eq.' + businessCode
+                    },
+                    (payload) => {
+                        console.log('🔄 تغيير في المشروبات:', payload);
+                        syncAllData();
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'stations_config',
+                        filter: 'business_code=eq.' + businessCode
+                    },
+                    (payload) => {
+                        console.log('🔄 تغيير في الأجهزة:', payload);
+                        syncAllData();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('📡 حالة الاشتراك:', status);
+                    if (status === 'SUBSCRIBED') {
+                        console.log('✅ تم الاشتراك في Realtime بنجاح');
+                        // نزل البيانات أول مرة
+                        syncAllData();
+                    }
+                });
+
+            return realtimeChannel;
+        }
+
+        // ============================================
+        // SAVE FUNCTIONS (تُستدعى عند كل تغيير)
+        // ============================================
+
+        async function saveSessionToSupabase(stationNumber, startTime, rate) {
             try {
                 const { error } = await supabaseClient
                     .from('active_sessions')
                     .upsert({
-                        business_code: businessCode,
+                        business_code: currentBusiness,
                         station_number: stationNumber,
                         start_time: startTime.toISOString(),
                         rate: rate,
-                        device_id: deviceId
+                        device_id: getDeviceId()
                     }, { onConflict: 'business_code, station_number' });
                 if (error) console.error('❌ خطأ في حفظ الجلسة:', error);
             } catch (e) { console.error(e); }
         }
 
-        async function deleteSessionFromSupabase(businessCode, stationNumber) {
+        async function deleteSessionFromSupabase(stationNumber) {
             try {
                 const { error } = await supabaseClient
                     .from('active_sessions')
                     .delete()
-                    .eq('business_code', businessCode)
+                    .eq('business_code', currentBusiness)
                     .eq('station_number', stationNumber);
                 if (error) console.error('❌ خطأ في حذف الجلسة:', error);
             } catch (e) { console.error(e); }
         }
 
-        async function loadSessionsFromSupabase(businessCode) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('active_sessions')
-                    .select('*')
-                    .eq('business_code', businessCode);
-                if (error) {
-                    console.error('❌ خطأ في تحميل الجلسات:', error);
-                    return {};
-                }
-                var sessionsData = {};
-                data.forEach(function(row) {
-                    sessionsData[row.station_number] = {
-                        startTime: new Date(row.start_time),
-                        endTime: null,
-                        completed: false,
-                        amount: 0,
-                        duration: 0,
-                        rate: row.rate
-                    };
-                });
-                return sessionsData;
-            } catch (e) { return {}; }
-        }
-
-        async function saveNoodleToSupabase(businessCode, stationNumber, count, deviceId) {
+        async function saveNoodleToSupabase(stationNumber, count) {
             try {
                 const { error } = await supabaseClient
                     .from('noodle_orders')
                     .upsert({
-                        business_code: businessCode,
+                        business_code: currentBusiness,
                         station_number: stationNumber,
                         count: count,
-                        device_id: deviceId,
+                        device_id: getDeviceId(),
                         updated_at: new Date().toISOString()
                     }, { onConflict: 'business_code, station_number' });
                 if (error) console.error('❌ خطأ في حفظ النودلز:', error);
             } catch (e) { console.error(e); }
         }
 
-        async function loadNoodlesFromSupabase(businessCode) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('noodle_orders')
-                    .select('*')
-                    .eq('business_code', businessCode);
-                if (error) {
-                    console.error('❌ خطأ في تحميل النودلز:', error);
-                    return {};
-                }
-                var noodles = {};
-                data.forEach(function(row) {
-                    noodles[row.station_number] = row.count;
-                });
-                return noodles;
-            } catch (e) { return {}; }
-        }
-
-        async function saveDrinkToSupabase(businessCode, stationNumber, drinkId, count, deviceId) {
+        async function saveDrinkToSupabase(stationNumber, drinkId, count) {
             try {
                 const { error } = await supabaseClient
                     .from('drink_orders')
                     .upsert({
-                        business_code: businessCode,
+                        business_code: currentBusiness,
                         station_number: stationNumber,
                         drink_id: drinkId,
                         count: count,
-                        device_id: deviceId,
+                        device_id: getDeviceId(),
                         updated_at: new Date().toISOString()
                     }, { onConflict: 'business_code, station_number, drink_id' });
                 if (error) console.error('❌ خطأ في حفظ المشروب:', error);
             } catch (e) { console.error(e); }
         }
 
-        async function loadDrinksFromSupabase(businessCode) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('drink_orders')
-                    .select('*')
-                    .eq('business_code', businessCode);
-                if (error) {
-                    console.error('❌ خطأ في تحميل المشروبات:', error);
-                    return {};
-                }
-                var drinksData = {};
-                data.forEach(function(row) {
-                    if (!drinksData[row.station_number]) drinksData[row.station_number] = {};
-                    drinksData[row.station_number][row.drink_id] = row.count;
-                });
-                return drinksData;
-            } catch (e) { return {}; }
-        }
-
-        async function saveStationToSupabase(businessCode, stationNumber, name, rate) {
+        async function saveStationToSupabase(stationNumber, name, rate) {
             try {
                 const { error } = await supabaseClient
                     .from('stations_config')
                     .upsert({
-                        business_code: businessCode,
+                        business_code: currentBusiness,
                         station_number: stationNumber,
                         name: name,
                         rate: rate
@@ -995,497 +1166,14 @@
             } catch (e) { console.error(e); }
         }
 
-        async function loadStationsFromSupabase(businessCode) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('stations_config')
-                    .select('*')
-                    .eq('business_code', businessCode);
-                if (error) {
-                    console.error('❌ خطأ في تحميل الأجهزة:', error);
-                    return {};
-                }
-                var devices = {};
-                data.forEach(function(row) {
-                    devices[row.station_number] = {
-                        name: row.name,
-                        rate: row.rate
-                    };
-                });
-                return devices;
-            } catch (e) { return {}; }
-        }
-
-        async function loadShiftHistoryFromSupabase(businessCode) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('shift_history')
-                    .select('*')
-                    .eq('business_code', businessCode)
-                    .order('closed_at', { ascending: false });
-                if (error) {
-                    console.error('❌ خطأ في تحميل التاريخ:', error);
-                    return [];
-                }
-                return data || [];
-            } catch (e) { return []; }
-        }
-
-        async function saveShiftHistoryToSupabase(entry) {
-            try {
-                const { error } = await supabaseClient
-                    .from('shift_history')
-                    .insert({
-                        business_code: entry.businessCode,
-                        closed_at: entry.closedAt,
-                        total_sessions: entry.totalSessions,
-                        total_hours: entry.totalHours,
-                        total_noodles: entry.totalNoodles,
-                        total_drinks: entry.totalDrinks,
-                        session_revenue: entry.sessionRevenue,
-                        noodle_revenue: entry.noodleRevenue,
-                        drink_revenue: entry.drinkRevenue,
-                        total_revenue: entry.totalRevenue,
-                        drink_details: entry.drinkDetails,
-                        device_id: getDeviceId()
-                    });
-                if (error) console.error('❌ خطأ في حفظ التاريخ:', error);
-            } catch (e) { console.error(e); }
-        }
-
         // ============================================
-        // REALTIME SUBSCRIPTION
+        // BUSINESS FUNCTIONS
         // ============================================
-
-        function subscribeToRealtime(businessCode) {
-            if (realtimeChannel) {
-                supabaseClient.removeChannel(realtimeChannel);
-                realtimeChannel = null;
-            }
-
-            realtimeChannel = supabaseClient
-                .channel('ps-rental-realtime-' + businessCode)
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'active_sessions', filter: 'business_code=eq.' +
-                            businessCode },
-                    function(payload) {
-                        console.log('🔄 تغيير في الجلسات:', payload);
-                        syncAllData();
-                    }
-                )
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'noodle_orders', filter: 'business_code=eq.' +
-                            businessCode },
-                    function(payload) {
-                        console.log('🔄 تغيير في النودلز:', payload);
-                        syncAllData();
-                    }
-                )
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'drink_orders', filter: 'business_code=eq.' +
-                            businessCode },
-                    function(payload) {
-                        console.log('🔄 تغيير في المشروبات:', payload);
-                        syncAllData();
-                    }
-                )
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'stations_config', filter: 'business_code=eq.' +
-                            businessCode },
-                    function(payload) {
-                        console.log('🔄 تغيير في الأجهزة:', payload);
-                        syncAllData();
-                    }
-                )
-                .subscribe();
-
-            return realtimeChannel;
-        }
-
-        async function syncAllData() {
-            if (!currentBusiness) return;
-            console.log('🔄 جاري مزامنة البيانات...');
-
-            try {
-                var loadedSessions = await loadSessionsFromSupabase(currentBusiness);
-                sessions = loadedSessions;
-
-                var loadedNoodles = await loadNoodlesFromSupabase(currentBusiness);
-                noodleOrders = loadedNoodles;
-
-                var loadedDrinks = await loadDrinksFromSupabase(currentBusiness);
-                drinkOrders = loadedDrinks;
-
-                var loadedDevices = await loadStationsFromSupabase(currentBusiness);
-                if (Object.keys(loadedDevices).length > 0) {
-                    deviceConfig = loadedDevices;
-                    // تحديث totalStations
-                    if (businessConfig) {
-                        businessConfig.totalStations = Object.keys(deviceConfig).length;
-                    }
-                }
-
-                // إعادة تشغيل المؤقتات للجلسات النشطة
-                Object.keys(activeTimers).forEach(function(k) {
-                    clearInterval(activeTimers[k]);
-                    delete activeTimers[k];
-                });
-                Object.keys(sessions).forEach(function(key) {
-                    if (sessions[key] && !sessions[key].completed) {
-                        startPlayTimer(parseInt(key));
-                    }
-                });
-
-                renderMain();
-                console.log('✅ تمت المزامنة');
-            } catch (e) {
-                console.error('❌ خطأ في المزامنة:', e);
-            }
-        }
-
-        // ============================================
-        // SESSION STORAGE (Local fallback)
-        // ============================================
-        function getSessionKey() {
-            return 'ps_sessions_' + currentBusiness;
-        }
-
-        function getOrdersKey() {
-            return 'ps_orders_' + currentBusiness;
-        }
-
-        function saveSessionsToSharedStorage() {
-            if (!currentBusiness) return;
-            try {
-                var toSave = {};
-                Object.keys(sessions).forEach(function(key) {
-                    toSave[key] = {};
-                    Object.assign(toSave[key], sessions[key]);
-                    if (toSave[key].startTime) {
-                        toSave[key].startTime = toSave[key].startTime.toISOString();
-                    }
-                    if (toSave[key].endTime) {
-                        toSave[key].endTime = toSave[key].endTime.toISOString();
-                    }
-                });
-                localStorage.setItem(getSessionKey(), JSON.stringify(toSave));
-
-                var ordersToSave = {
-                    noodles: noodleOrders,
-                    drinks: drinkOrders
-                };
-                localStorage.setItem(getOrdersKey(), JSON.stringify(ordersToSave));
-            } catch (e) {}
-        }
-
-        function loadSessionsFromSharedStorage() {
-            if (!currentBusiness) return {};
-            try {
-                var data = localStorage.getItem(getSessionKey());
-                if (data) {
-                    var parsed = JSON.parse(data);
-                    Object.keys(parsed).forEach(function(key) {
-                        if (parsed[key].startTime) {
-                            parsed[key].startTime = new Date(parsed[key].startTime);
-                        }
-                        if (parsed[key].endTime) {
-                            parsed[key].endTime = new Date(parsed[key].endTime);
-                        }
-                    });
-                    return parsed;
-                }
-                return {};
-            } catch (e) { return {}; }
-        }
-
-        function loadOrdersFromSharedStorage() {
-            if (!currentBusiness) return { noodles: {}, drinks: {} };
-            try {
-                var data = localStorage.getItem(getOrdersKey());
-                if (data) {
-                    return JSON.parse(data);
-                }
-                return { noodles: {}, drinks: {} };
-            } catch (e) { return { noodles: {}, drinks: {} }; }
-        }
-
-        function getCompletedSessionsKey() {
-            return 'ps_completed_sessions_' + currentBusiness;
-        }
-
-        function loadCompletedSessionsFromStorage() {
-            if (!currentBusiness) return {};
-            try {
-                var data = localStorage.getItem(getCompletedSessionsKey());
-                return data ? JSON.parse(data) : {};
-            } catch (e) { return {}; }
-        }
-
-        function saveCompletedSessionsToStorage() {
-            if (!currentBusiness) return;
-            try {
-                localStorage.setItem(getCompletedSessionsKey(), JSON.stringify(completedSessions));
-            } catch (e) {}
-        }
-
-        function getCompletedOrdersKey() {
-            return 'ps_completed_orders_' + currentBusiness;
-        }
-
-        function loadCompletedOrdersFromStorage() {
-            if (!currentBusiness) return { noodles: {}, drinks: {} };
-            try {
-                var data = localStorage.getItem(getCompletedOrdersKey());
-                return data ? JSON.parse(data) : { noodles: {}, drinks: {} };
-            } catch (e) { return { noodles: {}, drinks: {} }; }
-        }
-
-        function saveCompletedOrdersToStorage() {
-            if (!currentBusiness) return;
-            try {
-                localStorage.setItem(getCompletedOrdersKey(), JSON.stringify(completedOrders));
-            } catch (e) {}
-        }
-
-        const SHIFT_KEY = 'ps_shift_data';
-        const SHIFT_HISTORY_KEY = 'ps_shift_history';
-
-        function getShiftData() {
-            try {
-                var data = localStorage.getItem(SHIFT_KEY);
-                if (data) {
-                    return JSON.parse(data);
-                }
-            } catch (e) {}
-            return null;
-        }
-
-        function saveShiftData(data) {
-            try {
-                localStorage.setItem(SHIFT_KEY, JSON.stringify(data));
-            } catch (e) {}
-        }
-
-        function getShiftHistory() {
-            try {
-                var data = localStorage.getItem(SHIFT_HISTORY_KEY);
-                return data ? JSON.parse(data) : [];
-            } catch (e) { return []; }
-        }
-
-        function saveShiftHistoryLocal(entry) {
-            try {
-                var history = getShiftHistory();
-                history.push(entry);
-                localStorage.setItem(SHIFT_HISTORY_KEY, JSON.stringify(history));
-            } catch (e) {}
-        }
-
-        function resetShiftData() {
-            var shiftData = {
-                totalSessions: 0,
-                totalNoodles: 0,
-                totalDrinks: 0,
-                totalHours: 0,
-                noodleRevenue: 0,
-                drinkRevenue: 0,
-                sessionRevenue: 0,
-                totalRevenue: 0,
-                drinkDetails: {},
-                date: new Date().toISOString(),
-                isOpen: true
-            };
-            saveShiftData(shiftData);
-            return shiftData;
-        }
-
-        function getOrCreateShift() {
-            var shift = getShiftData();
-            if (!shift || !shift.isOpen) {
-                shift = resetShiftData();
-            }
-            if (!shift.drinkDetails) shift.drinkDetails = {};
-            return shift;
-        }
-
-        // ============================================
-        // STATION STATS
-        // ============================================
-
-        function getTotalStations() {
-            var total = Object.keys(deviceConfig).length;
-            if (total === 0 && businessConfig) {
-                total = businessConfig.totalStations || 11;
-                if (total > 0 && Object.keys(deviceConfig).length === 0) {
-                    for (var i = 1; i <= total; i++) {
-                        if (!deviceConfig[i]) {
-                            deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
-                        }
-                    }
-                }
-            }
-            return total;
-        }
-
-        function getActiveCount() {
-            return Object.keys(sessions).filter(function(k) {
-                return sessions[k] && !sessions[k].completed;
-            }).length;
-        }
-
-        function getAvailableCount() {
-            var total = getTotalStations();
-            var active = getActiveCount();
-            return Math.max(0, total - active);
-        }
-
-        function getStationKeys() {
-            var keys = Object.keys(deviceConfig);
-            if (keys.length === 0) {
-                var total = businessConfig ? businessConfig.totalStations : 11;
-                for (var i = 1; i <= total; i++) {
-                    keys.push(i.toString());
-                    if (!deviceConfig[i]) {
-                        deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
-                    }
-                }
-            }
-            keys.sort(function(a, b) { return parseInt(a) - parseInt(b); });
-            return keys;
-        }
-
-        // ============================================
-        // ADD / REMOVE STATIONS
-        // ============================================
-        async function addStation() {
-            if (!businessConfig) {
-                showToast('⚠️ يرجى تحميل النشاط التجاري أولاً', 'warning');
-                return;
-            }
-            var stationKeys = Object.keys(deviceConfig);
-            var maxIndex = 0;
-            for (var idx = 0; idx < stationKeys.length; idx++) {
-                var num = parseInt(stationKeys[idx]);
-                if (num > maxIndex) maxIndex = num;
-            }
-            var newIndex = maxIndex + 1;
-            deviceConfig[newIndex] = { name: 'PS ' + newIndex, rate: 25 };
-            businessConfig.totalStations = Object.keys(deviceConfig).length;
-
-            await saveStationToSupabase(currentBusiness, newIndex, 'PS ' + newIndex, 25);
-            await saveBusinessConfig(currentBusiness, businessConfig);
-
-            renderSettingsList();
-            renderMain();
-            showToast('✅ تم إضافة جهاز PS ' + newIndex, 'success');
-        }
-
-        async function removeStation(index) {
-            if (!businessConfig) return;
-            if (sessions[index] && !sessions[index].completed) {
-                var t = translations[currentLang];
-                showToast(t.confirmRemoveStation, 'error');
-                return;
-            }
-            var t = translations[currentLang];
-            if (!confirm((currentLang === 'ar' ? 'هل أنت متأكد من حذف الجهاز ' : 'Delete station ') + index + '?')) return;
-
-            delete deviceConfig[index];
-            delete noodleOrders[index];
-            if (drinkOrders[index]) delete drinkOrders[index];
-            if (sessions[index]) delete sessions[index];
-
-            // حذف من Supabase
-            await supabaseClient.from('stations_config').delete().eq('business_code', currentBusiness).eq('station_number',
-                index);
-            await supabaseClient.from('active_sessions').delete().eq('business_code', currentBusiness).eq('station_number',
-                index);
-            await supabaseClient.from('noodle_orders').delete().eq('business_code', currentBusiness).eq('station_number',
-                index);
-            await supabaseClient.from('drink_orders').delete().eq('business_code', currentBusiness).eq('station_number',
-                index);
-
-            businessConfig.totalStations = Object.keys(deviceConfig).length;
-            await saveBusinessConfig(currentBusiness, businessConfig);
-
-            renderSettingsList();
-            renderMain();
-            showToast('✅ ' + (currentLang === 'ar' ? 'تم حذف الجهاز' : 'Station deleted'), 'success');
-        }
-
-        function renderSettingsList() {
-            var list = document.getElementById('settingsList');
-            if (!list) return;
-            var t = translations[currentLang];
-
-            var stationKeys = getStationKeys();
-            var html = '';
-            for (var idx = 0; idx < stationKeys.length; idx++) {
-                var i = parseInt(stationKeys[idx]);
-                var config = deviceConfig[i] || { name: 'PS ' + i, rate: 25 };
-                var session = sessions[i];
-                var isActive = session && !session.completed;
-                var statusText = isActive ? (currentLang === 'ar' ? '🔴 مشغول' : '🔴 In Use') : (currentLang === 'ar' ?
-                    '⚪ متاح' : '⚪ Available');
-                var statusClass = isActive ? 'in-use' : '';
-                var disableRemove = isActive ? 'disabled' : '';
-                var disableEdit = isActive ? 'disabled' : '';
-                var editHint = isActive ? '<div class="hint">⛔ ' + (currentLang === 'ar' ?
-                    'لا يمكن التعديل أثناء الاستخدام' : 'Cannot edit while in use') + '</div>' : '';
-
-                html +=
-                    '<div class="settings-device"><div class="device-header"><span class="device-num">' + i +
-                    '</span><span class="device-status ' + statusClass + '">' + statusText +
-                    '</span><button class="btn-remove-station" onclick="removeStation(' + i + ')" ' + disableRemove +
-                    '>' + t.removeStation + '</button></div><div class="settings-row"><div class="settings-group"><label>' +
-                    (currentLang === 'ar' ? 'الاسم' : 'Name') +
-                    '</label><input type="text" id="settings_name_' + i + '" value="' + config.name +
-                    '" placeholder="PS ' + i + '" ' + disableEdit + '>' + editHint +
-                    '</div><div class="settings-group"><label>' + (currentLang === 'ar' ? 'السعر (EGP/ساعة)' :
-                        'Rate (EGP/hour)') +
-                    '</label><input type="number" id="settings_rate_' + i + '" value="' + config.rate +
-                    '" min="1" max="100" step="0.5" ' + disableEdit + '>' + editHint +
-                    '</div></div></div>';
-            }
-            list.innerHTML = html;
-            var addBtn = document.querySelector('.btn-add-station');
-            if (addBtn) addBtn.textContent = t.addStation;
-        }
-
-        // ============================================
-        // DRINKS STORAGE
-        // ============================================
-        function getDrinksKey() {
-            return 'ps_drinks_' + currentBusiness;
-        }
-
-        function loadDrinksFromStorage() {
-            if (!currentBusiness) return {};
-            try {
-                var data = localStorage.getItem(getDrinksKey());
-                return data ? JSON.parse(data) : {};
-            } catch (e) { return {}; }
-        }
-
-        function saveDrinksToStorage() {
-            if (!currentBusiness) return;
-            try {
-                localStorage.setItem(getDrinksKey(), JSON.stringify(drinks));
-            } catch (e) {}
-        }
-
-        function getUserDataKey() {
-            return 'ps_user_' + currentBusiness + '_' + getDeviceId();
-        }
 
         function getUserDataLocal() {
             if (!currentBusiness) return null;
             try {
-                var data = localStorage.getItem(getUserDataKey());
+                const data = localStorage.getItem('ps_user_' + currentBusiness + '_' + getDeviceId());
                 return data ? JSON.parse(data) : null;
             } catch (e) { return null; }
         }
@@ -1493,105 +1181,36 @@
         function saveUserDataLocal(data) {
             if (!currentBusiness) return;
             try {
-                localStorage.setItem(getUserDataKey(), JSON.stringify(data));
+                localStorage.setItem('ps_user_' + currentBusiness + '_' + getDeviceId(), JSON.stringify(data));
             } catch (e) {}
         }
 
         function isRentalActive() {
-            var data = getUserDataLocal();
-            if (!data) return false;
-            if (!data.isActive) return false;
-            if (data.revoked === true) return false;
+            const data = getUserDataLocal();
+            if (!data || !data.isActive || data.revoked) return false;
             if (!data.expiryDate) return false;
-            var now = new Date();
-            var expiry = new Date(data.expiryDate);
-            return now <= expiry;
+            return new Date() <= new Date(data.expiryDate);
         }
 
         function getDaysRemaining() {
-            var data = getUserDataLocal();
+            const data = getUserDataLocal();
             if (!data || !data.isActive || !data.expiryDate) return 0;
-            var now = new Date();
-            var diff = new Date(data.expiryDate) - now;
+            const diff = new Date(data.expiryDate) - new Date();
             return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
         }
 
-        async function loadBusiness(code) {
-            try {
-                var { data, error } = await supabaseClient.from('businesses').select('*').eq('code', code.toUpperCase())
-                    .single();
-                if (error) return null;
-                return data;
-            } catch (e) { return null; }
-        }
-
-        async function saveBusinessConfig(code, config) {
-            try {
-                var { error } = await supabaseClient.from('businesses').upsert({
-                    code: code.toUpperCase(),
-                    business_name: config.businessName,
-                    total_stations: config.totalStations,
-                    price: config.price,
-                    phone: config.phone,
-                    noodle_price: config.noodlePrice || 15,
-                    device_config: config.deviceConfig || {},
-                    drinks: config.drinks || {}
-                });
-                if (error) return false;
-                return true;
-            } catch (e) { return false; }
-        }
-
-        async function getUserDataSupabase(businessCode, deviceId) {
-            try {
-                var { data, error } = await supabaseClient.from('users').select('*').eq('business_code', businessCode).eq(
-                    'device_id', deviceId).single();
-                if (error && error.code !== 'PGRST116') return null;
-                return data;
-            } catch (e) { return null; }
-        }
-
-        async function saveUserDataSupabase(businessCode, deviceId, data) {
-            try {
-                var { error } = await supabaseClient.from('users').upsert({
-                    business_code: businessCode,
-                    device_id: deviceId,
-                    is_active: data.isActive || false,
-                    expiry_date: data.expiryDate,
-                    revoked: data.revoked || false
-                });
-                if (error) return false;
-                return true;
-            } catch (e) { return false; }
-        }
-
-        async function verifyCode(businessCode, code) {
-            try {
-                var { data, error } = await supabaseClient.from('code_history').select('*').eq('business_code',
-                    businessCode).eq('code', code).eq('used', false).single();
-                if (error || !data) return { valid: false };
-                await supabaseClient.from('code_history').update({ used: true }).eq('id', data.id);
-                return { valid: true };
-            } catch (e) { return { valid: false }; }
-        }
-
         async function createNewBusiness() {
-            var t = translations[currentLang];
-            var code = prompt('أدخل كود النشاط التجاري الجديد (مثال: BIZ123):', 'BIZ' + Math.floor(Math.random() * 10000));
+            const t = translations[currentLang];
+            const code = prompt('أدخل كود النشاط التجاري الجديد (مثال: BIZ123):', 'BIZ' + Math.floor(Math.random() * 10000));
             if (!code) return;
-            var cleanCode = code.trim().toUpperCase();
-            if (cleanCode.length < 3) {
-                alert(t.codeMinLength);
-                return;
-            }
-            var existing = await loadBusiness(cleanCode);
-            if (existing) {
-                alert(t.confirmCreateBusiness);
-                return;
-            }
-            var config = {
-                businessName: prompt('اسم النشاط التجاري:', 'صالة بلايستيشن ' + cleanCode) || 'صالة بلايستيشن ' +
-                    cleanCode,
+            const cleanCode = code.trim().toUpperCase();
+            if (cleanCode.length < 3) { alert(t.codeMinLength); return; }
+
+            const existing = await loadBusiness(cleanCode);
+            if (existing) { alert(t.confirmCreateBusiness); return; }
+
+            const config = {
+                businessName: prompt('اسم النشاط التجاري:', 'صالة بلايستيشن ' + cleanCode) || 'صالة بلايستيشن ' + cleanCode,
                 totalStations: parseInt(prompt('عدد الأجهزة:', '11')) || 11,
                 price: parseFloat(prompt('السعر الشهري (EGP):', '150')) || 150,
                 phone: prompt('رقم هاتف الدفع:', '01012345678') || '01012345678',
@@ -1601,19 +1220,19 @@
                     'drink_1': { name: currentLang === 'ar' ? 'شاي' : 'Tea', price: 10, icon: '☕' },
                     'drink_2': { name: currentLang === 'ar' ? 'قهوة' : 'Coffee', price: 15, icon: '☕' },
                     'drink_3': { name: currentLang === 'ar' ? 'عصير' : 'Juice', price: 20, icon: '🧃' }
-                },
-                createdAt: new Date().toISOString()
+                }
             };
-            for (var i = 1; i <= config.totalStations; i++) {
+
+            for (let i = 1; i <= config.totalStations; i++) {
                 config.deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
             }
+
             if (await saveBusinessConfig(cleanCode, config)) {
                 // حفظ الأجهزة في stations_config
-                for (var i = 1; i <= config.totalStations; i++) {
-                    await saveStationToSupabase(cleanCode, i, 'PS ' + i, i === 1 ? 20 : 25);
+                for (let i = 1; i <= config.totalStations; i++) {
+                    await saveStationToSupabase(i, 'PS ' + i, i === 1 ? 20 : 25);
                 }
-                alert('✅ تم إنشاء النشاط التجاري بنجاح!\n\nالكود: ' + cleanCode + '\nالاسم: ' + config.businessName +
-                    '\nالأجهزة: ' + config.totalStations + '\nالسعر: ' + config.price + ' EGP');
+                alert('✅ تم إنشاء النشاط التجاري بنجاح!\n\nالكود: ' + cleanCode);
                 document.getElementById('businessCodeInput').value = cleanCode;
                 enterBusiness();
             } else {
@@ -1622,16 +1241,18 @@
         }
 
         // ============================================
-        // ENTER BUSINESS
+        // ENTER BUSINESS - المحور الرئيسي
         // ============================================
+
         async function enterBusiness() {
-            var input = document.getElementById('businessCodeInput');
-            var code = input.value.trim().toUpperCase();
+            const input = document.getElementById('businessCodeInput');
+            const code = input.value.trim().toUpperCase();
             if (!code) {
                 showToast('❌ الرجاء إدخال كود النشاط التجاري', 'error');
                 return;
             }
-            var config = await loadBusiness(code);
+
+            const config = await loadBusiness(code);
             if (!config) {
                 showToast('❌ النشاط التجاري غير موجود! تحقق من الكود', 'error');
                 return;
@@ -1648,42 +1269,22 @@
                 drinks: config.drinks || {}
             };
 
-            // تحميل البيانات من Supabase
-            sessions = await loadSessionsFromSupabase(code);
-            noodleOrders = await loadNoodlesFromSupabase(code);
-            drinkOrders = await loadDrinksFromSupabase(code);
-            var loadedDevices = await loadStationsFromSupabase(code);
-
-            if (Object.keys(loadedDevices).length > 0) {
-                deviceConfig = loadedDevices;
-            } else {
-                deviceConfig = businessConfig.deviceConfig || {};
-            }
-
+            deviceConfig = businessConfig.deviceConfig || {};
             noodlePrice = businessConfig.noodlePrice || 15;
             drinks = businessConfig.drinks || {};
 
-            // Ensure all stations exist
-            var totalStations = businessConfig.totalStations || 11;
+            // تأكد من وجود الأجهزة
             if (Object.keys(deviceConfig).length === 0) {
-                for (var i = 1; i <= totalStations; i++) {
-                    if (!deviceConfig[i]) {
-                        deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
-                        await saveStationToSupabase(code, i, 'PS ' + i, i === 1 ? 20 : 25);
-                    }
+                const total = businessConfig.totalStations || 11;
+                for (let i = 1; i <= total; i++) {
+                    deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
                 }
             }
 
-            Object.keys(drinks).forEach(function(key) {
-                if (!drinks[key].id) drinks[key].id = key;
-            });
-            drinkIdCounter = Object.keys(drinks).length;
+            localStorage.setItem('ps_business_code', code);
 
-            localStorage.setItem(BUSINESS_KEY, code);
-
-            var deviceId = getDeviceId();
-
-            var userData = await getUserDataSupabase(code, deviceId);
+            const deviceId = getDeviceId();
+            const userData = await getUserDataSupabase(code, deviceId);
             if (userData) {
                 saveUserDataLocal({
                     isActive: userData.is_active || false,
@@ -1692,32 +1293,17 @@
                 });
             }
 
-            drinks = loadDrinksFromStorage();
-            completedSessions = loadCompletedSessionsFromStorage();
-            completedOrders = loadCompletedOrdersFromStorage();
-
-            if (Object.keys(drinks).length === 0 && businessConfig.drinks) {
-                drinks = businessConfig.drinks;
-                Object.keys(drinks).forEach(function(key) {
-                    if (!drinks[key].id) drinks[key].id = key;
-                });
-                saveDrinksToStorage();
-            }
-
-            getOrCreateShift();
-
-            // اشترك في Realtime
-            subscribeToRealtime(code);
-
-            var isActive = isRentalActive();
-
+            // تحديث الواجهة
             document.getElementById('setupScreen').classList.remove('active');
             document.getElementById('lockBusinessName').textContent = '🏢 ' + businessConfig.businessName;
             document.getElementById('appBusinessTag').textContent = code;
             document.getElementById('priceDisplay').textContent = businessConfig.price + ' EGP';
             document.getElementById('paymentCode').textContent = businessConfig.phone;
 
-            applyTranslations();
+            // الاشتراك في Realtime - ده اللي هيخلي التزامن يشتغل
+            subscribeToRealtime(code);
+
+            const isActive = isRentalActive();
 
             if (isActive) {
                 document.getElementById('lockScreen').classList.remove('active');
@@ -1725,12 +1311,6 @@
                 window.scrollTo(0, 0);
                 if (!isMainAppInitialized) {
                     renderMain();
-                    // بدء المؤقتات للجلسات النشطة
-                    Object.keys(sessions).forEach(function(key) {
-                        if (sessions[key] && !sessions[key].completed) {
-                            startPlayTimer(parseInt(key));
-                        }
-                    });
                     isMainAppInitialized = true;
                 }
                 updateLockScreen();
@@ -1740,21 +1320,17 @@
                 isMainAppInitialized = false;
                 updateLockScreen();
             }
+
+            showToast('✅ مرحباً بك في ' + businessConfig.businessName, 'success');
         }
 
         function switchBusiness() {
-            var t = translations[currentLang];
+            const t = translations[currentLang];
             if (confirm(t.confirmSwitch + currentBusiness)) {
-                saveSessionsToSharedStorage();
-                saveDrinksToStorage();
-                saveCompletedSessionsToStorage();
-                saveCompletedOrdersToStorage();
-
                 if (realtimeChannel) {
                     supabaseClient.removeChannel(realtimeChannel);
                     realtimeChannel = null;
                 }
-
                 document.getElementById('setupScreen').classList.add('active');
                 document.getElementById('lockScreen').classList.remove('active');
                 document.getElementById('mainApp').classList.remove('active');
@@ -1762,65 +1338,45 @@
                 currentBusiness = null;
                 businessConfig = null;
                 deviceConfig = {};
-                drinks = {};
                 isMainAppInitialized = false;
                 sessions = {};
                 noodleOrders = {};
                 drinkOrders = {};
-                completedSessions = {};
-                completedOrders = { noodles: {}, drinks: {} };
-                Object.keys(activeTimers).forEach(function(k) { clearInterval(activeTimers[k]);
+                Object.keys(activeTimers).forEach(k => { clearInterval(activeTimers[k]);
                     delete activeTimers[k]; });
                 showToast(t.toastSwitch, 'success');
             }
         }
 
-        async function activateRental() {
-            var t = translations[currentLang];
-            var now = new Date();
-            var expiry = new Date(now);
-            expiry.setMonth(expiry.getMonth() + 1);
-
-            var data = {
-                isActive: true,
-                expiryDate: expiry.toISOString(),
-                activatedAt: now.toISOString()
-            };
-
-            saveUserDataLocal(data);
-
-            var result = await saveUserDataSupabase(currentBusiness, getDeviceId(), data);
-
-            if (!result) {
-                showToast('❌ فشل تفعيل الاشتراك. حاول مرة أخرى', 'error');
-                return;
-            }
-
-            document.getElementById('lockScreen').classList.remove('active');
-            document.getElementById('mainApp').classList.add('active');
-            window.scrollTo(0, 0);
-            if (!isMainAppInitialized) {
-                renderMain();
-                isMainAppInitialized = true;
-            }
-            updateLockScreen();
-            showToast(t.toastActive + expiry.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US'), 'success');
-        }
-
         async function verifyPayment() {
-            var t = translations[currentLang];
-            var deviceId = getDeviceId();
-            var code = prompt(
+            const t = translations[currentLang];
+            const code = prompt(
                 '📱 ' + (currentLang === 'ar' ? 'أدخل كود التفعيل:' : 'Enter verification code:') + '\n\n' +
                 (currentLang === 'ar' ? 'أرسل ' : 'Send ') + businessConfig.price + ' EGP ' +
-                (currentLang === 'ar' ? 'إلى ' : 'to ') + businessConfig.phone + '\n\n' +
-                (currentLang === 'ar' ? 'النشاط: ' : 'Business: ') + businessConfig.businessName + '\n' +
-                (currentLang === 'ar' ? 'معرف الجهاز: ' : 'Device ID: ') + deviceId
+                (currentLang === 'ar' ? 'إلى ' : 'to ') + businessConfig.phone
             );
             if (code) {
-                var result = await verifyCode(currentBusiness, code);
+                const result = await verifyCode(currentBusiness, code);
                 if (result.valid) {
-                    activateRental();
+                    const now = new Date();
+                    const expiry = new Date(now);
+                    expiry.setMonth(expiry.getMonth() + 1);
+                    const data = {
+                        isActive: true,
+                        expiryDate: expiry.toISOString(),
+                        activatedAt: now.toISOString()
+                    };
+                    saveUserDataLocal(data);
+                    await saveUserDataSupabase(currentBusiness, getDeviceId(), data);
+                    document.getElementById('lockScreen').classList.remove('active');
+                    document.getElementById('mainApp').classList.add('active');
+                    if (!isMainAppInitialized) {
+                        renderMain();
+                        isMainAppInitialized = true;
+                    }
+                    updateLockScreen();
+                    showToast(t.toastActive + expiry.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US'),
+                    'success');
                 } else {
                     showToast(t.toastInvalidCode, 'error');
                 }
@@ -1828,15 +1384,14 @@
         }
 
         function updateLockScreen() {
-            var t = translations[currentLang];
-            var statusBadge = document.getElementById('statusBadge');
-            var daysLeft = document.getElementById('daysLeft');
-            var paymentStatus = document.getElementById('paymentStatus');
-            var deviceIdDisplay = document.getElementById('deviceIdDisplay');
-            deviceIdDisplay.textContent = getDeviceId();
+            const t = translations[currentLang];
+            const statusBadge = document.getElementById('statusBadge');
+            const daysLeft = document.getElementById('daysLeft');
+            const paymentStatus = document.getElementById('paymentStatus');
+            document.getElementById('deviceIdDisplay').textContent = getDeviceId();
 
-            var isActive = isRentalActive();
-            var days = getDaysRemaining();
+            const isActive = isRentalActive();
+            const days = getDaysRemaining();
 
             if (isActive) {
                 statusBadge.textContent = t.active;
@@ -1855,17 +1410,17 @@
                 statusBadge.className = 'status-badge locked';
                 daysLeft.innerHTML = t.payToUnlock + businessConfig.price + ' EGP ' +
                     (currentLang === 'ar' ? 'للتفعيل لمدة 30 يوماً' : 'to unlock for 30 days');
-                paymentStatus.innerHTML =
-                    '<button class="btn btn-pay" onclick="verifyPayment()">' + t.verifyPayBtn + '</button>';
+                paymentStatus.innerHTML = '<button class="btn btn-pay" onclick="verifyPayment()">' + t.verifyPayBtn +
+                    '</button>';
                 document.getElementById('mainApp').classList.remove('active');
                 isMainAppInitialized = false;
             }
         }
 
         async function logout() {
-            var t = translations[currentLang];
+            const t = translations[currentLang];
             if (confirm(t.confirmLogout)) {
-                var data = getUserDataLocal();
+                const data = getUserDataLocal();
                 if (data) {
                     data.isActive = false;
                     data.expiryDate = null;
@@ -1875,12 +1430,7 @@
                 sessions = {};
                 noodleOrders = {};
                 drinkOrders = {};
-                completedSessions = {};
-                completedOrders = { noodles: {}, drinks: {} };
-                saveSessionsToSharedStorage();
-                saveCompletedSessionsToStorage();
-                saveCompletedOrdersToStorage();
-                Object.keys(activeTimers).forEach(function(k) { clearInterval(activeTimers[k]);
+                Object.keys(activeTimers).forEach(k => { clearInterval(activeTimers[k]);
                     delete activeTimers[k]; });
                 updateLockScreen();
                 document.getElementById('mainApp').classList.remove('active');
@@ -1891,8 +1441,322 @@
         }
 
         // ============================================
-        // DRINKS MANAGEMENT
+        // SESSION FUNCTIONS
         // ============================================
+
+        async function startSession(d) {
+            const t = translations[currentLang];
+            if (sessions[d] && !sessions[d].completed) {
+                showToast((currentLang === 'ar' ? 'الجهاز' : 'Station') + ' ' + d + ' ' + (currentLang === 'ar' ?
+                    'مشغول بالفعل!' : 'is already in use!'), 'warning');
+                return;
+            }
+            const nowTime = now();
+            sessions[d] = {
+                startTime: nowTime,
+                endTime: null,
+                completed: false,
+                amount: 0,
+                duration: 0,
+                rate: getRate(d)
+            };
+
+            await saveSessionToSupabase(d, nowTime, getRate(d));
+            renderMain();
+            startPlayTimer(d);
+            showToast('✅ ' + (currentLang === 'ar' ? 'بدأت جلسة' : 'Started session') + ' ' + getDeviceName(d),
+            'success');
+        }
+
+        async function endSession(d) {
+            const session = sessions[d];
+            if (!session || session.completed) return;
+
+            const endTime = now();
+            session.endTime = endTime;
+            session.completed = true;
+            session.duration = endTime.getTime() - session.startTime.getTime();
+            const hours = session.duration / (1000 * 60 * 60);
+            session.amount = Math.round(hours * session.rate * 100) / 100;
+
+            const sessionId = 's_' + d + '_' + Date.now();
+            completedSessions[sessionId] = {
+                deviceId: d,
+                deviceName: getDeviceName(d),
+                startTime: session.startTime.toISOString(),
+                endTime: session.endTime.toISOString(),
+                duration: session.duration,
+                amount: session.amount,
+                rate: session.rate,
+                completedAt: new Date().toISOString()
+            };
+
+            const noodleCount = noodleOrders[d] || 0;
+            if (noodleCount > 0) {
+                completedOrders.noodles[d] = (completedOrders.noodles[d] || 0) + noodleCount;
+            }
+
+            const deviceDrinks = drinkOrders[d] || {};
+            Object.entries(deviceDrinks).forEach(([drinkId, count]) => {
+                if (count > 0) {
+                    completedOrders.drinks[drinkId] = (completedOrders.drinks[drinkId] || 0) + count;
+                }
+            });
+
+            await deleteSessionFromSupabase(d);
+            showSessionModal(d);
+
+            noodleOrders[d] = 0;
+            await saveNoodleToSupabase(d, 0);
+
+            if (drinkOrders[d]) {
+                const drinksToClear = Object.keys(drinkOrders[d]);
+                for (const drinkId of drinksToClear) {
+                    await saveDrinkToSupabase(d, drinkId, 0);
+                }
+                drinkOrders[d] = {};
+            }
+
+            delete sessions[d];
+            stopPlayTimer(d);
+            renderMain();
+        }
+
+        function startPlayTimer(d) {
+            if (activeTimers[d]) return;
+            activeTimers[d] = setInterval(() => {
+                const session = sessions[d];
+                if (!session || session.completed) { stopPlayTimer(d); return; }
+                updateStationDisplay(d);
+            }, 1000);
+        }
+
+        function stopPlayTimer(d) {
+            if (activeTimers[d]) { clearInterval(activeTimers[d]);
+                delete activeTimers[d]; }
+        }
+
+        function updateStationDisplay(d) {
+            const t = translations[currentLang];
+            const session = sessions[d];
+            if (!session) return;
+            const card = document.querySelector('[data-device="' + d + '"]');
+            if (!card) return;
+            const statusEl = card.querySelector('.status');
+            const durationEl = card.querySelector('.duration');
+            const startTimeEl = card.querySelector('.start-time');
+            if (!session.completed) {
+                const duration = Date.now() - session.startTime.getTime();
+                durationEl.textContent = formatDurationFull(duration);
+                statusEl.textContent = t.inUse;
+                statusEl.className = 'status active-text';
+                startTimeEl.textContent = t.started + ' ' + formatTime(session.startTime);
+            }
+        }
+
+        function showSessionModal(d) {
+            const t = translations[currentLang];
+            const session = sessions[d];
+            if (!session) return;
+
+            const noodleCount = noodleOrders[d] || 0;
+            const noodlePriceVal = getNoodlePrice();
+            const noodleTotal = noodleCount * noodlePriceVal;
+            const sessionTotal = session.amount || 0;
+
+            const deviceDrinkOrders = getDeviceDrinkOrders(d);
+            let drinkTotal = 0;
+            let drinkItemsHtml = '';
+
+            Object.entries(deviceDrinkOrders).forEach(([drinkId, count]) => {
+                const drink = drinks[drinkId];
+                if (drink && count > 0) {
+                    const cost = drink.price * count;
+                    drinkTotal += cost;
+                    drinkItemsHtml +=
+                        '<div class="detail-row drink-row"><span class="label">' + (drink.icon || '🥤') +
+                        ' ' + drink.name + '</span><span class="value">' + count + ' × ' + drink.price
+                        .toFixed(2) + ' EGP = ' + cost.toFixed(2) + ' EGP</span></div>';
+                }
+            });
+
+            const grandTotal = sessionTotal + noodleTotal + drinkTotal;
+
+            document.getElementById('modalSub').textContent = getDeviceName(d);
+            document.getElementById('modalDuration').textContent = formatDurationFull(session.duration || 0);
+            document.getElementById('modalTimePrice').textContent = formatCurrency(sessionTotal);
+
+            const itemsContainer = document.getElementById('modalItemsContainer');
+            let itemsHtml = '';
+
+            if (noodleCount > 0) {
+                itemsHtml +=
+                    '<div class="detail-row noodle-row"><span class="label">🍜 ' + t.noodles +
+                    '</span><span class="value">' + noodleCount + ' × ' + noodlePriceVal.toFixed(2) +
+                    ' EGP = ' + noodleTotal.toFixed(2) + ' EGP</span></div>';
+            }
+
+            itemsHtml += drinkItemsHtml;
+            itemsContainer.innerHTML = itemsHtml;
+
+            document.getElementById('modalTotal').textContent = formatCurrency(grandTotal);
+            document.getElementById('sessionModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('sessionModal').classList.remove('show');
+        }
+
+        // ============================================
+        // ORDER FUNCTIONS
+        // ============================================
+
+        async function addNoodle(d) {
+            noodleOrders[d] = (noodleOrders[d] || 0) + 1;
+            await saveNoodleToSupabase(d, noodleOrders[d]);
+            renderMain();
+        }
+
+        async function removeNoodle(d) {
+            if ((noodleOrders[d] || 0) > 0) {
+                noodleOrders[d] = (noodleOrders[d] || 0) - 1;
+                await saveNoodleToSupabase(d, noodleOrders[d]);
+                renderMain();
+            }
+        }
+
+        async function addDrinkOrder(deviceId, drinkId) {
+            if (!drinkOrders[deviceId]) drinkOrders[deviceId] = {};
+            drinkOrders[deviceId][drinkId] = (drinkOrders[deviceId][drinkId] || 0) + 1;
+            await saveDrinkToSupabase(deviceId, drinkId, drinkOrders[deviceId][drinkId]);
+            renderMain();
+        }
+
+        async function removeDrinkOrder(deviceId, drinkId) {
+            if (drinkOrders[deviceId] && drinkOrders[deviceId][drinkId] > 0) {
+                drinkOrders[deviceId][drinkId] = (drinkOrders[deviceId][drinkId] || 0) - 1;
+                if (drinkOrders[deviceId][drinkId] <= 0) {
+                    delete drinkOrders[deviceId][drinkId];
+                }
+                await saveDrinkToSupabase(deviceId, drinkId, drinkOrders[deviceId][drinkId] || 0);
+                renderMain();
+            }
+        }
+
+        // ============================================
+        // SETTINGS FUNCTIONS
+        // ============================================
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('show');
+            document.getElementById('noodlePriceInput').value = noodlePrice;
+            renderDrinksSettings();
+            renderSettingsList();
+        }
+
+        async function closeSettings() {
+            const t = translations[currentLang];
+            const noodlePriceInput = document.getElementById('noodlePriceInput');
+            if (noodlePriceInput) {
+                const newPrice = parseFloat(noodlePriceInput.value);
+                if (!isNaN(newPrice) && newPrice > 0) noodlePrice = newPrice;
+            }
+
+            const stationKeys = getStationKeys();
+            for (const key of stationKeys) {
+                const i = parseInt(key);
+                const nameInput = document.getElementById('settings_name_' + i);
+                const rateInput = document.getElementById('settings_rate_' + i);
+                if (nameInput && !nameInput.disabled) {
+                    const newName = nameInput.value.trim() || 'PS ' + i;
+                    if (!deviceConfig[i]) deviceConfig[i] = {};
+                    deviceConfig[i].name = newName;
+                    await saveStationToSupabase(i, newName, deviceConfig[i].rate || 25);
+                }
+                if (rateInput && !rateInput.disabled) {
+                    const newRate = parseFloat(rateInput.value);
+                    if (!isNaN(newRate) && newRate > 0) {
+                        if (!deviceConfig[i]) deviceConfig[i] = {};
+                        deviceConfig[i].rate = newRate;
+                        await saveStationToSupabase(i, deviceConfig[i].name || 'PS ' + i, newRate);
+                    }
+                }
+            }
+
+            saveDrinksToStorage();
+
+            if (currentBusiness) {
+                const updatedConfig = { ...businessConfig };
+                updatedConfig.deviceConfig = deviceConfig;
+                updatedConfig.drinks = drinks;
+                updatedConfig.noodlePrice = noodlePrice;
+                updatedConfig.totalStations = Object.keys(deviceConfig).length;
+                await saveBusinessConfig(currentBusiness, updatedConfig);
+            }
+
+            renderMain();
+            document.getElementById('settingsModal').classList.remove('show');
+            showToast(t.toastSaved, 'success');
+        }
+
+        function renderSettingsList() {
+            const list = document.getElementById('settingsList');
+            if (!list) return;
+            const t = translations[currentLang];
+            const stationKeys = getStationKeys();
+            let html = '';
+            for (const key of stationKeys) {
+                const i = parseInt(key);
+                const config = deviceConfig[i] || { name: 'PS ' + i, rate: 25 };
+                const session = sessions[i];
+                const isActive = session && !session.completed;
+                const statusText = isActive ? (currentLang === 'ar' ? '🔴 مشغول' : '🔴 In Use') : (currentLang === 'ar' ?
+                    '⚪ متاح' : '⚪ Available');
+                const statusClass = isActive ? 'in-use' : '';
+                const disableRemove = isActive ? 'disabled' : '';
+                const disableEdit = isActive ? 'disabled' : '';
+                const editHint = isActive ? '<div class="hint">⛔ ' + (currentLang === 'ar' ?
+                    'لا يمكن التعديل أثناء الاستخدام' : 'Cannot edit while in use') + '</div>' : '';
+
+                html +=
+                    '<div class="settings-device"><div class="device-header"><span class="device-num">' + i +
+                    '</span><span class="device-status ' + statusClass + '">' + statusText +
+                    '</span><button class="btn-remove-station" onclick="removeStation(' + i + ')" ' + disableRemove +
+                    '>' + t.removeStation + '</button></div><div class="settings-row"><div class="settings-group"><label>' +
+                    (currentLang === 'ar' ? 'الاسم' : 'Name') +
+                    '</label><input type="text" id="settings_name_' + i + '" value="' + config.name +
+                    '" placeholder="PS ' + i + '" ' + disableEdit + '>' + editHint +
+                    '</div><div class="settings-group"><label>' + (currentLang === 'ar' ? 'السعر (EGP/ساعة)' :
+                        'Rate (EGP/hour)') +
+                    '</label><input type="number" id="settings_rate_' + i + '" value="' + config.rate +
+                    '" min="1" max="100" step="0.5" ' + disableEdit + '>' + editHint +
+                    '</div></div></div>';
+            }
+            list.innerHTML = html;
+            const addBtn = document.querySelector('.btn-add-station');
+            if (addBtn) addBtn.textContent = t.addStation;
+        }
+
+        // ============================================
+        // DRINKS FUNCTIONS
+        // ============================================
+
+        function getDrinksKey() { return 'ps_drinks_' + currentBusiness; }
+
+        function loadDrinksFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                const data = localStorage.getItem(getDrinksKey());
+                return data ? JSON.parse(data) : {};
+            } catch (e) { return {}; }
+        }
+
+        function saveDrinksToStorage() {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem(getDrinksKey(), JSON.stringify(drinks));
+            } catch (e) {}
+        }
 
         function addDrinkSetting() {
             document.getElementById('addDrinkModal').classList.add('show');
@@ -1907,10 +1771,10 @@
         }
 
         function confirmAddDrink() {
-            var t = translations[currentLang];
-            var name = document.getElementById('newDrinkName').value.trim();
-            var price = parseFloat(document.getElementById('newDrinkPrice').value);
-            var icon = document.getElementById('newDrinkIcon').value.trim() || '🥤';
+            const t = translations[currentLang];
+            const name = document.getElementById('newDrinkName').value.trim();
+            const price = parseFloat(document.getElementById('newDrinkPrice').value);
+            const icon = document.getElementById('newDrinkIcon').value.trim() || '🥤';
 
             if (!name) {
                 showToast('❌ ' + (currentLang === 'ar' ? 'الرجاء إدخال اسم المشروب' : 'Please enter drink name'), 'error');
@@ -1921,13 +1785,12 @@
                 return;
             }
 
-            var id = 'drink_' + (++drinkIdCounter);
+            const id = 'drink_' + (++drinkIdCounter);
             drinks[id] = { id: id, name: name, price: price, icon: icon };
             saveDrinksToStorage();
 
             if (currentBusiness) {
-                var updatedConfig = {};
-                Object.assign(updatedConfig, businessConfig);
+                const updatedConfig = { ...businessConfig };
                 updatedConfig.drinks = drinks;
                 saveBusinessConfig(currentBusiness, updatedConfig);
             }
@@ -1939,21 +1802,19 @@
         }
 
         function removeDrink(drinkId) {
-            var t = translations[currentLang];
+            const t = translations[currentLang];
             if (confirm(t.confirmDeleteDrink)) {
                 delete drinks[drinkId];
                 saveDrinksToStorage();
 
-                Object.keys(drinkOrders).forEach(function(deviceId) {
+                Object.keys(drinkOrders).forEach(deviceId => {
                     if (drinkOrders[deviceId] && drinkOrders[deviceId][drinkId]) {
                         delete drinkOrders[deviceId][drinkId];
                     }
                 });
-                saveSessionsToSharedStorage();
 
                 if (currentBusiness) {
-                    var updatedConfig = {};
-                    Object.assign(updatedConfig, businessConfig);
+                    const updatedConfig = { ...businessConfig };
                     updatedConfig.drinks = drinks;
                     saveBusinessConfig(currentBusiness, updatedConfig);
                 }
@@ -1965,11 +1826,10 @@
         }
 
         function renderDrinksSettings() {
-            var t = translations[currentLang];
-            var container = document.getElementById('drinksSettingsList');
+            const container = document.getElementById('drinksSettingsList');
             if (!container) return;
 
-            var drinkEntries = Object.entries(drinks);
+            const drinkEntries = Object.entries(drinks);
             if (drinkEntries.length === 0) {
                 container.innerHTML =
                     '<div style="color:#5a6f8a;font-size:13px;text-align:center;padding:8px;">' + (currentLang ===
@@ -1977,14 +1837,12 @@
                 return;
             }
 
-            var html = '';
-            drinkEntries.forEach(function(_ref10) {
-                var id = _ref10[0],
-                    drink = _ref10[1];
-                var currentIcon = drink.icon || '🥤';
+            let html = '';
+            drinkEntries.forEach(([id, drink]) => {
+                const currentIcon = drink.icon || '🥤';
                 html +=
                     '<div class="drink-item-settings">' +
-                    '<span class="drink-icon" id="drink_icon_display_' + id + '">' + currentIcon + '</span>' +
+                    '<span class="drink-icon">' + currentIcon + '</span>' +
                     '<input type="text" value="' + drink.name +
                     '" onchange="updateDrinkName(\'' + id + '\', this.value)" placeholder="' + (currentLang ===
                         'ar' ? 'اسم المشروب' : 'Drink name') + '">' +
@@ -1998,21 +1856,19 @@
         }
 
         function editDrinkIcon(drinkId) {
-            var drink = drinks[drinkId];
+            const drink = drinks[drinkId];
             if (!drink) return;
-            var newIcon = prompt('أدخل الأيقونة الجديدة (رمز تعبيري واحد):', drink.icon || '🥤');
+            const newIcon = prompt('أدخل الأيقونة الجديدة:', drink.icon || '🥤');
             if (newIcon && newIcon.trim().length > 0) {
                 drinks[drinkId].icon = newIcon.trim();
                 saveDrinksToStorage();
                 if (currentBusiness) {
-                    var updatedConfig = {};
-                    Object.assign(updatedConfig, businessConfig);
+                    const updatedConfig = { ...businessConfig };
                     updatedConfig.drinks = drinks;
                     saveBusinessConfig(currentBusiness, updatedConfig);
                 }
                 renderDrinksSettings();
                 renderMain();
-                showToast('✅ تم تحديث الأيقونة', 'success');
             }
         }
 
@@ -2021,8 +1877,7 @@
                 drinks[id].name = value.trim() || (currentLang === 'ar' ? 'مشروب' : 'Drink');
                 saveDrinksToStorage();
                 if (currentBusiness) {
-                    var updatedConfig = {};
-                    Object.assign(updatedConfig, businessConfig);
+                    const updatedConfig = { ...businessConfig };
                     updatedConfig.drinks = drinks;
                     saveBusinessConfig(currentBusiness, updatedConfig);
                 }
@@ -2032,13 +1887,12 @@
         }
 
         function updateDrinkPrice(id, value) {
-            var price = parseFloat(value);
+            const price = parseFloat(value);
             if (drinks[id] && !isNaN(price) && price > 0) {
                 drinks[id].price = price;
                 saveDrinksToStorage();
                 if (currentBusiness) {
-                    var updatedConfig = {};
-                    Object.assign(updatedConfig, businessConfig);
+                    const updatedConfig = { ...businessConfig };
                     updatedConfig.drinks = drinks;
                     saveBusinessConfig(currentBusiness, updatedConfig);
                 }
@@ -2048,109 +1902,61 @@
         }
 
         // ============================================
-        // DRINK ORDERS
+        // STATION FUNCTIONS
         // ============================================
-        async function addDrinkOrder(deviceId, drinkId) {
-            if (!drinkOrders[deviceId]) drinkOrders[deviceId] = {};
-            drinkOrders[deviceId][drinkId] = (drinkOrders[deviceId][drinkId] || 0) + 1;
-            await saveDrinkToSupabase(currentBusiness, deviceId, drinkId, drinkOrders[deviceId][drinkId], getDeviceId());
-            renderMain();
-        }
 
-        async function removeDrinkOrder(deviceId, drinkId) {
-            if (drinkOrders[deviceId] && drinkOrders[deviceId][drinkId] > 0) {
-                drinkOrders[deviceId][drinkId] = (drinkOrders[deviceId][drinkId] || 0) - 1;
-                if (drinkOrders[deviceId][drinkId] <= 0) {
-                    delete drinkOrders[deviceId][drinkId];
-                }
-                await saveDrinkToSupabase(currentBusiness, deviceId, drinkId, drinkOrders[deviceId][drinkId] || 0,
-                    getDeviceId());
-                renderMain();
+        async function addStation() {
+            if (!businessConfig) {
+                showToast('⚠️ يرجى تحميل النشاط التجاري أولاً', 'warning');
+                return;
             }
-        }
+            const stationKeys = Object.keys(deviceConfig);
+            let maxIndex = 0;
+            for (const key of stationKeys) {
+                const num = parseInt(key);
+                if (num > maxIndex) maxIndex = num;
+            }
+            const newIndex = maxIndex + 1;
+            deviceConfig[newIndex] = { name: 'PS ' + newIndex, rate: 25 };
+            businessConfig.totalStations = Object.keys(deviceConfig).length;
 
-        function getDeviceDrinkOrders(deviceId) {
-            return drinkOrders[deviceId] || {};
-        }
+            await saveStationToSupabase(newIndex, 'PS ' + newIndex, 25);
+            await saveBusinessConfig(currentBusiness, businessConfig);
 
-        function getTotalDrinks() {
-            var total = 0;
-            Object.values(drinkOrders).forEach(function(deviceOrders) {
-                Object.values(deviceOrders).forEach(function(count) {
-                    total += count || 0;
-                });
-            });
-            return total;
-        }
-
-        function getTotalDrinkRevenue() {
-            var total = 0;
-            Object.entries(drinkOrders).forEach(function(_ref11) {
-                var deviceId = _ref11[0],
-                    deviceOrders = _ref11[1];
-                Object.entries(deviceOrders).forEach(function(_ref12) {
-                    var drinkId = _ref12[0],
-                        count = _ref12[1];
-                    var drink = drinks[drinkId];
-                    if (drink) total += drink.price * count;
-                });
-            });
-            return total;
-        }
-
-        function openSettings() {
-            var modal = document.getElementById('settingsModal');
-            document.getElementById('noodlePriceInput').value = noodlePrice;
-            renderDrinksSettings();
             renderSettingsList();
-            modal.classList.add('show');
+            renderMain();
+            showToast('✅ تم إضافة جهاز PS ' + newIndex, 'success');
         }
 
-        async function closeSettings() {
-            var t = translations[currentLang];
-            var noodlePriceInput = document.getElementById('noodlePriceInput');
-            if (noodlePriceInput) {
-                var newPrice = parseFloat(noodlePriceInput.value);
-                if (!isNaN(newPrice) && newPrice > 0) noodlePrice = newPrice;
+        async function removeStation(index) {
+            if (!businessConfig) return;
+            if (sessions[index] && !sessions[index].completed) {
+                showToast(translations[currentLang].confirmRemoveStation, 'error');
+                return;
             }
+            const t = translations[currentLang];
+            if (!confirm((currentLang === 'ar' ? 'هل أنت متأكد من حذف الجهاز ' : 'Delete station ') + index + '?')) return;
 
-            var stationKeys = getStationKeys();
-            for (var idx = 0; idx < stationKeys.length; idx++) {
-                var i = parseInt(stationKeys[idx]);
-                var nameInput = document.getElementById('settings_name_' + i);
-                var rateInput = document.getElementById('settings_rate_' + i);
-                if (nameInput && !nameInput.disabled) {
-                    var newName = nameInput.value.trim() || 'PS ' + i;
-                    if (!deviceConfig[i]) deviceConfig[i] = {};
-                    deviceConfig[i].name = newName;
-                    await saveStationToSupabase(currentBusiness, i, newName, deviceConfig[i].rate || 25);
-                }
-                if (rateInput && !rateInput.disabled) {
-                    var newRate = parseFloat(rateInput.value);
-                    if (!isNaN(newRate) && newRate > 0) {
-                        if (!deviceConfig[i]) deviceConfig[i] = {};
-                        deviceConfig[i].rate = newRate;
-                        await saveStationToSupabase(currentBusiness, i, deviceConfig[i].name || 'PS ' + i, newRate);
-                    }
-                }
-            }
+            delete deviceConfig[index];
+            delete noodleOrders[index];
+            if (drinkOrders[index]) delete drinkOrders[index];
+            if (sessions[index]) delete sessions[index];
 
-            saveDrinksToStorage();
+            await supabaseClient.from('stations_config').delete().eq('business_code', currentBusiness).eq('station_number',
+                index);
+            await supabaseClient.from('active_sessions').delete().eq('business_code', currentBusiness).eq('station_number',
+                index);
+            await supabaseClient.from('noodle_orders').delete().eq('business_code', currentBusiness).eq('station_number',
+                index);
+            await supabaseClient.from('drink_orders').delete().eq('business_code', currentBusiness).eq('station_number',
+                index);
 
-            if (currentBusiness) {
-                var updatedConfig = {};
-                Object.assign(updatedConfig, businessConfig);
-                updatedConfig.deviceConfig = deviceConfig;
-                updatedConfig.drinks = drinks;
-                updatedConfig.noodlePrice = noodlePrice;
-                updatedConfig.totalStations = Object.keys(deviceConfig).length;
-                await saveBusinessConfig(currentBusiness, updatedConfig);
-            }
+            businessConfig.totalStations = Object.keys(deviceConfig).length;
+            await saveBusinessConfig(currentBusiness, businessConfig);
 
+            renderSettingsList();
             renderMain();
-            document.getElementById('settingsModal').classList.remove('show');
-            document.getElementById('addDrinkModal').classList.remove('show');
-            showToast(t.toastSaved, 'success');
+            showToast('✅ ' + (currentLang === 'ar' ? 'تم حذف الجهاز' : 'Station deleted'), 'success');
         }
 
         // ============================================
@@ -2158,8 +1964,8 @@
         // ============================================
 
         function openShiftSummary() {
-            var t = translations[currentLang];
-            var shift = calculateShiftTotals();
+            const t = translations[currentLang];
+            const shift = calculateShiftTotals();
 
             document.getElementById('shiftDate').textContent = t.shiftDate +
                 new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
@@ -2173,20 +1979,17 @@
             document.getElementById('shiftDrinkRevenue').textContent = (shift.drinkRevenue || 0).toFixed(2);
             document.getElementById('shiftGrandTotal').textContent = (shift.totalRevenue || 0).toFixed(2) + ' EGP';
 
-            var drinkList = document.getElementById('shiftDrinksList');
-            var drinkHtml = '';
-            var drinkEntries = Object.entries(shift.drinkDetails || {});
+            const drinkList = document.getElementById('shiftDrinksList');
+            let drinkHtml = '';
+            const drinkEntries = Object.entries(shift.drinkDetails || {});
             if (drinkEntries.length === 0) {
-                drinkHtml =
-                    '<div style="color:#5a6f8a;font-size:12px;text-align:center;padding:4px;">' + (currentLang ===
-                        'ar' ? 'لا توجد طلبات مشروبات' : 'No drink orders') + '</div>';
+                drinkHtml = '<div style="color:#5a6f8a;font-size:12px;text-align:center;padding:4px;">' + (currentLang ===
+                    'ar' ? 'لا توجد طلبات مشروبات' : 'No drink orders') + '</div>';
             } else {
-                drinkEntries.forEach(function(_ref13) {
-                    var drinkId = _ref13[0],
-                        count = _ref13[1];
-                    var drink = drinks[drinkId];
+                drinkEntries.forEach(([drinkId, count]) => {
+                    const drink = drinks[drinkId];
                     if (drink) {
-                        var total = drink.price * count;
+                        const total = drink.price * count;
                         drinkHtml +=
                             '<div class="shift-drink-item"><span class="drink-name">' + (drink.icon || '🥤') +
                             ' ' + drink.name + '</span><span class="drink-total">' + count + ' × ' + drink.price
@@ -2204,17 +2007,12 @@
         }
 
         function confirmCloseShift() {
-            var t = translations[currentLang];
+            const t = translations[currentLang];
 
-            var activeSessions = Object.keys(sessions).filter(function(k) {
-                return sessions[k] && !sessions[k].completed;
-            });
+            const activeSessions = Object.keys(sessions).filter(k => sessions[k] && !sessions[k].completed);
 
             if (activeSessions.length > 0) {
-                var deviceNames = activeSessions.map(function(k) {
-                    return getDeviceName(parseInt(k));
-                }).join('، ');
-
+                const deviceNames = activeSessions.map(k => getDeviceName(parseInt(k))).join('، ');
                 showToast(t.cannotCloseShift + deviceNames, 'error');
                 return;
             }
@@ -2225,11 +2023,10 @@
         }
 
         async function closeShift() {
-            var t = translations[currentLang];
+            const t = translations[currentLang];
+            const shift = calculateShiftTotals();
 
-            var shift = calculateShiftTotals();
-
-            var historyEntry = {
+            const historyEntry = {
                 totalSessions: shift.totalSessions,
                 totalNoodles: shift.totalNoodles,
                 totalDrinks: shift.totalDrinks,
@@ -2244,11 +2041,23 @@
                 businessName: businessConfig ? businessConfig.businessName : 'غير معروف'
             };
 
-            // حفظ محلياً
-            saveShiftHistoryLocal(historyEntry);
-
             // حفظ في Supabase
-            await saveShiftHistoryToSupabase(historyEntry);
+            try {
+                await supabaseClient.from('shift_history').insert({
+                    business_code: currentBusiness,
+                    closed_at: historyEntry.closedAt,
+                    total_sessions: historyEntry.totalSessions,
+                    total_hours: historyEntry.totalHours,
+                    total_noodles: historyEntry.totalNoodles,
+                    total_drinks: historyEntry.totalDrinks,
+                    session_revenue: historyEntry.sessionRevenue,
+                    noodle_revenue: historyEntry.noodleRevenue,
+                    drink_revenue: historyEntry.drinkRevenue,
+                    total_revenue: historyEntry.totalRevenue,
+                    drink_details: historyEntry.drinkDetails,
+                    device_id: getDeviceId()
+                });
+            } catch (e) { console.error(e); }
 
             resetShiftData();
             noodleOrders = {};
@@ -2257,16 +2066,9 @@
             completedSessions = {};
             completedOrders = { noodles: {}, drinks: {} };
 
-            // حذف الجلسات النشطة من Supabase
-            try {
-                await supabaseClient.from('active_sessions').delete().eq('business_code', currentBusiness);
-                await supabaseClient.from('noodle_orders').delete().eq('business_code', currentBusiness);
-                await supabaseClient.from('drink_orders').delete().eq('business_code', currentBusiness);
-            } catch (e) { console.error(e); }
-
-            saveSessionsToSharedStorage();
-            saveCompletedSessionsToStorage();
-            saveCompletedOrdersToStorage();
+            await supabaseClient.from('active_sessions').delete().eq('business_code', currentBusiness);
+            await supabaseClient.from('noodle_orders').delete().eq('business_code', currentBusiness);
+            await supabaseClient.from('drink_orders').delete().eq('business_code', currentBusiness);
 
             closeShiftModal();
             renderMain();
@@ -2274,65 +2076,30 @@
         }
 
         async function viewShiftHistory() {
-            var t = translations[currentLang];
-            var container = document.getElementById('historyContainer');
+            const t = translations[currentLang];
+            const container = document.getElementById('historyContainer');
 
-            container.innerHTML =
-                '<div style="text-align:center;color:#5a6f8a;padding:20px;">جارٍ التحميل...</div>';
+            container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">جارٍ التحميل...</div>';
 
             try {
-                var data = await loadShiftHistoryFromSupabase(currentBusiness);
+                const { data, error } = await supabaseClient
+                    .from('shift_history')
+                    .select('*')
+                    .eq('business_code', currentBusiness)
+                    .order('closed_at', { ascending: false });
 
-                if (!data || data.length === 0) {
-                    // حاول تجيب من localStorage
-                    var localHistory = getShiftHistory();
-                    if (localHistory.length > 0) {
-                        var html = '';
-                        var reversed = [].concat(localHistory).reverse();
-                        reversed.forEach(function(entry) {
-                            var date = new Date(entry.closedAt || entry.closed_at);
-                            var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
-                            var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                            var businessName = entry.businessName || entry.business_code || 'غير معروف';
-                            var totalRevenue = entry.totalRevenue || entry.total_revenue || 0;
-                            var totalSessions = entry.totalSessions || entry.total_sessions || 0;
-                            var totalNoodles = entry.totalNoodles || entry.total_noodles || 0;
-                            var totalDrinks = entry.totalDrinks || entry.total_drinks || 0;
-                            var totalHours = entry.totalHours || entry.total_hours || 0;
-
-                            html +=
-                                '<div class="shift-history-item" style="border-color:rgba(255,165,0,0.3);">' +
-                                '<div class="hist-header">' +
-                                '<span class="hist-date">📅 ' + dateStr + ' ' + timeStr + ' (محلي)</span>' +
-                                '<span class="hist-total">' + (totalRevenue || 0).toFixed(2) + ' EGP</span>' +
-                                '</div>' +
-                                '<div style="font-size:12px;color:#8ba0c7;margin-top:2px;">🏢 ' + businessName +
-                                '</div>' +
-                                '<div class="hist-stats">' +
-                                '<span>🎮 ' + (totalSessions || 0) + '</span>' +
-                                '<span>🍜 ' + (totalNoodles || 0) + '</span>' +
-                                '<span>🥤 ' + (totalDrinks || 0) + '</span>' +
-                                '<span>⏱ ' + (totalHours || 0) + 'h</span>' +
-                                '</div>' +
-                                '</div>';
-                        });
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + t.noHistory +
-                            '</div>';
-                    }
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + t.noHistory +
+                        '</div>';
                     document.getElementById('historyModal').classList.add('show');
                     return;
                 }
 
-                var html = '';
-                data.forEach(function(entry) {
-                    var date = new Date(entry.closed_at);
-                    var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
-                    var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
+                let html = '';
+                data.forEach(entry => {
+                    const date = new Date(entry.closed_at);
+                    const dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+                    const timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
                         hour: '2-digit',
                         minute: '2-digit'
                     });
@@ -2354,7 +2121,7 @@
                 container.innerHTML = html;
 
             } catch (e) {
-                console.error('❌ خطأ:', e);
+                console.error(e);
                 container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + t.noHistory +
                 '</div>';
             }
@@ -2369,68 +2136,59 @@
         // ============================================
         // CALCULATE SHIFT TOTALS
         // ============================================
+
         function calculateShiftTotals() {
-            var shift = getOrCreateShift();
+            const shift = getOrCreateShift();
 
-            var totalNoodles = 0;
-            Object.values(completedOrders.noodles).forEach(function(c) { totalNoodles += c || 0; });
-            Object.values(noodleOrders).forEach(function(c) { totalNoodles += c || 0; });
+            let totalNoodles = 0;
+            Object.values(completedOrders.noodles).forEach(c => totalNoodles += c || 0);
+            Object.values(noodleOrders).forEach(c => totalNoodles += c || 0);
 
-            var totalDrinks = 0;
-            var drinkDetails = {};
-            Object.entries(completedOrders.drinks).forEach(function(_ref) {
-                var drinkId = _ref[0],
-                    count = _ref[1];
+            let totalDrinks = 0;
+            const drinkDetails = {};
+            Object.entries(completedOrders.drinks).forEach(([drinkId, count]) => {
                 totalDrinks += count || 0;
                 if (!drinkDetails[drinkId]) drinkDetails[drinkId] = 0;
                 drinkDetails[drinkId] += count || 0;
             });
-            Object.entries(drinkOrders).forEach(function(_ref2) {
-                var deviceId = _ref2[0],
-                    deviceOrders = _ref2[1];
-                Object.entries(deviceOrders).forEach(function(_ref3) {
-                    var drinkId = _ref3[0],
-                        count = _ref3[1];
+            Object.entries(drinkOrders).forEach(([deviceId, deviceOrders]) => {
+                Object.entries(deviceOrders).forEach(([drinkId, count]) => {
                     totalDrinks += count || 0;
                     if (!drinkDetails[drinkId]) drinkDetails[drinkId] = 0;
                     drinkDetails[drinkId] += count || 0;
                 });
             });
 
-            var totalSessions = 0;
-            var totalHours = 0;
-            var sessionRevenue = 0;
+            let totalSessions = 0;
+            let totalHours = 0;
+            let sessionRevenue = 0;
 
-            Object.values(completedSessions).forEach(function(s) {
+            Object.values(completedSessions).forEach(s => {
                 totalSessions++;
-                var hours = s.duration / (1000 * 60 * 60);
-                totalHours += hours;
+                totalHours += s.duration / (1000 * 60 * 60);
                 sessionRevenue += s.amount || 0;
             });
 
-            Object.values(sessions).forEach(function(s) {
+            Object.values(sessions).forEach(s => {
                 if (!s.completed) {
                     totalSessions++;
-                    var duration = s.duration || 0;
+                    let duration = s.duration || 0;
                     if (s.startTime) {
                         duration = Date.now() - s.startTime.getTime();
                     }
-                    var hours = duration / (1000 * 60 * 60);
-                    totalHours += hours;
+                    totalHours += duration / (1000 * 60 * 60);
                     sessionRevenue += s.amount || 0;
                 }
             });
 
-            var noodleRevenue = totalNoodles * getNoodlePrice();
-            var drinkRevenue = 0;
-            Object.entries(drinkDetails).forEach(function(_ref4) {
-                var drinkId = _ref4[0],
-                    count = _ref4[1];
-                var drink = drinks[drinkId];
+            const noodleRevenue = totalNoodles * getNoodlePrice();
+            let drinkRevenue = 0;
+            Object.entries(drinkDetails).forEach(([drinkId, count]) => {
+                const drink = drinks[drinkId];
                 if (drink) drinkRevenue += drink.price * count;
             });
 
-            var totalRevenue = sessionRevenue + noodleRevenue + drinkRevenue;
+            const totalRevenue = sessionRevenue + noodleRevenue + drinkRevenue;
 
             shift.totalSessions = totalSessions;
             shift.totalHours = Math.round(totalHours * 100) / 100;
@@ -2448,239 +2206,93 @@
         }
 
         // ============================================
-        // MAIN APP - HELPERS
+        // SHIFT STORAGE
         // ============================================
 
-        function getRate(d) { return deviceConfig[d] ? deviceConfig[d].rate : 25; }
+        const SHIFT_KEY = 'ps_shift_data';
 
-        function getDeviceName(d) { return deviceConfig[d] ? deviceConfig[d].name : 'PS ' + d; }
-
-        function getNoodlePrice() { return noodlePrice || 15; }
-
-        function now() { return new Date(); }
-
-        function formatTime(date) {
-            if (!date) return '--';
-            return date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+        function getShiftData() {
+            try {
+                const data = localStorage.getItem(SHIFT_KEY);
+                return data ? JSON.parse(data) : null;
+            } catch (e) { return null; }
         }
 
-        function formatDurationFull(ms) {
-            if (ms < 0) return '0ث';
-            var totalSeconds = Math.floor(ms / 1000);
-            var hours = Math.floor(totalSeconds / 3600);
-            var minutes = Math.floor((totalSeconds % 3600) / 60);
-            var seconds = totalSeconds % 60;
-
-            if (hours > 0) {
-                if (currentLang === 'ar') return hours + 'س ' + minutes + 'د ' + seconds + 'ث';
-                return hours + 'h ' + minutes + 'm ' + seconds + 's';
-            }
-            if (minutes > 0) {
-                if (currentLang === 'ar') return minutes + 'د ' + seconds + 'ث';
-                return minutes + 'm ' + seconds + 's';
-            }
-            if (currentLang === 'ar') return seconds + 'ث';
-            return seconds + 's';
+        function saveShiftData(data) {
+            try {
+                localStorage.setItem(SHIFT_KEY, JSON.stringify(data));
+            } catch (e) {}
         }
 
-        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
-
-        function getTotalNoodles() {
-            var total = 0;
-            Object.values(noodleOrders).forEach(function(c) { total += c || 0; });
-            return total;
-        }
-
-        function getTotalNoodleRevenue() { return getTotalNoodles() * getNoodlePrice(); }
-
-        function getTotalSessionRevenue() {
-            var total = 0;
-            Object.values(sessions).forEach(function(s) { if (s.completed) total += s.amount || 0; });
-            return total;
-        }
-
-        function getGrandTotal() {
-            return getTotalSessionRevenue() + getTotalNoodleRevenue() + getTotalDrinkRevenue();
-        }
-
-        // ============================================
-        // NOODLE FUNCTIONS
-        // ============================================
-        async function addNoodle(d) {
-            noodleOrders[d] = (noodleOrders[d] || 0) + 1;
-            await saveNoodleToSupabase(currentBusiness, d, noodleOrders[d], getDeviceId());
-            renderMain();
-        }
-
-        async function removeNoodle(d) {
-            if ((noodleOrders[d] || 0) > 0) {
-                noodleOrders[d] = (noodleOrders[d] || 0) - 1;
-                await saveNoodleToSupabase(currentBusiness, d, noodleOrders[d], getDeviceId());
-                renderMain();
-            }
-        }
-
-        // ============================================
-        // SESSION FUNCTIONS
-        // ============================================
-        async function startSession(d) {
-            var t = translations[currentLang];
-            if (sessions[d] && !sessions[d].completed) {
-                showToast((currentLang === 'ar' ? 'الجهاز' : 'Station') + ' ' + d + ' ' + (currentLang === 'ar' ?
-                    'مشغول بالفعل!' : 'is already in use!'), 'warning');
-                return;
-            }
-            var nowTime = now();
-            sessions[d] = {
-                startTime: nowTime,
-                endTime: null,
-                completed: false,
-                amount: 0,
-                duration: 0,
-                rate: getRate(d)
+        function resetShiftData() {
+            const shiftData = {
+                totalSessions: 0,
+                totalNoodles: 0,
+                totalDrinks: 0,
+                totalHours: 0,
+                noodleRevenue: 0,
+                drinkRevenue: 0,
+                sessionRevenue: 0,
+                totalRevenue: 0,
+                drinkDetails: {},
+                date: new Date().toISOString(),
+                isOpen: true
             };
-
-            await saveSessionToSupabase(currentBusiness, d, nowTime, getRate(d), getDeviceId());
-
-            renderMain();
-            startPlayTimer(d);
-            showToast('✅ ' + (currentLang === 'ar' ? 'بدأت جلسة' : 'Started session') + ' ' + getDeviceName(d),
-                'success');
+            saveShiftData(shiftData);
+            return shiftData;
         }
 
-        async function endSession(d) {
-            var session = sessions[d];
-            if (!session || session.completed) return;
-
-            var endTime = now();
-            session.endTime = endTime;
-            session.completed = true;
-            session.duration = endTime.getTime() - session.startTime.getTime();
-            var hours = session.duration / (1000 * 60 * 60);
-            session.amount = Math.round(hours * session.rate * 100) / 100;
-
-            var sessionId = 's_' + d + '_' + Date.now();
-            completedSessions[sessionId] = {
-                deviceId: d,
-                deviceName: getDeviceName(d),
-                startTime: session.startTime.toISOString(),
-                endTime: session.endTime.toISOString(),
-                duration: session.duration,
-                amount: session.amount,
-                rate: session.rate,
-                completedAt: new Date().toISOString()
-            };
-            saveCompletedSessionsToStorage();
-
-            var noodleCount = noodleOrders[d] || 0;
-            if (noodleCount > 0) {
-                completedOrders.noodles[d] = (completedOrders.noodles[d] || 0) + noodleCount;
+        function getOrCreateShift() {
+            let shift = getShiftData();
+            if (!shift || !shift.isOpen) {
+                shift = resetShiftData();
             }
-
-            var deviceDrinks = drinkOrders[d] || {};
-            Object.entries(deviceDrinks).forEach(function(_ref16) {
-                var drinkId = _ref16[0],
-                    count = _ref16[1];
-                if (count > 0) {
-                    completedOrders.drinks[drinkId] = (completedOrders.drinks[drinkId] || 0) + count;
-                }
-            });
-            saveCompletedOrdersToStorage();
-
-            await deleteSessionFromSupabase(currentBusiness, d);
-
-            showSessionModal(d);
-
-            noodleOrders[d] = 0;
-            await saveNoodleToSupabase(currentBusiness, d, 0, getDeviceId());
-
-            if (drinkOrders[d]) {
-                var drinksToClear = Object.keys(drinkOrders[d]);
-                for (var idx = 0; idx < drinksToClear.length; idx++) {
-                    await saveDrinkToSupabase(currentBusiness, d, drinksToClear[idx], 0, getDeviceId());
-                }
-                drinkOrders[d] = {};
-            }
-
-            delete sessions[d];
-            stopPlayTimer(d);
-            renderMain();
-            calculateShiftTotals();
-        }
-
-        function startPlayTimer(d) {
-            if (activeTimers[d]) return;
-            activeTimers[d] = setInterval(function() {
-                var session = sessions[d];
-                if (!session || session.completed) { stopPlayTimer(d); return; }
-                updateStationDisplay(d);
-            }, 1000);
-        }
-
-        function stopPlayTimer(d) {
-            if (activeTimers[d]) { clearInterval(activeTimers[d]);
-                delete activeTimers[d]; }
-        }
-
-        function updateStationDisplay(d) {
-            var t = translations[currentLang];
-            var session = sessions[d];
-            if (!session) return;
-            var card = document.querySelector('[data-device="' + d + '"]');
-            if (!card) return;
-            var statusEl = card.querySelector('.status');
-            var durationEl = card.querySelector('.duration');
-            var startTimeEl = card.querySelector('.start-time');
-            if (!session.completed) {
-                var duration = Date.now() - session.startTime.getTime();
-                durationEl.textContent = formatDurationFull(duration);
-                statusEl.textContent = t.inUse;
-                statusEl.className = 'status active-text';
-                startTimeEl.textContent = t.started + ' ' + formatTime(session.startTime);
-            }
+            if (!shift.drinkDetails) shift.drinkDetails = {};
+            return shift;
         }
 
         // ============================================
         // RENDER MAIN
         // ============================================
+
         function renderMain() {
-            var t = translations[currentLang];
+            const t = translations[currentLang];
             if (!businessConfig) return;
-            var grid = document.getElementById('stationGrid');
+            const grid = document.getElementById('stationGrid');
             if (!grid) return;
 
-            var stationKeys = getStationKeys();
-            var totalStations = stationKeys.length;
-            var activeCount = getActiveCount();
-            var availableCount = getAvailableCount();
+            const stationKeys = getStationKeys();
+            const totalStations = stationKeys.length;
+            const activeCount = getActiveCount();
+            const availableCount = getAvailableCount();
 
             document.getElementById('totalStations').textContent = totalStations;
             document.getElementById('inUseCount').textContent = activeCount;
             document.getElementById('availableCount').textContent = availableCount;
             document.getElementById('currentTime').textContent = formatTime(now());
 
-            var html = '';
-            for (var idx = 0; idx < stationKeys.length; idx++) {
-                var i = parseInt(stationKeys[idx]);
-                var session = sessions[i];
-                var isActive = session && !session.completed;
-                var rate = getRate(i);
-                var name = getDeviceName(i);
-                var isSpecial = rate !== 25;
-                var noodleCount = noodleOrders[i] || 0;
-                var deviceDrinkOrders = getDeviceDrinkOrders(i);
+            let html = '';
+            for (const key of stationKeys) {
+                const i = parseInt(key);
+                const session = sessions[i];
+                const isActive = session && !session.completed;
+                const rate = getRate(i);
+                const name = getDeviceName(i);
+                const isSpecial = rate !== 25;
+                const noodleCount = noodleOrders[i] || 0;
+                const deviceDrinkOrders = getDeviceDrinkOrders(i);
 
-                var statusText = t.available;
-                var statusClass = '';
-                var durationText = '';
-                var startTimeText = '';
-                var buttonHtml = '';
-                var cardClass = 'station-card';
+                let statusText = t.available;
+                let statusClass = '';
+                let durationText = '';
+                let startTimeText = '';
+                let buttonHtml = '';
+                let cardClass = 'station-card';
 
                 if (isActive) {
                     statusText = t.inUse;
                     statusClass = 'active-text';
-                    var duration = Date.now() - session.startTime.getTime();
+                    const duration = Date.now() - session.startTime.getTime();
                     durationText = formatDurationFull(duration);
                     startTimeText = t.started + ' ' + formatTime(session.startTime);
                     cardClass += ' active';
@@ -2691,30 +2303,27 @@
                         .start + '</button>';
                 }
 
-                var rateLabel = isSpecial ? rate + ' EGP/' + (currentLang === 'ar' ? 'س' : 'hr') : '';
-                var rateClass = isSpecial ? 'rate-badge special' : 'rate-badge';
+                const rateLabel = isSpecial ? rate + ' EGP/' + (currentLang === 'ar' ? 'س' : 'hr') : '';
+                const rateClass = isSpecial ? 'rate-badge special' : 'rate-badge';
 
-                var itemsHtml = '';
+                let itemsHtml = '';
 
                 itemsHtml +=
                     '<div class="item-control noodle-control"><span class="item-icon">🍜</span><span class="item-name">' +
                     t.noodles +
                     '</span><button class="item-btn minus" onclick="removeNoodle(' + i +
-                    ')">−</button><span class="item-count" data-noodle-count="' + i + '">' + noodleCount +
+                    ')">−</button><span class="item-count">' + noodleCount +
                     '</span><button class="item-btn plus" onclick="addNoodle(' + i + ')">+</button></div>';
 
-                var drinkEntries = Object.entries(drinks);
-                for (var dIdx = 0; dIdx < drinkEntries.length; dIdx++) {
-                    var drinkId = drinkEntries[dIdx][0];
-                    var drink = drinkEntries[dIdx][1];
-                    var count = deviceDrinkOrders[drinkId] || 0;
+                const drinkEntries = Object.entries(drinks);
+                for (const [drinkId, drink] of drinkEntries) {
+                    const count = deviceDrinkOrders[drinkId] || 0;
                     itemsHtml +=
                         '<div class="item-control drink-control"><span class="item-icon">' + (drink.icon ||
                             '🥤') +
                         '</span><span class="item-name">' + drink.name +
                         '</span><button class="item-btn minus" onclick="removeDrinkOrder(' + i + ', \'' +
-                        drinkId + '\')">−</button><span class="item-count" data-drink-count="' + i + '_' +
-                        drinkId + '">' + count +
+                        drinkId + '\')">−</button><span class="item-count">' + count +
                         '</span><button class="item-btn plus" onclick="addDrinkOrder(' + i + ', \'' +
                         drinkId + '\')">+</button></div>';
                 }
@@ -2742,74 +2351,80 @@
             grid.innerHTML = html;
         }
 
-        function showSessionModal(d) {
-            var t = translations[currentLang];
-            var session = sessions[d];
-            if (!session) return;
-
-            var noodleCount = noodleOrders[d] || 0;
-            var noodlePriceVal = getNoodlePrice();
-            var noodleTotal = noodleCount * noodlePriceVal;
-            var sessionTotal = session.amount || 0;
-
-            var deviceDrinkOrders = getDeviceDrinkOrders(d);
-            var drinkTotal = 0;
-            var drinkItemsHtml = '';
-
-            Object.entries(deviceDrinkOrders).forEach(function(_ref18) {
-                var drinkId = _ref18[0],
-                    count = _ref18[1];
-                var drink = drinks[drinkId];
-                if (drink && count > 0) {
-                    var cost = drink.price * count;
-                    drinkTotal += cost;
-                    drinkItemsHtml +=
-                        '<div class="detail-row drink-row"><span class="label">' + (drink.icon || '🥤') +
-                        ' ' + drink.name + '</span><span class="value">' + count + ' × ' + drink.price
-                        .toFixed(2) + ' EGP = ' + cost.toFixed(2) + ' EGP</span></div>';
-                }
-            });
-
-            var grandTotal = sessionTotal + noodleTotal + drinkTotal;
-
-            document.getElementById('modalSub').textContent = getDeviceName(d);
-            document.getElementById('modalDuration').textContent = formatDurationFull(session.duration || 0);
-            document.getElementById('modalTimePrice').textContent = formatCurrency(sessionTotal);
-
-            var itemsContainer = document.getElementById('modalItemsContainer');
-            var itemsHtml = '';
-
-            if (noodleCount > 0) {
-                itemsHtml +=
-                    '<div class="detail-row noodle-row"><span class="label">🍜 ' + t.noodles +
-                    '</span><span class="value">' + noodleCount + ' × ' + noodlePriceVal.toFixed(2) +
-                    ' EGP = ' + noodleTotal.toFixed(2) + ' EGP</span></div>';
-            }
-
-            itemsHtml += drinkItemsHtml;
-            itemsContainer.innerHTML = itemsHtml;
-
-            document.getElementById('modalTotal').textContent = formatCurrency(grandTotal);
-            document.getElementById('sessionModal').classList.add('show');
-        }
-
-        function closeModal() {
-            document.getElementById('sessionModal').classList.remove('show');
-        }
+        // ============================================
+        // INITIALIZATION
+        // ============================================
 
         async function initializeApp() {
+            console.log('🚀 تهيئة التطبيق...');
             document.getElementById('demoDeviceId').textContent = getDeviceId();
-            applyTranslations();
+            currentLang = getLang();
+            document.body.className = currentLang === 'ar' ? 'rtl' : 'ltr';
 
-            var savedBusiness = localStorage.getItem(BUSINESS_KEY);
+            // ترجمات أولية
+            const t = translations[currentLang];
+            if (t) {
+                document.getElementById('setupSubtitle').textContent = t.setupSubtitle;
+                document.getElementById('setupInfo').textContent = t.setupInfo;
+                document.getElementById('setupCodeLabel').textContent = t.setupCodeLabel;
+                document.getElementById('setupCodeHint').textContent = t.setupCodeHint;
+                document.getElementById('setupEnterBtn').textContent = t.setupEnterBtn;
+                document.getElementById('setupNewBizLabel').textContent = t.setupNewBizLabel;
+                document.getElementById('setupNewBizBtn').textContent = t.setupNewBizBtn;
+                document.getElementById('lockSubtitle').textContent = t.lockSubtitle;
+                document.getElementById('pricePeriod').textContent = t.pricePeriod;
+                document.getElementById('feature1').textContent = t.feature1;
+                document.getElementById('feature2').textContent = t.feature2;
+                document.getElementById('feature3').textContent = t.feature3;
+                document.getElementById('feature4').textContent = t.feature4;
+                document.getElementById('feature5').textContent = t.feature5;
+                document.getElementById('feature6').textContent = t.feature6;
+                document.getElementById('paymentLabel').textContent = t.paymentLabel;
+                document.getElementById('paymentMethod').textContent = t.paymentMethod;
+                document.getElementById('deviceIdLabel').textContent = t.deviceIdLabel;
+                document.getElementById('copyDeviceBtn').textContent = t.copyDeviceBtn;
+                document.getElementById('verifyPayBtn').textContent = t.verifyPayBtn;
+                document.getElementById('switchBizBtn').textContent = t.switchBizBtn;
+                document.getElementById('statTotalLabel').textContent = t.statTotalLabel;
+                document.getElementById('statInUseLabel').textContent = t.statInUseLabel;
+                document.getElementById('statAvailableLabel').textContent = t.statAvailableLabel;
+                document.getElementById('stationsTitle').textContent = t.stationsTitle;
+                document.getElementById('settingsTitle').textContent = t.settingsTitle;
+                document.getElementById('settingsSub').textContent = t.settingsSub;
+                document.getElementById('settingsNote').textContent = t.settingsNote;
+                document.getElementById('noodleLabel').textContent = t.noodleLabel;
+                document.getElementById('noodlePriceLabel').textContent = t.noodlePriceLabel;
+                document.getElementById('noodleHint').textContent = t.noodleHint;
+                document.getElementById('drinksLabel').textContent = t.drinksLabel;
+                document.getElementById('addDrinkBtn').textContent = t.addDrinkBtn;
+                document.getElementById('settingsDoneBtn').textContent = t.settingsDoneBtn;
+                document.getElementById('addDrinkTitle').textContent = t.addDrinkTitle;
+                document.getElementById('addDrinkSub').textContent = t.addDrinkSub;
+                document.getElementById('addDrinkNameLabel').textContent = t.addDrinkNameLabel;
+                document.getElementById('addDrinkPriceLabel').textContent = t.addDrinkPriceLabel;
+                document.getElementById('addDrinkIconLabel').textContent = t.addDrinkIconLabel;
+                document.getElementById('addDrinkCancelBtn').textContent = t.addDrinkCancelBtn;
+                document.getElementById('addDrinkConfirmBtn').textContent = t.addDrinkConfirmBtn;
+                document.getElementById('modalTitle').textContent = t.modalTitle;
+                document.getElementById('modalDurationLabel').textContent = t.modalDurationLabel;
+                document.getElementById('modalTimeLabel').textContent = t.modalTimeLabel;
+                document.getElementById('modalTotalLabel').textContent = t.modalTotalLabel;
+                document.getElementById('modalDoneBtn').textContent = t.modalDoneBtn;
+                document.getElementById('langLabel').textContent = t.langLabel;
+                document.getElementById('langArBtn').textContent = t.langAr;
+                document.getElementById('langEnBtn').textContent = t.langEn;
+                document.querySelector('.btn-add-station').textContent = t.addStation;
+            }
+
+            const savedBusiness = localStorage.getItem('ps_business_code');
             if (savedBusiness) {
-                var config = await loadBusiness(savedBusiness);
+                const config = await loadBusiness(savedBusiness);
                 if (config) {
                     document.getElementById('businessCodeInput').value = savedBusiness;
                     await enterBusiness();
                     return;
                 } else {
-                    localStorage.removeItem(BUSINESS_KEY);
+                    localStorage.removeItem('ps_business_code');
                 }
             }
 
@@ -2817,45 +2432,47 @@
             document.getElementById('lockScreen').classList.remove('active');
             document.getElementById('mainApp').classList.remove('active');
             isMainAppInitialized = false;
+
+            console.log('✅ التطبيق جاهز');
+            console.log('📱 Device ID:', getDeviceId());
+            console.log('🌐 اللغة:', currentLang);
         }
 
         // ============================================
         // EVENT LISTENERS
         // ============================================
 
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
         document.getElementById('sessionModal').addEventListener('click', function(e) {
             if (e.target === e.currentTarget) closeModal();
         });
+
         document.getElementById('settingsModal').addEventListener('click', function(e) {
             if (e.target === e.currentTarget) closeSettings();
         });
+
         document.getElementById('addDrinkModal').addEventListener('click', function(e) {
             if (e.target === e.currentTarget) closeAddDrinkModal();
         });
+
         document.getElementById('shiftModal').addEventListener('click', function(e) {
             if (e.target === e.currentTarget) closeShiftModal();
         });
+
         document.getElementById('historyModal').addEventListener('click', function(e) {
             if (e.target === e.currentTarget) closeHistoryModal();
         });
 
-        setInterval(function() {
+        // تحديث الساعة كل ثانية
+        setInterval(() => {
             document.getElementById('currentTime').textContent = formatTime(now());
-            Object.keys(sessions).forEach(function(key) {
-                if (!sessions[key].completed) updateStationDisplay(parseInt(key));
-            });
         }, 1000);
 
-        setInterval(function() {
-            saveSessionsToSharedStorage();
-            saveDrinksToStorage();
-            saveCompletedSessionsToStorage();
-            saveCompletedOrdersToStorage();
-        }, 5000);
-
+        // Enter key للدخول
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
-                var active = document.activeElement;
+                const active = document.activeElement;
                 if (active && active.id === 'businessCodeInput') {
                     enterBusiness();
                 }
@@ -2872,15 +2489,10 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', initializeApp);
-
         console.log('========================================');
-        console.log('🎮 PS Rental Pro - v' + APP_VERSION);
-        console.log('✅ Connected to Supabase');
-        console.log('✅ REALTIME: All devices sync instantly');
-        console.log('✅ SHARED DATA: Sessions, orders, stations');
-        console.log('✅ Shift system saves to Supabase');
-        console.log('✅ Cannot close shift with active sessions');
+        console.log('🎮 PS Rental Pro - v3.0.0');
+        console.log('✅ Supabase Connected');
+        console.log('✅ Realtime Enabled - All devices sync');
         console.log('========================================');
     </script>
 </body>
