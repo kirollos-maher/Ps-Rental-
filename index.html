@@ -1,0 +1,2642 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PS Rental Pro</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0e17;color:#e8f0fe;min-height:100vh;padding:16px;padding-bottom:30px}
+        body.rtl{direction:rtl}body.ltr{direction:ltr}
+        .container{max-width:500px;margin:0 auto}
+        .screen{display:none}.screen.active{display:block}
+        .setup-screen{background:#131c2e;border-radius:24px;padding:40px 32px;max-width:420px;width:100%;margin:0 auto;border:1px solid rgba(255,255,255,0.05);box-shadow:0 20px 60px rgba(0,0,0,0.8);text-align:center}
+        .setup-screen .logo{font-size:48px;margin-bottom:8px}
+        .setup-screen h1{font-size:28px;font-weight:700;background:linear-gradient(135deg,#00d4ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+        .setup-screen .subtitle{color:#8ba0c7;font-size:14px;margin-bottom:24px}
+        .setup-screen .input-group{margin:12px 0;text-align:inherit}
+        .setup-screen .input-group label{display:block;font-size:13px;color:#8ba0c7;margin-bottom:4px}
+        .setup-screen .input-group input{width:100%;padding:14px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#e8f0fe;font-size:16px;outline:none;text-align:center;letter-spacing:2px}
+        .setup-screen .input-group input:focus{border-color:#00d4ff}
+        .setup-screen .input-group .hint{font-size:12px;color:#5a6f8a;margin-top:4px}
+        .setup-screen .business-info{background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.1);border-radius:12px;padding:12px;margin:12px 0;font-size:13px;color:#8ba0c7}
+        .btn{padding:8px 16px;border:none;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;touch-action:manipulation;color:#fff;min-width:70px;text-align:center}
+        .btn:active{transform:scale(.95)}
+        .btn-primary{background:linear-gradient(135deg,#00d4ff,#7b61ff)}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,212,255,.3)}
+        .btn-success{background:linear-gradient(135deg,#2ecc71,#27ae60)}
+        .btn-success:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(46,204,113,.3)}
+        .btn-danger{background:linear-gradient(135deg,#e74c3c,#c0392b)}
+        .btn-danger:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(231,76,60,.3)}
+        .btn-secondary{background:rgba(255,255,255,0.08)}
+        .btn-secondary:hover{background:rgba(255,255,255,0.15)}
+        .btn-warning{background:linear-gradient(135deg,#f39c12,#e67e22)}
+        .btn-warning:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(243,156,18,.3)}
+        .btn-block{width:100%;padding:14px;font-size:16px}
+        .btn-pay{background:linear-gradient(135deg,#2ecc71,#27ae60)!important;color:#fff!important;font-weight:700!important;font-size:16px!important;padding:14px!important;border:none!important;border-radius:12px!important;cursor:pointer!important;width:100%!important;transition:all .2s!important}
+        .btn-pay:hover{transform:translateY(-2px)!important;box-shadow:0 8px 25px rgba(46,204,113,.4)!important}
+        .btn-pay:active{transform:scale(.97)!important}
+        .switch-business{margin-top:16px}
+        .switch-business .btn-switch{background:rgba(255,255,255,0.05);color:#8ba0c7;font-size:13px;padding:10px;border:none;border-radius:12px;cursor:pointer;width:100%}
+        .switch-business .btn-switch:hover{background:rgba(255,255,255,0.1)}
+        .device-id-display{font-size:11px;color:#5a6f8a;margin-top:16px}
+        .device-id-display span{color:#00d4ff;font-family:'Courier New',monospace}
+        .lock-screen{background:#131c2e;border-radius:24px;padding:40px 32px;max-width:420px;width:100%;margin:0 auto;border:1px solid rgba(255,255,255,0.05);box-shadow:0 20px 60px rgba(0,0,0,0.8);text-align:center}
+        .lock-screen .business-name{font-size:14px;color:#00d4ff;margin-bottom:4px}
+        .lock-screen .logo{font-size:48px;margin-bottom:8px}
+        .lock-screen h1{font-size:28px;font-weight:700;background:linear-gradient(135deg,#00d4ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+        .lock-screen .subtitle{color:#8ba0c7;font-size:14px;margin-bottom:24px}
+        .status-badge{display:inline-block;padding:6px 16px;border-radius:30px;font-size:13px;font-weight:600;margin-bottom:16px}
+        .status-badge.locked{background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid rgba(231,76,60,.2)}
+        .status-badge.active{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.2)}
+        .status-badge.expiring{background:rgba(255,165,0,.15);color:#ffa500;border:1px solid rgba(255,165,0,.2)}
+        .price-tag{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15);border-radius:16px;padding:16px;margin-bottom:24px}
+        .price-tag .amount{font-size:32px;font-weight:700;color:#00d4ff}
+        .price-tag .period{color:#8ba0c7;font-size:14px;margin-top:4px}
+        .features{text-align:inherit;margin:20px 0;padding:0 8px}
+        .features li{list-style:none;color:#b0c4de;font-size:14px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:10px}
+        .features li:last-child{border-bottom:none}
+        .features li .check{color:#2ecc71;font-weight:700}
+        .payment-section{background:rgba(255,200,0,.05);border:1px solid rgba(255,200,0,.1);border-radius:12px;padding:16px;margin:20px 0}
+        .payment-section .label{color:#8ba0c7;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+        .payment-section .code{font-family:'Courier New',monospace;font-size:24px;font-weight:700;color:#ffd700;letter-spacing:4px;background:rgba(0,0,0,.3);padding:12px;border-radius:8px;user-select:all}
+        .device-id-box{background:rgba(0,0,0,.3);padding:10px;border-radius:8px;font-family:'Courier New',monospace;font-size:14px;color:#00d4ff;margin-top:8px;word-break:break-all;user-select:all}
+        .copy-btn{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:#00d4ff;padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;margin-top:4px}
+        .copy-btn:hover{background:rgba(0,212,255,.2)}
+        .days-left{color:#8ba0c7;font-size:14px;margin-top:12px}
+        .days-left strong{color:#00d4ff}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:8px}
+        .header-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+        .header h1{font-size:24px;font-weight:700;background:linear-gradient(135deg,#00d4ff,#7b61ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .header .business-tag{font-size:10px;background:rgba(0,212,255,.1);color:#00d4ff;padding:2px 10px;border-radius:12px;border:1px solid rgba(0,212,255,.15);font-weight:600}
+        .header-time{color:#8ba0c7;font-size:14px}
+        .header-actions{display:flex;gap:6px;align-items:center}
+        .btn-shift{background:rgba(255,165,0,.15);border:1px solid rgba(255,165,0,.2);color:#ffa500;padding:4px 12px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;touch-action:manipulation}
+        .btn-shift:hover{background:rgba(255,165,0,.25);border-color:rgba(255,165,0,.4)}
+        .btn-shift:active{transform:scale(.95)}
+        .btn-settings{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#8ba0c7;padding:6px 12px;border-radius:10px;font-size:18px;cursor:pointer;transition:all .2s;touch-action:manipulation;line-height:1}
+        .btn-settings:active{transform:scale(.92)}
+        .btn-settings:hover{background:rgba(255,255,255,.15)}
+        .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:#131c2e;border-radius:16px;padding:16px;margin-bottom:24px;border:1px solid rgba(255,255,255,.05)}
+        .stat-item{text-align:center}
+        .stat-item .number{font-size:28px;font-weight:700}
+        .stat-item .label{font-size:12px;color:#8ba0c7;margin-top:4px}
+        .stat-item .number.total{color:#00d4ff}
+        .stat-item .number.active{color:#2ecc71}
+        .stat-item .number.available{color:#8ba0c7}
+        .stations-title{font-size:18px;font-weight:600;margin-bottom:16px;color:#e8f0fe}
+        .station-grid{display:flex;flex-direction:column;gap:12px}
+        .station-card{background:#131c2e;border-radius:14px;padding:16px;border:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:10px}
+        .station-card.active{border-right:4px solid #2ecc71}
+        body.ltr .station-card.active{border-right:none;border-left:4px solid #2ecc71}
+        .station-card .top-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+        .station-card .info{display:flex;flex-direction:column;gap:4px;flex:1;min-width:100px}
+        .station-card .name{font-size:18px;font-weight:600}
+        .station-card .status{font-size:13px;color:#8ba0c7}
+        .station-card .status.active-text{color:#2ecc71}
+        .station-card .duration{font-size:14px;font-weight:500;color:#00d4ff}
+        .station-card .start-time{font-size:12px;color:#8ba0c7}
+        .station-card .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .station-card .rate-badge{font-size:11px;background:rgba(0,212,255,.1);color:#00d4ff;padding:4px 10px;border-radius:20px;border:1px solid rgba(0,212,255,.15);white-space:nowrap}
+        .station-card .rate-badge.special{background:rgba(255,165,0,.15);color:#ffa500;border-color:rgba(255,165,0,.2)}
+        .station-card .items-section{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05);align-items:center}
+        .station-card .items-section .items-label{font-size:11px;color:#5a6f8a;margin:0 4px}
+        .item-control{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.03);padding:2px 6px 2px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.06)}
+        .item-control .item-icon{font-size:13px}
+        .item-control .item-name{font-size:11px;color:#b0c4de;margin:0 2px}
+        .item-control .item-count{font-size:13px;font-weight:600;color:#ffd700;min-width:18px;text-align:center}
+        .item-control .item-btn{background:rgba(255,255,255,.08);border:none;color:#b0c4de;width:18px;height:18px;border-radius:50%;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+        .item-control .item-btn:active{transform:scale(.85)}
+        .item-control .item-btn.minus{color:#ff6b6b;background:rgba(255,100,100,.1)}
+        .item-control .item-btn.plus{color:#51cf66;background:rgba(80,200,100,.1)}
+        .item-control .item-btn:hover{opacity:.7}
+        .item-control.noodle-control{border-color:rgba(255,200,0,.15)}
+        .item-control.noodle-control .item-name{color:#ffd700}
+        .item-control.drink-control{border-color:rgba(0,212,255,.15)}
+        .item-control.drink-control .item-name{color:#00d4ff}
+        .btn-start{background:linear-gradient(135deg,#2ecc71,#27ae60)}
+        .btn-start:hover{box-shadow:0 4px 15px rgba(46,204,113,.3)}
+        .btn-end{background:linear-gradient(135deg,#e74c3c,#c0392b)}
+        .btn-end:hover{box-shadow:0 4px 15px rgba(231,76,60,.3)}
+        .btn-small{padding:4px 10px;font-size:11px;min-width:50px}
+        .btn-add-drink{background:rgba(0,212,255,.1);border:1px dashed rgba(0,212,255,.2);color:#00d4ff;padding:2px 10px;border-radius:16px;font-size:11px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}
+        .btn-add-drink:hover{background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.4)}
+        .btn-add-drink:active{transform:scale(.95)}
+        .shift-modal-content{background:#131c2e;border-radius:16px;padding:24px 20px;max-width:450px;width:100%;border:1px solid rgba(255,255,255,.08);max-height:90vh;overflow-y:auto;text-align:inherit}
+        .shift-modal-content h2{font-size:22px;margin-bottom:4px;color:#ffa500;text-align:center}
+        .shift-modal-content .shift-date{color:#8ba0c7;font-size:14px;text-align:center;margin-bottom:16px}
+        .shift-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+        .shift-stat-card{background:rgba(255,255,255,.03);border-radius:12px;padding:14px 12px;text-align:center;border:1px solid rgba(255,255,255,.05)}
+        .shift-stat-card .shift-stat-number{font-size:24px;font-weight:700}
+        .shift-stat-card .shift-stat-label{font-size:11px;color:#8ba0c7;margin-top:4px}
+        .shift-stat-card .shift-stat-number.gold{color:#ffd700}
+        .shift-stat-card .shift-stat-number.blue{color:#00d4ff}
+        .shift-stat-card .shift-stat-number.green{color:#2ecc71}
+        .shift-stat-card .shift-stat-number.orange{color:#ffa500}
+        .shift-stat-card .shift-stat-number.pink{color:#ff6b9d}
+        .shift-stat-card .shift-stat-number.purple{color:#a855f7}
+        .shift-stat-card .shift-stat-number.cyan{color:#22d3ee}
+        .shift-total-row{display:flex;justify-content:space-between;padding:12px 16px;background:rgba(255,165,0,.08);border-radius:12px;border:1px solid rgba(255,165,0,.15);font-size:18px;font-weight:700;margin:12px 0 16px}
+        .shift-total-row .total-label{color:#8ba0c7}
+        .shift-total-row .total-amount{color:#ffd700}
+        .shift-drinks-detail{margin:12px 0;padding:12px;background:rgba(0,212,255,.03);border-radius:10px;border:1px solid rgba(0,212,255,.08)}
+        .shift-drinks-detail .detail-title{font-size:13px;color:#8ba0c7;margin-bottom:8px;font-weight:600}
+        .shift-drink-item{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.03)}
+        .shift-drink-item:last-child{border-bottom:none}
+        .shift-drink-item .drink-name{color:#b0c4de}
+        .shift-drink-item .drink-total{color:#00d4ff;font-weight:600}
+        .shift-actions{display:flex;gap:10px;margin-top:16px}
+        .shift-actions .btn{flex:1;padding:12px;font-size:15px}
+        .shift-history-item{background:rgba(255,255,255,.03);border-radius:10px;padding:12px 14px;margin-bottom:8px;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:all .2s}
+        .shift-history-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,165,0,.2)}
+        .shift-history-item .hist-header{display:flex;justify-content:space-between;align-items:center}
+        .shift-history-item .hist-date{font-weight:600;color:#e8f0fe}
+        .shift-history-item .hist-total{color:#ffd700;font-weight:700}
+        .shift-history-item .hist-stats{display:flex;gap:16px;font-size:12px;color:#8ba0c7;margin-top:4px}
+        .shift-history-container{max-height:300px;overflow-y:auto}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+        .modal-overlay.show{display:flex}
+        .modal-content{background:#131c2e;border-radius:16px;padding:28px 24px;max-width:380px;width:100%;border:1px solid rgba(255,255,255,.08);max-height:90vh;overflow-y:auto;text-align:inherit}
+        .modal-content h2{font-size:20px;margin-bottom:4px;color:#2ecc71}
+        .modal-content .sub{color:#8ba0c7;font-size:14px;margin-bottom:16px}
+        .modal-content .detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+        .modal-content .detail-row .label{color:#8ba0c7}
+        .modal-content .detail-row .value{font-weight:600;color:#e8f0fe}
+        .modal-content .detail-row.drink-row .value{color:#00d4ff}
+        .modal-content .detail-row.noodle-row .value{color:#ffd700}
+        .modal-content .detail-row.time-row .value{color:#00d4ff}
+        .modal-content .total-row{display:flex;justify-content:space-between;padding:12px 0 4px;font-size:20px;font-weight:700;border-top:2px solid rgba(255,255,255,.1);margin-top:8px}
+        .modal-content .total-row .amount{color:#00d4ff}
+        .modal-actions{display:flex;gap:10px;margin-top:16px}
+        .modal-actions .btn{flex:1;padding:12px;font-size:15px}
+        .btn-done{background:linear-gradient(135deg,#00d4ff,#7b61ff)}
+        .btn-done:hover{box-shadow:0 4px 15px rgba(0,212,255,.3)}
+        .settings-modal-content{background:#131c2e;border-radius:16px;padding:28px 24px;max-width:450px;width:100%;border:1px solid rgba(255,255,255,.08);max-height:85vh;overflow-y:auto;text-align:inherit}
+        .settings-modal-content h2{font-size:20px;margin-bottom:4px;color:#e8f0fe}
+        .settings-modal-content .sub{color:#8ba0c7;font-size:14px;margin-bottom:16px}
+        .lang-toggle{display:flex;align-items:center;gap:12px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.1);border-radius:12px;padding:12px 16px;margin-bottom:16px}
+        .lang-toggle .lang-label{font-size:13px;color:#8ba0c7}
+        .lang-toggle .lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#8ba0c7;padding:4px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+        .lang-toggle .lang-btn.active{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.3);color:#00d4ff}
+        .lang-toggle .lang-btn:hover{background:rgba(255,255,255,.15)}
+        .lang-toggle .lang-btn.active:hover{background:rgba(0,212,255,.25)}
+        .lang-toggle .lang-divider{color:#5a6f8a;font-size:14px}
+        .settings-group{margin-bottom:16px}
+        .settings-group label{display:block;font-size:13px;color:#8ba0c7;margin-bottom:4px}
+        .settings-group input{width:100%;padding:10px 14px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#e8f0fe;font-size:16px;outline:none}
+        .settings-group input:focus{border-color:#00d4ff}
+        .settings-group input:disabled{opacity:.5;cursor:not-allowed}
+        .settings-group .hint{font-size:12px;color:#5a6f8a;margin-top:4px}
+        .settings-device{background:rgba(255,255,255,.03);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid rgba(255,255,255,.05)}
+        .settings-device .device-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+        .settings-device .device-header .device-num{font-weight:600;font-size:15px}
+        .settings-device .device-header .device-status{font-size:12px;color:#8ba0c7}
+        .settings-device .device-header .device-status.in-use{color:#2ecc71}
+        .settings-device .device-header .btn-remove-station{background:rgba(231,76,60,.15);border:none;color:#e74c3c;width:24px;height:24px;border-radius:50%;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+        .settings-device .device-header .btn-remove-station:hover{background:rgba(231,76,60,.3)}
+        .settings-device .device-header .btn-remove-station:active{transform:scale(.9)}
+        .settings-device .device-header .btn-remove-station:disabled{opacity:0.3;cursor:not-allowed}
+        .settings-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .settings-row .settings-group{margin-bottom:0}
+        .settings-note{font-size:13px;color:#ffa500;background:rgba(255,165,0,.08);padding:12px;border-radius:10px;margin:12px 0;border:1px solid rgba(255,165,0,.1);text-align:inherit}
+        .btn-add-station{background:rgba(46,204,113,.1);border:1px dashed rgba(46,204,113,.2);color:#2ecc71;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;width:100%;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
+        .btn-add-station:hover{background:rgba(46,204,113,.2);border-color:rgba(46,204,113,.4)}
+        .global-settings{background:rgba(255,200,0,.05);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid rgba(255,200,0,.1)}
+        .global-settings .global-label{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:8px;color:#ffd700}
+        .drinks-settings{background:rgba(0,212,255,.05);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid rgba(0,212,255,.1)}
+        .drinks-settings .drinks-label{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:8px;color:#00d4ff}
+        .drink-item-settings{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);padding:8px 12px;border-radius:8px;margin-bottom:6px;border:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+        .drink-item-settings .drink-icon{font-size:16px}
+        .drink-item-settings input[type=text]{flex:1;padding:6px 10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:6px;color:#e8f0fe;font-size:13px;outline:none;min-width:60px}
+        .drink-item-settings input[type=text]:focus{border-color:#00d4ff}
+        .drink-item-settings input[type=number]{width:60px;padding:6px 8px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:6px;color:#e8f0fe;font-size:13px;outline:none;text-align:center}
+        .drink-item-settings input[type=number]:focus{border-color:#00d4ff}
+        .drink-item-settings .btn-remove-drink{background:rgba(231,76,60,.15);border:none;color:#e74c3c;width:24px;height:24px;border-radius:50%;font-size:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+        .drink-item-settings .btn-remove-drink:hover{background:rgba(231,76,60,.3)}
+        .drink-item-settings .btn-remove-drink:active{transform:scale(.9)}
+        .btn-add-drink-setting{background:rgba(0,212,255,.1);border:1px dashed rgba(0,212,255,.2);color:#00d4ff;padding:8px 14px;border-radius:10px;font-size:13px;cursor:pointer;transition:all .2s;width:100%;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px}
+        .btn-add-drink-setting:hover{background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.4)}
+        .toast{position:fixed;bottom:30px;left:20px;right:20px;padding:16px;border-radius:12px;text-align:center;font-weight:600;z-index:999;animation:slideUp .3s ease-out;display:none}
+        .toast.success{background:#2ecc71;color:#fff}
+        .toast.error{background:#e74c3c;color:#fff}
+        .toast.warning{background:#f39c12;color:#fff}
+        @keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}
+        @media(max-width:400px){.stats-row{padding:12px}.stat-item .number{font-size:22px}.station-card{padding:12px}.station-card .top-row{flex-direction:column;align-items:stretch}.station-card .right{justify-content:flex-start}.btn{padding:6px 12px;font-size:12px;min-width:60px}.lock-screen{padding:28px 20px}.setup-screen{padding:28px 20px}.payment-section .code{font-size:18px}.settings-row{grid-template-columns:1fr}.settings-modal-content{padding:20px 16px}.btn-pay{font-size:14px!important;padding:12px!important}.drink-item-settings{flex-wrap:wrap}.drink-item-settings input[type=text]{min-width:100%}.station-card .items-section{gap:4px}.item-control{padding:2px 4px 2px 8px}.item-control .item-name{font-size:10px}.lang-toggle{flex-wrap:wrap;justify-content:center}.shift-summary-grid{grid-template-columns:1fr 1fr;gap:6px}.shift-stat-card{padding:10px 8px}.shift-stat-card .shift-stat-number{font-size:18px}.shift-total-row{font-size:15px;padding:10px 12px}}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div id="toast" class="toast"></div>
+
+        <div id="setupScreen" class="screen setup-screen active">
+            <div class="logo">🏪</div>
+            <h1>PS Rental Pro</h1>
+            <div class="subtitle" id="setupSubtitle">إدارة صالات البلايستيشن باحترافية</div>
+            <div class="business-info" id="setupInfo">🔑 أدخل كود النشاط التجاري للوصول إلى نظامك</div>
+            <div class="input-group">
+                <label id="setupCodeLabel">🏢 كود النشاط التجاري</label>
+                <input type="text" id="businessCodeInput" placeholder="مثال: BIZ123" maxlength="20" style="text-transform:uppercase;letter-spacing:2px;">
+                <div class="hint" id="setupCodeHint">تواصل مع البائع للحصول على كود النشاط</div>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="enterBusiness()" id="setupEnterBtn">🔑 دخول</button>
+            <div class="switch-business">
+                <div style="font-size:12px;color:#5a6f8a;margin-bottom:8px;" id="setupNewBizLabel">ليس لديك نشاط تجاري؟</div>
+                <button class="btn-switch" onclick="createNewBusiness()" id="setupNewBizBtn">➕ إنشاء نشاط تجاري جديد</button>
+            </div>
+            <div class="device-id-display">
+                📱 معرف الجهاز: <span id="demoDeviceId">جاري التحميل...</span>
+            </div>
+        </div>
+
+        <div id="lockScreen" class="screen lock-screen">
+            <div class="business-name" id="lockBusinessName">🏢 اسم النشاط التجاري</div>
+            <div class="logo">🎮</div>
+            <h1>PS Rental Pro</h1>
+            <div class="subtitle" id="lockSubtitle">إدارة احترافية لتأجير البلايستيشن</div>
+            <div class="status-badge locked" id="statusBadge">🔒 مقفل</div>
+            <div class="price-tag">
+                <div class="amount" id="priceDisplay">150 EGP</div>
+                <div class="period" id="pricePeriod">شهرياً</div>
+            </div>
+            <ul class="features" id="lockFeatures">
+                <li><span class="check">✅</span> <span id="feature1">أجهزة بلايستيشن</span></li>
+                <li><span class="check">✅</span> <span id="feature2">تتبع الجلسات والفواتير</span></li>
+                <li><span class="check">✅</span> <span id="feature3">تتبع الطلبات (نودلز + مشروبات)</span></li>
+                <li><span class="check">✅</span> <span id="feature4">أسعار مخصصة لكل جهاز</span></li>
+                <li><span class="check">✅</span> <span id="feature5">بالجنيه المصري (EGP)</span></li>
+                <li><span class="check">✅</span> <span id="feature6">وصول 24/7</span></li>
+            </ul>
+            <div class="payment-section">
+                <div class="label" id="paymentLabel">📱 أرسل الدفع إلى:</div>
+                <div class="code" id="paymentCode">01012345678</div>
+                <div style="color:#8ba0c7;font-size:12px;margin-top:8px;" id="paymentMethod">فودافون كاش / إنستا باي</div>
+            </div>
+            <div style="margin: 12px 0;">
+                <div style="color:#8ba0c7;font-size:13px;margin-bottom:4px;" id="deviceIdLabel">معرف جهازك:</div>
+                <div class="device-id-box" id="deviceIdDisplay">جاري التحميل...</div>
+                <button class="copy-btn" onclick="copyDeviceId()" id="copyDeviceBtn">📋 نسخ المعرف</button>
+            </div>
+            <div id="paymentStatus" style="margin: 12px 0;">
+                <button class="btn btn-pay" onclick="verifyPayment()" id="verifyPayBtn">✅ لقد دفعت - تحقق الآن</button>
+            </div>
+            <div class="days-left" id="daysLeft"></div>
+            <div class="switch-business" style="margin-top:16px;">
+                <button class="btn-switch" onclick="switchBusiness()" id="switchBizBtn">🔄 تغيير النشاط التجاري</button>
+            </div>
+        </div>
+
+        <div id="mainApp" class="screen">
+            <div class="header">
+                <div class="header-left">
+                    <h1>PS Rental</h1>
+                    <span class="business-tag" id="appBusinessTag">BIZ</span>
+                    <button class="btn-settings" onclick="openSettings()">⚙️</button>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-shift" onclick="openShiftSummary()">📊 تقفيل</button>
+                    <span class="header-time" id="currentTime">12:00</span>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="number total" id="totalStations">0</div>
+                    <div class="label" id="statTotalLabel">إجمالي الأجهزة</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number active" id="inUseCount">0</div>
+                    <div class="label" id="statInUseLabel">مشغولة</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number available" id="availableCount">0</div>
+                    <div class="label" id="statAvailableLabel">متاحة</div>
+                </div>
+            </div>
+            <div class="stations-title" id="stationsTitle">الأجهزة</div>
+            <div class="station-grid" id="stationGrid"></div>
+        </div>
+
+        <div class="modal-overlay" id="sessionModal">
+            <div class="modal-content">
+                <h2 id="modalTitle">✅ انتهت الجلسة!</h2>
+                <div class="sub" id="modalSub">جهاز بلايستيشن 1</div>
+                <div class="detail-row">
+                    <span class="label" id="modalDurationLabel">⏱ المدة</span>
+                    <span class="value" id="modalDuration">--</span>
+                </div>
+                <div class="detail-row time-row">
+                    <span class="label" id="modalTimeLabel">💰 تكلفة الوقت</span>
+                    <span class="value" id="modalTimePrice">0.00 EGP</span>
+                </div>
+                <div id="modalItemsContainer"></div>
+                <div class="total-row">
+                    <span id="modalTotalLabel">الإجمالي</span>
+                    <span class="amount" id="modalTotal">0.00 EGP</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-done" onclick="closeModal()" id="modalDoneBtn">تم</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="shiftModal">
+            <div class="shift-modal-content">
+                <h2>📊 تقفيل الشيفت</h2>
+                <div class="shift-date" id="shiftDate">اليوم: --/--/----</div>
+
+                <div class="shift-summary-grid">
+                    <div class="shift-stat-card">
+                        <div class="shift-stat-number gold" id="shiftNoodles">0</div>
+                        <div class="shift-stat-label">🍜 نودلز</div>
+                    </div>
+                    <div class="shift-stat-card">
+                        <div class="shift-stat-number blue" id="shiftDrinksTotal">0</div>
+                        <div class="shift-stat-label">🥤 مشروبات</div>
+                    </div>
+                    <div class="shift-stat-card">
+                        <div class="shift-stat-number green" id="shiftSessions">0</div>
+                        <div class="shift-stat-label">🎮 جلسات لعب</div>
+                    </div>
+                    <div class="shift-stat-card">
+                        <div class="shift-stat-number orange" id="shiftHours">0.0</div>
+                        <div class="shift-stat-label">⏱ ساعات لعب</div>
+                    </div>
+                    <div class="shift-stat-card">
+                        <div class="shift-stat-number cyan" id="shiftSessionRevenue">0.00</div>
+                        <div class="shift-stat-label">💰 إيرادات الجلسات</div>
+                    </div>
+                    <div class="shift-stat-card">
+                        <div class="shift-stat-number pink" id="shiftNoodleRevenue">0.00</div>
+                        <div class="shift-stat-label">💰 إيرادات النودلز</div>
+                    </div>
+                    <div class="shift-stat-card">
+                        <div class="shift-stat-number purple" id="shiftDrinkRevenue">0.00</div>
+                        <div class="shift-stat-label">💰 إيرادات المشروبات</div>
+                    </div>
+                </div>
+
+                <div class="shift-drinks-detail" id="shiftDrinksDetail">
+                    <div class="detail-title">🥤 تفاصيل المشروبات</div>
+                    <div id="shiftDrinksList"></div>
+                </div>
+
+                <div class="shift-total-row">
+                    <span class="total-label">💰 إجمالي الإيرادات</span>
+                    <span class="total-amount" id="shiftGrandTotal">0.00 EGP</span>
+                </div>
+
+                <div class="shift-actions">
+                    <button class="btn btn-secondary" onclick="closeShiftModal()">إغلاق</button>
+                    <button class="btn btn-warning" onclick="viewShiftHistory()">📜 السجل</button>
+                    <button class="btn btn-success" onclick="confirmCloseShift()">✅ تقفيل</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="historyModal">
+            <div class="shift-modal-content">
+                <h2>📜 سجل التقفيلات</h2>
+                <div class="shift-date" style="margin-bottom:12px;">جميع التقفيلات السابقة</div>
+                <div class="shift-history-container" id="historyContainer">
+                    <div style="text-align:center;color:#5a6f8a;padding:20px;">جارٍ التحميل...</div>
+                </div>
+                <div class="shift-actions">
+                    <button class="btn btn-secondary" onclick="closeHistoryModal()" style="flex:1;">إغلاق</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="settingsModal">
+            <div class="settings-modal-content">
+                <h2 id="settingsTitle">⚙️ الإعدادات</h2>
+                <div class="sub" id="settingsSub">تخصيص الأجهزة والمشروبات</div>
+
+                <div class="lang-toggle">
+                    <span class="lang-label" id="langLabel">🌐 اللغة:</span>
+                    <button class="lang-btn active" onclick="setLanguage('ar')" id="langArBtn">🇸🇦 عربي</button>
+                    <span class="lang-divider">|</span>
+                    <button class="lang-btn" onclick="setLanguage('en')" id="langEnBtn">🇬🇧 English</button>
+                </div>
+
+                <div class="settings-note" id="settingsNote">💡 التغييرات تطبق فوراً. الجلسات النشطة تحتفظ بالسعر الذي بدأت به.</div>
+
+                <div class="global-settings">
+                    <div class="global-label" id="noodleLabel">🍜 النودلز / الأندومي</div>
+                    <div class="settings-group" style="margin-bottom:0;">
+                        <label id="noodlePriceLabel">سعر العلبة (EGP)</label>
+                        <input type="number" id="noodlePriceInput" value="15" min="1" max="100" step="0.5">
+                        <div class="hint" id="noodleHint">الافتراضي: 15 EGP</div>
+                    </div>
+                </div>
+
+                <div class="drinks-settings">
+                    <div class="drinks-label" id="drinksLabel">🥤 المشروبات المخصصة</div>
+                    <div id="drinksSettingsList"></div>
+                    <button class="btn-add-drink-setting" onclick="addDrinkSetting()" id="addDrinkBtn">➕ إضافة مشروب جديد</button>
+                </div>
+
+                <div id="settingsList"></div>
+                <button class="btn-add-station" onclick="addStation()">➕ إضافة جهاز جديد</button>
+
+                <div class="modal-actions" style="margin-top:16px;">
+                    <button class="btn btn-done" onclick="closeSettings()" style="flex:1;" id="settingsDoneBtn">تم</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="addDrinkModal">
+            <div class="modal-content">
+                <h2 id="addDrinkTitle">🥤 إضافة مشروب جديد</h2>
+                <div class="sub" id="addDrinkSub">أدخل اسم المشروب وسعره</div>
+                <div class="settings-group">
+                    <label id="addDrinkNameLabel">اسم المشروب</label>
+                    <input type="text" id="newDrinkName" placeholder="مثال: شاي، قهوة، عصير...">
+                </div>
+                <div class="settings-group">
+                    <label id="addDrinkPriceLabel">السعر (EGP)</label>
+                    <input type="number" id="newDrinkPrice" value="10" min="1" step="0.5">
+                </div>
+                <div class="settings-group">
+                    <label id="addDrinkIconLabel">رمز تعبيري (اختياري)</label>
+                    <input type="text" id="newDrinkIcon" placeholder="☕" maxlength="2" style="text-align:center;font-size:24px;width:60px;">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeAddDrinkModal()" id="addDrinkCancelBtn">إلغاء</button>
+                    <button class="btn btn-success" onclick="confirmAddDrink()" id="addDrinkConfirmBtn">إضافة</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const SUPABASE_URL = 'https://fhjhtgbvtkuhhzitvxtx.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_X0aLD3gjXGqC_no4gW78ng_TWztP5cd';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ============================================
+        // TRANSLATIONS
+        // ============================================
+        const LANG_KEY = 'ps_language';
+        const translations = {
+            ar: {
+                setupSubtitle: 'إدارة صالات البلايستيشن باحترافية',
+                setupInfo: '🔑 أدخل كود النشاط التجاري للوصول إلى نظامك',
+                setupCodeLabel: '🏢 كود النشاط التجاري',
+                setupCodeHint: 'تواصل مع البائع للحصول على كود النشاط',
+                setupEnterBtn: '🔑 دخول',
+                setupNewBizLabel: 'ليس لديك نشاط تجاري؟',
+                setupNewBizBtn: '➕ إنشاء نشاط تجاري جديد',
+                lockSubtitle: 'إدارة احترافية لتأجير البلايستيشن',
+                pricePeriod: 'شهرياً',
+                feature1: 'أجهزة بلايستيشن',
+                feature2: 'تتبع الجلسات والفواتير',
+                feature3: 'تتبع الطلبات (نودلز + مشروبات)',
+                feature4: 'أسعار مخصصة لكل جهاز',
+                feature5: 'بالجنيه المصري (EGP)',
+                feature6: 'وصول 24/7',
+                paymentLabel: '📱 أرسل الدفع إلى:',
+                paymentMethod: 'فودافون كاش / إنستا باي',
+                deviceIdLabel: 'معرف جهازك:',
+                copyDeviceBtn: '📋 نسخ المعرف',
+                verifyPayBtn: '✅ لقد دفعت - تحقق الآن',
+                switchBizBtn: '🔄 تغيير النشاط التجاري',
+                statTotalLabel: 'إجمالي الأجهزة',
+                statInUseLabel: 'مشغولة',
+                statAvailableLabel: 'متاحة',
+                stationsTitle: 'الأجهزة',
+                locked: '🔒 مقفل',
+                active: '✅ نشط',
+                expiring: '⚠️ ينتهي قريباً',
+                modalTitle: '✅ انتهت الجلسة!',
+                modalDurationLabel: '⏱ المدة',
+                modalTimeLabel: '💰 تكلفة الوقت',
+                modalTotalLabel: 'الإجمالي',
+                modalDoneBtn: 'تم',
+                settingsTitle: '⚙️ الإعدادات',
+                settingsSub: 'تخصيص الأجهزة والمشروبات',
+                settingsNote: '💡 التغييرات تطبق فوراً. الجلسات النشطة تحتفظ بالسعر الذي بدأت به.',
+                noodleLabel: '🍜 النودلز / الأندومي',
+                noodlePriceLabel: 'سعر العلبة (EGP)',
+                noodleHint: 'الافتراضي: 15 EGP',
+                drinksLabel: '🥤 المشروبات المخصصة',
+                addDrinkBtn: '➕ إضافة مشروب جديد',
+                settingsDoneBtn: 'تم',
+                addDrinkTitle: '🥤 إضافة مشروب جديد',
+                addDrinkSub: 'أدخل اسم المشروب وسعره',
+                addDrinkNameLabel: 'اسم المشروب',
+                addDrinkPriceLabel: 'السعر (EGP)',
+                addDrinkIconLabel: 'رمز تعبيري (اختياري)',
+                addDrinkCancelBtn: 'إلغاء',
+                addDrinkConfirmBtn: 'إضافة',
+                langLabel: '🌐 اللغة:',
+                langAr: '🇸🇦 عربي',
+                langEn: '🇬🇧 English',
+                toastCopied: '📋 تم نسخ المعرف: ',
+                toastSwitch: '✅ تم تغيير النشاط التجاري',
+                toastActive: '✅ تم تفعيل الاشتراك حتى ',
+                toastInvalidCode: '❌ كود غير صحيح أو مستخدم مسبقاً',
+                toastSaved: '✅ تم حفظ الإعدادات',
+                toastLogout: '🔒 تم تسجيل الخروج',
+                toastDrinkAdded: '✅ تم إضافة ',
+                toastDrinkRemoved: '✅ تم حذف المشروب',
+                toastShiftClosed: '✅ تم تقفيل الشيفت بنجاح!',
+                available: 'متاح',
+                inUse: 'قيد اللعب',
+                started: 'بدأ',
+                endSession: 'إنهاء',
+                start: 'بدء',
+                orders: '🛒 الطلبات:',
+                addDrink: '➕ إضافة مشروب',
+                noodles: 'نودلز',
+                total: 'إجمالي',
+                drinks: 'مشروب',
+                daysRemaining: 'أيام متبقية',
+                payToUnlock: '💡 ادفع ',
+                confirmSwitch: 'تغيير النشاط التجاري؟\n\nالحالي: ',
+                confirmLogout: 'تسجيل الخروج وقفل التطبيق؟',
+                confirmDeleteDrink: 'هل تريد حذف هذا المشروب؟',
+                confirmCreateBusiness: 'هذا الكود موجود بالفعل!',
+                codeMinLength: 'كود النشاط التجاري يجب أن يكون 3 أحرف على الأقل',
+                shiftTitle: '📊 تقفيل الشيفت',
+                shiftDate: 'اليوم: ',
+                shiftNoodles: '🍜 نودلز',
+                shiftDrinksTotal: '🥤 مشروبات',
+                shiftSessions: '🎮 جلسات لعب',
+                shiftHours: '⏱ ساعات لعب',
+                shiftSessionRevenue: '💰 إيرادات الجلسات',
+                shiftNoodleRevenue: '💰 إيرادات النودلز',
+                shiftDrinkRevenue: '💰 إيرادات المشروبات',
+                shiftGrandTotal: '💰 إجمالي الإيرادات',
+                shiftClose: '✅ تقفيل',
+                shiftHistory: '📜 السجل',
+                shiftNoHistory: 'لا توجد تقفيلات سابقة',
+                shiftDrinksDetail: '🥤 تفاصيل المشروبات',
+                shiftCloseConfirm: 'هل أنت متأكد من تقفيل الشيفت؟\n\nسيتم حفظ جميع البيانات وبدء شيفت جديد.',
+                shiftClosed: '✅ تم تقفيل الشيفت!',
+                noHistory: 'لا توجد تقفيلات سابقة',
+                addStation: '➕ إضافة جهاز جديد',
+                removeStation: '🗑️',
+                confirmRemoveStation: 'هل أنت متأكد من حذف هذا الجهاز؟\n\nالجهاز مشغول حالياً، لا يمكن حذفه.',
+                cannotCloseShift: '⚠️ لا يمكن تقفيل الشيفت، الأجهزة التالية لا تزال مشغولة: ',
+            },
+            en: {
+                setupSubtitle: 'Professional PlayStation Rental Management',
+                setupInfo: '🔑 Enter your business code to access your system',
+                setupCodeLabel: '🏢 Business Code',
+                setupCodeHint: 'Contact your seller for your business code',
+                setupEnterBtn: '🔑 Enter',
+                setupNewBizLabel: "Don't have a business?",
+                setupNewBizBtn: '➕ Create New Business',
+                lockSubtitle: 'Professional PlayStation Rental Management',
+                pricePeriod: 'per month',
+                feature1: 'PlayStation stations',
+                feature2: 'Session tracking & billing',
+                feature3: 'Order tracking (Noodles + Drinks)',
+                feature4: 'Custom prices per device',
+                feature5: 'In EGP currency',
+                feature6: '24/7 access',
+                paymentLabel: '📱 Send payment to:',
+                paymentMethod: 'Vodafone Cash / InstaPay',
+                deviceIdLabel: 'Your Device ID:',
+                copyDeviceBtn: '📋 Copy ID',
+                verifyPayBtn: "✅ I've Paid - Verify Now",
+                switchBizBtn: '🔄 Switch Business',
+                statTotalLabel: 'Total Stations',
+                statInUseLabel: 'In Use',
+                statAvailableLabel: 'Available',
+                stationsTitle: 'STATIONS',
+                locked: '🔒 Locked',
+                active: '✅ Active',
+                expiring: '⚠️ Expiring Soon',
+                modalTitle: '✅ Session Complete!',
+                modalDurationLabel: '⏱ Duration',
+                modalTimeLabel: '💰 Time Price',
+                modalTotalLabel: 'Total',
+                modalDoneBtn: 'Done',
+                settingsTitle: '⚙️ Settings',
+                settingsSub: 'Customize each PlayStation station',
+                settingsNote: '💡 Changes apply immediately. Active sessions keep the rate they started with.',
+                noodleLabel: '🍜 Noodle / Indomi Settings',
+                noodlePriceLabel: 'Price per Noodle (EGP)',
+                noodleHint: 'Default: 15 EGP',
+                drinksLabel: '🥤 Custom Drinks',
+                addDrinkBtn: '➕ Add New Drink',
+                settingsDoneBtn: 'Done',
+                addDrinkTitle: '🥤 Add New Drink',
+                addDrinkSub: 'Enter drink name and price',
+                addDrinkNameLabel: 'Drink Name',
+                addDrinkPriceLabel: 'Price (EGP)',
+                addDrinkIconLabel: 'Emoji (Optional)',
+                addDrinkCancelBtn: 'Cancel',
+                addDrinkConfirmBtn: 'Add',
+                langLabel: '🌐 Language:',
+                langAr: '🇸🇦 عربي',
+                langEn: '🇬🇧 English',
+                toastCopied: '📋 Device ID copied: ',
+                toastSwitch: '✅ Business switched',
+                toastActive: '✅ Subscription activated until ',
+                toastInvalidCode: '❌ Invalid or already used code',
+                toastSaved: '✅ Settings saved',
+                toastLogout: '🔒 Logged out',
+                toastDrinkAdded: '✅ Added ',
+                toastDrinkRemoved: '✅ Drink removed',
+                toastShiftClosed: '✅ Shift closed successfully!',
+                available: 'Available',
+                inUse: 'In Use',
+                started: 'Started',
+                endSession: 'End',
+                start: 'Start',
+                orders: '🛒 Orders:',
+                addDrink: '➕ Add Drink',
+                noodles: 'Noodles',
+                total: 'Total',
+                drinks: 'Drinks',
+                daysRemaining: 'days remaining',
+                payToUnlock: '💡 Pay ',
+                confirmSwitch: 'Switch business?\n\nCurrent: ',
+                confirmLogout: 'Logout and lock the app?',
+                confirmDeleteDrink: 'Delete this drink?',
+                confirmCreateBusiness: 'Business code already exists!',
+                codeMinLength: 'Business code must be at least 3 characters',
+                shiftTitle: '📊 Shift Summary',
+                shiftDate: 'Date: ',
+                shiftNoodles: '🍜 Noodles',
+                shiftDrinksTotal: '🥤 Drinks',
+                shiftSessions: '🎮 Sessions',
+                shiftHours: '⏱ Hours Played',
+                shiftSessionRevenue: '💰 Session Revenue',
+                shiftNoodleRevenue: '💰 Noodle Revenue',
+                shiftDrinkRevenue: '💰 Drink Revenue',
+                shiftGrandTotal: '💰 Total Revenue',
+                shiftClose: '✅ Close Shift',
+                shiftHistory: '📜 History',
+                shiftNoHistory: 'No shifts found',
+                shiftDrinksDetail: '🥤 Drink Details',
+                shiftCloseConfirm: 'Are you sure you want to close the shift?\n\nAll data will be saved and a new shift will start.',
+                shiftClosed: '✅ Shift closed!',
+                noHistory: 'No shifts found',
+                addStation: '➕ Add New Station',
+                removeStation: '🗑️',
+                confirmRemoveStation: 'Are you sure you want to delete this station?\n\nThe station is currently in use and cannot be deleted.',
+                cannotCloseShift: '⚠️ Cannot close shift, the following stations are still in use: ',
+            }
+        };
+
+        let currentLang = 'ar';
+
+        function getLang() {
+            const saved = localStorage.getItem(LANG_KEY);
+            if (saved && translations[saved]) return saved;
+            return 'ar';
+        }
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            localStorage.setItem(LANG_KEY, lang);
+            document.body.className = lang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langArBtn').className = 'lang-btn' + (lang === 'ar' ? ' active' : '');
+            document.getElementById('langEnBtn').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
+            applyTranslations();
+            renderMain();
+            updateLockScreen();
+            renderDrinksSettings();
+            showToast('✅ ' + (lang === 'ar' ? 'تم تغيير اللغة' : 'Language changed'), 'success');
+        }
+
+        function applyTranslations() {
+            const t = translations[currentLang];
+            if (!t) return;
+            document.getElementById('setupSubtitle').textContent = t.setupSubtitle;
+            document.getElementById('setupInfo').textContent = t.setupInfo;
+            document.getElementById('setupCodeLabel').textContent = t.setupCodeLabel;
+            document.getElementById('setupCodeHint').textContent = t.setupCodeHint;
+            document.getElementById('setupEnterBtn').textContent = t.setupEnterBtn;
+            document.getElementById('setupNewBizLabel').textContent = t.setupNewBizLabel;
+            document.getElementById('setupNewBizBtn').textContent = t.setupNewBizBtn;
+            document.getElementById('lockSubtitle').textContent = t.lockSubtitle;
+            document.getElementById('pricePeriod').textContent = t.pricePeriod;
+            document.getElementById('feature1').textContent = t.feature1;
+            document.getElementById('feature2').textContent = t.feature2;
+            document.getElementById('feature3').textContent = t.feature3;
+            document.getElementById('feature4').textContent = t.feature4;
+            document.getElementById('feature5').textContent = t.feature5;
+            document.getElementById('feature6').textContent = t.feature6;
+            document.getElementById('paymentLabel').textContent = t.paymentLabel;
+            document.getElementById('paymentMethod').textContent = t.paymentMethod;
+            document.getElementById('deviceIdLabel').textContent = t.deviceIdLabel;
+            document.getElementById('copyDeviceBtn').textContent = t.copyDeviceBtn;
+            document.getElementById('verifyPayBtn').textContent = t.verifyPayBtn;
+            document.getElementById('switchBizBtn').textContent = t.switchBizBtn;
+            document.getElementById('statTotalLabel').textContent = t.statTotalLabel;
+            document.getElementById('statInUseLabel').textContent = t.statInUseLabel;
+            document.getElementById('statAvailableLabel').textContent = t.statAvailableLabel;
+            document.getElementById('stationsTitle').textContent = t.stationsTitle;
+            document.getElementById('settingsTitle').textContent = t.settingsTitle;
+            document.getElementById('settingsSub').textContent = t.settingsSub;
+            document.getElementById('settingsNote').textContent = t.settingsNote;
+            document.getElementById('noodleLabel').textContent = t.noodleLabel;
+            document.getElementById('noodlePriceLabel').textContent = t.noodlePriceLabel;
+            document.getElementById('noodleHint').textContent = t.noodleHint;
+            document.getElementById('drinksLabel').textContent = t.drinksLabel;
+            document.getElementById('addDrinkBtn').textContent = t.addDrinkBtn;
+            document.getElementById('settingsDoneBtn').textContent = t.settingsDoneBtn;
+            document.getElementById('addDrinkTitle').textContent = t.addDrinkTitle;
+            document.getElementById('addDrinkSub').textContent = t.addDrinkSub;
+            document.getElementById('addDrinkNameLabel').textContent = t.addDrinkNameLabel;
+            document.getElementById('addDrinkPriceLabel').textContent = t.addDrinkPriceLabel;
+            document.getElementById('addDrinkIconLabel').textContent = t.addDrinkIconLabel;
+            document.getElementById('addDrinkCancelBtn').textContent = t.addDrinkCancelBtn;
+            document.getElementById('addDrinkConfirmBtn').textContent = t.addDrinkConfirmBtn;
+            document.getElementById('modalTitle').textContent = t.modalTitle;
+            document.getElementById('modalDurationLabel').textContent = t.modalDurationLabel;
+            document.getElementById('modalTimeLabel').textContent = t.modalTimeLabel;
+            document.getElementById('modalTotalLabel').textContent = t.modalTotalLabel;
+            document.getElementById('modalDoneBtn').textContent = t.modalDoneBtn;
+            document.getElementById('langLabel').textContent = t.langLabel;
+            document.getElementById('langArBtn').textContent = t.langAr;
+            document.getElementById('langEnBtn').textContent = t.langEn;
+            document.querySelector('.btn-add-station').textContent = t.addStation;
+            updateLockScreen();
+        }
+
+        function showToast(message, type) {
+            type = type || 'success';
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.style.display = 'block';
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(function() { toast.style.display = 'none'; }, 3500);
+        }
+
+        const VERSION_KEY = 'ps_app_version';
+        const APP_VERSION = '2.6.0';
+
+        function checkVersion() {
+            const stored = localStorage.getItem(VERSION_KEY);
+            if (stored && stored !== APP_VERSION) {
+                localStorage.setItem(VERSION_KEY, APP_VERSION);
+                location.reload();
+                return true;
+            }
+            if (!stored) localStorage.setItem(VERSION_KEY, APP_VERSION);
+            return false;
+        }
+        setInterval(function() {
+            const stored = localStorage.getItem(VERSION_KEY);
+            if (stored && stored !== APP_VERSION) {
+                localStorage.setItem(VERSION_KEY, APP_VERSION);
+                location.reload();
+            }
+        }, 30000);
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) checkVersion();
+        });
+        checkVersion();
+
+        const DEVICE_ID_KEY = 'ps_device_id';
+
+        function getDeviceId() {
+            var deviceId = localStorage.getItem(DEVICE_ID_KEY);
+            if (!deviceId) {
+                var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                var result = 'PS-';
+                for (var i = 0; i < 8; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                deviceId = result;
+                localStorage.setItem(DEVICE_ID_KEY, deviceId);
+            }
+            return deviceId;
+        }
+
+        function copyDeviceId() {
+            var deviceId = getDeviceId();
+            var t = translations[currentLang];
+            navigator.clipboard.writeText(deviceId).then(function() {
+                showToast(t.toastCopied + deviceId);
+            }).catch(function() {
+                var input = document.createElement('input');
+                input.value = deviceId;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast(t.toastCopied + deviceId);
+            });
+        }
+
+        currentLang = getLang();
+        document.body.className = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.getElementById('langArBtn').className = 'lang-btn' + (currentLang === 'ar' ? ' active' : '');
+        document.getElementById('langEnBtn').className = 'lang-btn' + (currentLang === 'en' ? ' active' : '');
+
+        const BUSINESS_KEY = 'ps_business_code';
+
+        var currentBusiness = null;
+        var businessConfig = null;
+        var deviceConfig = {};
+        var sessions = {};
+        var noodleOrders = {};
+        var drinkOrders = {};
+        var drinks = {};
+        var noodlePrice = 15;
+        var activeTimers = {};
+        var isMainAppInitialized = false;
+        var drinkIdCounter = 0;
+
+        var completedSessions = {};
+        var completedOrders = { noodles: {}, drinks: {} };
+
+        function getCompletedSessionsKey() {
+            return 'ps_completed_sessions_' + currentBusiness + '_' + getDeviceId();
+        }
+
+        function loadCompletedSessionsFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                var data = localStorage.getItem(getCompletedSessionsKey());
+                return data ? JSON.parse(data) : {};
+            } catch (e) { return {}; }
+        }
+
+        function saveCompletedSessionsToStorage() {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem(getCompletedSessionsKey(), JSON.stringify(completedSessions));
+            } catch (e) {}
+        }
+
+        function getCompletedOrdersKey() {
+            return 'ps_completed_orders_' + currentBusiness + '_' + getDeviceId();
+        }
+
+        function loadCompletedOrdersFromStorage() {
+            if (!currentBusiness) return { noodles: {}, drinks: {} };
+            try {
+                var data = localStorage.getItem(getCompletedOrdersKey());
+                return data ? JSON.parse(data) : { noodles: {}, drinks: {} };
+            } catch (e) { return { noodles: {}, drinks: {} }; }
+        }
+
+        function saveCompletedOrdersToStorage() {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem(getCompletedOrdersKey(), JSON.stringify(completedOrders));
+            } catch (e) {}
+        }
+
+        const SHIFT_KEY = 'ps_shift_data';
+        const SHIFT_HISTORY_KEY = 'ps_shift_history';
+
+        function getShiftData() {
+            try {
+                var data = localStorage.getItem(SHIFT_KEY);
+                if (data) {
+                    return JSON.parse(data);
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function saveShiftData(data) {
+            try {
+                localStorage.setItem(SHIFT_KEY, JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        function getShiftHistory() {
+            try {
+                var data = localStorage.getItem(SHIFT_HISTORY_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch (e) { return []; }
+        }
+
+        function saveShiftHistory(entry) {
+            try {
+                var history = getShiftHistory();
+                history.push(entry);
+                localStorage.setItem(SHIFT_HISTORY_KEY, JSON.stringify(history));
+            } catch (e) {}
+        }
+
+        function resetShiftData() {
+            var shiftData = {
+                totalSessions: 0,
+                totalNoodles: 0,
+                totalDrinks: 0,
+                totalHours: 0,
+                noodleRevenue: 0,
+                drinkRevenue: 0,
+                sessionRevenue: 0,
+                totalRevenue: 0,
+                drinkDetails: {},
+                date: new Date().toISOString(),
+                isOpen: true
+            };
+            saveShiftData(shiftData);
+            return shiftData;
+        }
+
+        function getOrCreateShift() {
+            var shift = getShiftData();
+            if (!shift || !shift.isOpen) {
+                shift = resetShiftData();
+            }
+            if (!shift.drinkDetails) shift.drinkDetails = {};
+            return shift;
+        }
+
+        // ============================================
+        // ADD / REMOVE STATIONS
+        // ============================================
+        function addStation() {
+            if (!businessConfig) {
+                showToast('⚠️ يرجى تحميل النشاط التجاري أولاً', 'warning');
+                return;
+            }
+            var newIndex = businessConfig.totalStations + 1;
+            deviceConfig[newIndex] = { name: 'PS ' + newIndex, rate: 25 };
+            businessConfig.totalStations = newIndex;
+            saveBusinessConfig(currentBusiness, businessConfig);
+            renderSettingsList();
+            renderMain();
+            showToast('✅ تم إضافة جهاز PS ' + newIndex, 'success');
+        }
+
+        function removeStation(index) {
+            if (!businessConfig) return;
+            if (sessions[index] && !sessions[index].completed) {
+                var t = translations[currentLang];
+                showToast(t.confirmRemoveStation, 'error');
+                return;
+            }
+            var t = translations[currentLang];
+            if (!confirm('هل أنت متأكد من حذف الجهاز ' + index + '؟')) return;
+
+            delete deviceConfig[index];
+            delete noodleOrders[index];
+            if (drinkOrders[index]) delete drinkOrders[index];
+            if (sessions[index]) delete sessions[index];
+
+            var newDeviceConfig = {};
+            var newIndex = 1;
+            for (var i = 1; i <= businessConfig.totalStations; i++) {
+                if (i === index) continue;
+                if (deviceConfig[i]) {
+                    newDeviceConfig[newIndex] = deviceConfig[i];
+                    newIndex++;
+                }
+            }
+            deviceConfig = newDeviceConfig;
+            businessConfig.totalStations = Object.keys(deviceConfig).length;
+
+            saveBusinessConfig(currentBusiness, businessConfig);
+            saveSessionsToStorage();
+            saveNoodleOrdersToStorage();
+            saveDrinkOrdersToStorage();
+            renderSettingsList();
+            renderMain();
+            showToast('✅ تم حذف الجهاز', 'success');
+        }
+
+        function renderSettingsList() {
+            var list = document.getElementById('settingsList');
+            if (!list) return;
+            var t = translations[currentLang];
+            var totalStations = businessConfig ? businessConfig.totalStations : 11;
+            var html = '';
+            for (var i = 1; i <= totalStations; i++) {
+                var config = deviceConfig[i] || { name: 'PS ' + i, rate: 25 };
+                var session = sessions[i];
+                var isActive = session && !session.completed;
+                var statusText = isActive ? (currentLang === 'ar' ? '🔴 مشغول' : '🔴 In Use') : (currentLang === 'ar' ?
+                    '⚪ متاح' : '⚪ Available');
+                var statusClass = isActive ? 'in-use' : '';
+                var disableRemove = isActive ? 'disabled' : '';
+                html +=
+                    '<div class="settings-device"><div class="device-header"><span class="device-num">' + i +
+                    '</span><span class="device-status ' + statusClass + '">' + statusText +
+                    '</span><button class="btn-remove-station" onclick="removeStation(' + i + ')" ' + disableRemove +
+                    '>' + t.removeStation + '</button></div><div class="settings-row"><div class="settings-group"><label>' +
+                    (currentLang === 'ar' ? 'الاسم' : 'Name') +
+                    '</label><input type="text" id="settings_name_' + i + '" value="' + config.name +
+                    '" placeholder="PS ' + i + '" ' + (isActive ? 'disabled' : '') + '>' + (isActive ?
+                        '<div class="hint">⛔ ' + (currentLang === 'ar' ? 'لا يمكن التعديل أثناء الاستخدام' :
+                            'Cannot edit while in use') + '</div>' : '') +
+                    '</div><div class="settings-group"><label>' + (currentLang === 'ar' ? 'السعر (EGP/ساعة)' :
+                        'Rate (EGP/hour)') +
+                    '</label><input type="number" id="settings_rate_' + i + '" value="' + config.rate +
+                    '" min="1" max="100" step="0.5" ' + (isActive ? 'disabled' : '') + '>' + (isActive ?
+                        '<div class="hint">⛔ ' + (currentLang === 'ar' ? 'لا يمكن التعديل أثناء الاستخدام' :
+                            'Cannot edit while in use') + '</div>' : '') +
+                    '</div></div></div>';
+            }
+            list.innerHTML = html;
+            var addBtn = document.querySelector('.btn-add-station');
+            if (addBtn) addBtn.textContent = t.addStation;
+        }
+
+        // ============================================
+        // CALCULATE SHIFT TOTALS
+        // ============================================
+        function calculateShiftTotals() {
+            var shift = getOrCreateShift();
+
+            var totalNoodles = 0;
+            Object.values(completedOrders.noodles).forEach(function(c) { totalNoodles += c || 0; });
+            Object.values(noodleOrders).forEach(function(c) { totalNoodles += c || 0; });
+
+            var totalDrinks = 0;
+            var drinkDetails = {};
+            Object.entries(completedOrders.drinks).forEach(function(_ref) {
+                var drinkId = _ref[0],
+                    count = _ref[1];
+                totalDrinks += count || 0;
+                if (!drinkDetails[drinkId]) drinkDetails[drinkId] = 0;
+                drinkDetails[drinkId] += count || 0;
+            });
+            Object.entries(drinkOrders).forEach(function(_ref2) {
+                var deviceId = _ref2[0],
+                    deviceOrders = _ref2[1];
+                Object.entries(deviceOrders).forEach(function(_ref3) {
+                    var drinkId = _ref3[0],
+                        count = _ref3[1];
+                    totalDrinks += count || 0;
+                    if (!drinkDetails[drinkId]) drinkDetails[drinkId] = 0;
+                    drinkDetails[drinkId] += count || 0;
+                });
+            });
+
+            var totalSessions = 0;
+            var totalHours = 0;
+            var sessionRevenue = 0;
+
+            Object.values(completedSessions).forEach(function(s) {
+                totalSessions++;
+                var hours = s.duration / (1000 * 60 * 60);
+                totalHours += hours;
+                sessionRevenue += s.amount || 0;
+            });
+
+            Object.values(sessions).forEach(function(s) {
+                if (!s.completed) {
+                    totalSessions++;
+                    var duration = s.duration || 0;
+                    if (s.startTime) {
+                        duration = Date.now() - s.startTime.getTime();
+                    }
+                    var hours = duration / (1000 * 60 * 60);
+                    totalHours += hours;
+                    sessionRevenue += s.amount || 0;
+                }
+            });
+
+            var noodleRevenue = totalNoodles * getNoodlePrice();
+            var drinkRevenue = 0;
+            Object.entries(drinkDetails).forEach(function(_ref4) {
+                var drinkId = _ref4[0],
+                    count = _ref4[1];
+                var drink = drinks[drinkId];
+                if (drink) drinkRevenue += drink.price * count;
+            });
+
+            var totalRevenue = sessionRevenue + noodleRevenue + drinkRevenue;
+
+            shift.totalSessions = totalSessions;
+            shift.totalHours = Math.round(totalHours * 100) / 100;
+            shift.totalNoodles = totalNoodles;
+            shift.totalDrinks = totalDrinks;
+            shift.noodleRevenue = Math.round(noodleRevenue * 100) / 100;
+            shift.drinkRevenue = Math.round(drinkRevenue * 100) / 100;
+            shift.sessionRevenue = Math.round(sessionRevenue * 100) / 100;
+            shift.totalRevenue = Math.round(totalRevenue * 100) / 100;
+            shift.drinkDetails = drinkDetails;
+            shift.date = new Date().toISOString();
+
+            saveShiftData(shift);
+            return shift;
+        }
+
+        // ============================================
+        // DRINKS STORAGE
+        // ============================================
+        function getDrinksKey() {
+            return 'ps_drinks_' + currentBusiness;
+        }
+
+        function loadDrinksFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                var data = localStorage.getItem(getDrinksKey());
+                return data ? JSON.parse(data) : {};
+            } catch (e) { return {}; }
+        }
+
+        function saveDrinksToStorage() {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem(getDrinksKey(), JSON.stringify(drinks));
+            } catch (e) {}
+        }
+
+        function getDrinkOrdersKey() {
+            return 'ps_drink_orders_' + currentBusiness + '_' + getDeviceId();
+        }
+
+        function loadDrinkOrdersFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                var data = localStorage.getItem(getDrinkOrdersKey());
+                return data ? JSON.parse(data) : {};
+            } catch (e) { return {}; }
+        }
+
+        function saveDrinkOrdersToStorage() {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem(getDrinkOrdersKey(), JSON.stringify(drinkOrders));
+            } catch (e) {}
+        }
+
+        function getSessionsKey() {
+            return 'ps_sessions_' + currentBusiness + '_' + getDeviceId();
+        }
+
+        function loadSessionsFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                var data = localStorage.getItem(getSessionsKey());
+                if (data) {
+                    var parsed = JSON.parse(data);
+                    Object.keys(parsed).forEach(function(key) {
+                        if (parsed[key].startTime) {
+                            parsed[key].startTime = new Date(parsed[key].startTime);
+                        }
+                        if (parsed[key].endTime) {
+                            parsed[key].endTime = new Date(parsed[key].endTime);
+                        }
+                    });
+                    return parsed;
+                }
+                return {};
+            } catch (e) { return {}; }
+        }
+
+        function saveSessionsToStorage() {
+            if (!currentBusiness) return;
+            try {
+                var toSave = {};
+                Object.keys(sessions).forEach(function(key) {
+                    toSave[key] = {};
+                    Object.assign(toSave[key], sessions[key]);
+                    if (toSave[key].startTime) {
+                        toSave[key].startTime = toSave[key].startTime.toISOString();
+                    }
+                    if (toSave[key].endTime) {
+                        toSave[key].endTime = toSave[key].endTime.toISOString();
+                    }
+                });
+                localStorage.setItem(getSessionsKey(), JSON.stringify(toSave));
+            } catch (e) {}
+        }
+
+        function loadNoodleOrdersFromStorage() {
+            if (!currentBusiness) return {};
+            try {
+                var data = localStorage.getItem('ps_noodles_' + currentBusiness + '_' + getDeviceId());
+                return data ? JSON.parse(data) : {};
+            } catch (e) { return {}; }
+        }
+
+        function saveNoodleOrdersToStorage() {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem('ps_noodles_' + currentBusiness + '_' + getDeviceId(), JSON.stringify(noodleOrders));
+            } catch (e) {}
+        }
+
+        function getUserDataKey() {
+            return 'ps_user_' + currentBusiness + '_' + getDeviceId();
+        }
+
+        function getUserDataLocal() {
+            if (!currentBusiness) return null;
+            try {
+                var data = localStorage.getItem(getUserDataKey());
+                return data ? JSON.parse(data) : null;
+            } catch (e) { return null; }
+        }
+
+        function saveUserDataLocal(data) {
+            if (!currentBusiness) return;
+            try {
+                localStorage.setItem(getUserDataKey(), JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        function isRentalActive() {
+            var data = getUserDataLocal();
+            if (!data) return false;
+            if (!data.isActive) return false;
+            if (data.revoked === true) return false;
+            if (!data.expiryDate) return false;
+            var now = new Date();
+            var expiry = new Date(data.expiryDate);
+            return now <= expiry;
+        }
+
+        function getDaysRemaining() {
+            var data = getUserDataLocal();
+            if (!data || !data.isActive || !data.expiryDate) return 0;
+            var now = new Date();
+            var diff = new Date(data.expiryDate) - now;
+            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
+
+        async function loadBusiness(code) {
+            try {
+                var _ref5 = await supabaseClient.from('businesses').select('*').eq('code', code.toUpperCase()).single();
+                var data = _ref5.data;
+                var error = _ref5.error;
+                if (error) return null;
+                return data;
+            } catch (e) { return null; }
+        }
+
+        async function saveBusinessConfig(code, config) {
+            try {
+                var _ref6 = await supabaseClient.from('businesses').upsert({
+                    code: code.toUpperCase(),
+                    business_name: config.businessName,
+                    total_stations: config.totalStations,
+                    price: config.price,
+                    phone: config.phone,
+                    noodle_price: config.noodlePrice || 15,
+                    device_config: config.deviceConfig || {},
+                    drinks: config.drinks || {}
+                });
+                var error = _ref6.error;
+                if (error) return false;
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function getUserDataSupabase(businessCode, deviceId) {
+            try {
+                var _ref7 = await supabaseClient.from('users').select('*').eq('business_code', businessCode).eq('device_id',
+                    deviceId).single();
+                var data = _ref7.data;
+                var error = _ref7.error;
+                if (error && error.code !== 'PGRST116') return null;
+                return data;
+            } catch (e) { return null; }
+        }
+
+        async function saveUserDataSupabase(businessCode, deviceId, data) {
+            try {
+                var _ref8 = await supabaseClient.from('users').upsert({
+                    business_code: businessCode,
+                    device_id: deviceId,
+                    is_active: data.isActive || false,
+                    expiry_date: data.expiryDate,
+                    revoked: data.revoked || false
+                });
+                var error = _ref8.error;
+                if (error) return false;
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function verifyCode(businessCode, code) {
+            try {
+                var _ref9 = await supabaseClient.from('code_history').select('*').eq('business_code', businessCode).eq(
+                    'code', code).eq('used', false).single();
+                var data = _ref9.data;
+                var error = _ref9.error;
+                if (error || !data) return { valid: false };
+                await supabaseClient.from('code_history').update({ used: true }).eq('id', data.id);
+                return { valid: true };
+            } catch (e) { return { valid: false }; }
+        }
+
+        async function createNewBusiness() {
+            var t = translations[currentLang];
+            var code = prompt('أدخل كود النشاط التجاري الجديد (مثال: BIZ123):', 'BIZ' + Math.floor(Math.random() * 10000));
+            if (!code) return;
+            var cleanCode = code.trim().toUpperCase();
+            if (cleanCode.length < 3) {
+                alert(t.codeMinLength);
+                return;
+            }
+            var existing = await loadBusiness(cleanCode);
+            if (existing) {
+                alert(t.confirmCreateBusiness);
+                return;
+            }
+            var config = {
+                businessName: prompt('اسم النشاط التجاري:', 'صالة بلايستيشن ' + cleanCode) || 'صالة بلايستيشن ' +
+                    cleanCode,
+                totalStations: parseInt(prompt('عدد الأجهزة:', '11')) || 11,
+                price: parseFloat(prompt('السعر الشهري (EGP):', '150')) || 150,
+                phone: prompt('رقم هاتف الدفع:', '01012345678') || '01012345678',
+                noodlePrice: 15,
+                deviceConfig: {},
+                drinks: {
+                    'drink_1': { name: currentLang === 'ar' ? 'شاي' : 'Tea', price: 10, icon: '☕' },
+                    'drink_2': { name: currentLang === 'ar' ? 'قهوة' : 'Coffee', price: 15, icon: '☕' },
+                    'drink_3': { name: currentLang === 'ar' ? 'عصير' : 'Juice', price: 20, icon: '🧃' }
+                },
+                createdAt: new Date().toISOString()
+            };
+            for (var i = 1; i <= config.totalStations; i++) {
+                config.deviceConfig[i] = { name: 'PS ' + i, rate: i === 1 ? 20 : 25 };
+            }
+            if (await saveBusinessConfig(cleanCode, config)) {
+                alert('✅ تم إنشاء النشاط التجاري بنجاح!\n\nالكود: ' + cleanCode + '\nالاسم: ' + config.businessName +
+                    '\nالأجهزة: ' + config.totalStations + '\nالسعر: ' + config.price + ' EGP');
+                document.getElementById('businessCodeInput').value = cleanCode;
+                enterBusiness();
+            } else {
+                alert('❌ فشل إنشاء النشاط التجاري');
+            }
+        }
+
+        // ============================================
+        // ENTER BUSINESS
+        // ============================================
+        async function enterBusiness() {
+            var input = document.getElementById('businessCodeInput');
+            var code = input.value.trim().toUpperCase();
+            if (!code) {
+                showToast('❌ الرجاء إدخال كود النشاط التجاري', 'error');
+                return;
+            }
+            var config = await loadBusiness(code);
+            if (!config) {
+                showToast('❌ النشاط التجاري غير موجود! تحقق من الكود', 'error');
+                return;
+            }
+
+            currentBusiness = code;
+            businessConfig = {
+                businessName: config.business_name,
+                totalStations: config.total_stations,
+                price: config.price,
+                phone: config.phone,
+                noodlePrice: config.noodle_price || 15,
+                deviceConfig: config.device_config || {},
+                drinks: config.drinks || {}
+            };
+            deviceConfig = businessConfig.deviceConfig || {};
+            noodlePrice = businessConfig.noodlePrice || 15;
+            drinks = businessConfig.drinks || {};
+
+            Object.keys(drinks).forEach(function(key) {
+                if (!drinks[key].id) drinks[key].id = key;
+            });
+            drinkIdCounter = Object.keys(drinks).length;
+
+            localStorage.setItem(BUSINESS_KEY, code);
+
+            var deviceId = getDeviceId();
+
+            var userData = await getUserDataSupabase(code, deviceId);
+            if (userData) {
+                saveUserDataLocal({
+                    isActive: userData.is_active || false,
+                    expiryDate: userData.expiry_date,
+                    revoked: userData.revoked || false
+                });
+            }
+
+            sessions = loadSessionsFromStorage();
+            noodleOrders = loadNoodleOrdersFromStorage();
+            drinkOrders = loadDrinkOrdersFromStorage();
+            drinks = loadDrinksFromStorage();
+            completedSessions = loadCompletedSessionsFromStorage();
+            completedOrders = loadCompletedOrdersFromStorage();
+
+            if (Object.keys(drinks).length === 0 && businessConfig.drinks) {
+                drinks = businessConfig.drinks;
+                Object.keys(drinks).forEach(function(key) {
+                    if (!drinks[key].id) drinks[key].id = key;
+                });
+                saveDrinksToStorage();
+            }
+
+            getOrCreateShift();
+
+            var isActive = isRentalActive();
+
+            document.getElementById('setupScreen').classList.remove('active');
+            document.getElementById('lockBusinessName').textContent = '🏢 ' + businessConfig.businessName;
+            document.getElementById('appBusinessTag').textContent = code;
+            document.getElementById('priceDisplay').textContent = businessConfig.price + ' EGP';
+            document.getElementById('paymentCode').textContent = businessConfig.phone;
+
+            applyTranslations();
+
+            if (isActive) {
+                document.getElementById('lockScreen').classList.remove('active');
+                document.getElementById('mainApp').classList.add('active');
+                window.scrollTo(0, 0);
+                if (!isMainAppInitialized) {
+                    renderMain();
+                    isMainAppInitialized = true;
+                }
+                updateLockScreen();
+            } else {
+                document.getElementById('lockScreen').classList.add('active');
+                document.getElementById('mainApp').classList.remove('active');
+                isMainAppInitialized = false;
+                updateLockScreen();
+            }
+        }
+
+        function switchBusiness() {
+            var t = translations[currentLang];
+            if (confirm(t.confirmSwitch + currentBusiness)) {
+                saveSessionsToStorage();
+                saveNoodleOrdersToStorage();
+                saveDrinkOrdersToStorage();
+                saveDrinksToStorage();
+                saveCompletedSessionsToStorage();
+                saveCompletedOrdersToStorage();
+                document.getElementById('setupScreen').classList.add('active');
+                document.getElementById('lockScreen').classList.remove('active');
+                document.getElementById('mainApp').classList.remove('active');
+                document.getElementById('businessCodeInput').value = '';
+                currentBusiness = null;
+                businessConfig = null;
+                deviceConfig = {};
+                drinks = {};
+                isMainAppInitialized = false;
+                sessions = {};
+                noodleOrders = {};
+                drinkOrders = {};
+                completedSessions = {};
+                completedOrders = { noodles: {}, drinks: {} };
+                Object.keys(activeTimers).forEach(function(k) { clearInterval(activeTimers[k]);
+                    delete activeTimers[k]; });
+                showToast(t.toastSwitch, 'success');
+            }
+        }
+
+        async function activateRental() {
+            var t = translations[currentLang];
+            var now = new Date();
+            var expiry = new Date(now);
+            expiry.setMonth(expiry.getMonth() + 1);
+
+            var data = {
+                isActive: true,
+                expiryDate: expiry.toISOString(),
+                activatedAt: now.toISOString()
+            };
+
+            saveUserDataLocal(data);
+
+            var result = await saveUserDataSupabase(currentBusiness, getDeviceId(), data);
+
+            if (!result) {
+                showToast('❌ فشل تفعيل الاشتراك. حاول مرة أخرى', 'error');
+                return;
+            }
+
+            document.getElementById('lockScreen').classList.remove('active');
+            document.getElementById('mainApp').classList.add('active');
+            window.scrollTo(0, 0);
+            if (!isMainAppInitialized) {
+                renderMain();
+                isMainAppInitialized = true;
+            }
+            updateLockScreen();
+            showToast(t.toastActive + expiry.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US'), 'success');
+        }
+
+        async function verifyPayment() {
+            var t = translations[currentLang];
+            var deviceId = getDeviceId();
+            var code = prompt(
+                '📱 ' + (currentLang === 'ar' ? 'أدخل كود التفعيل:' : 'Enter verification code:') + '\n\n' +
+                (currentLang === 'ar' ? 'أرسل ' : 'Send ') + businessConfig.price + ' EGP ' +
+                (currentLang === 'ar' ? 'إلى ' : 'to ') + businessConfig.phone + '\n\n' +
+                (currentLang === 'ar' ? 'النشاط: ' : 'Business: ') + businessConfig.businessName + '\n' +
+                (currentLang === 'ar' ? 'معرف الجهاز: ' : 'Device ID: ') + deviceId
+            );
+            if (code) {
+                var result = await verifyCode(currentBusiness, code);
+                if (result.valid) {
+                    activateRental();
+                } else {
+                    showToast(t.toastInvalidCode, 'error');
+                }
+            }
+        }
+
+        function updateLockScreen() {
+            var t = translations[currentLang];
+            var statusBadge = document.getElementById('statusBadge');
+            var daysLeft = document.getElementById('daysLeft');
+            var paymentStatus = document.getElementById('paymentStatus');
+            var deviceIdDisplay = document.getElementById('deviceIdDisplay');
+            deviceIdDisplay.textContent = getDeviceId();
+
+            var isActive = isRentalActive();
+            var days = getDaysRemaining();
+
+            if (isActive) {
+                statusBadge.textContent = t.active;
+                statusBadge.className = 'status-badge active';
+                if (days <= 3) {
+                    statusBadge.textContent = t.expiring;
+                    statusBadge.className = 'status-badge expiring';
+                }
+                daysLeft.innerHTML = '📅 <strong>' + days + '</strong> ' + t.daysRemaining;
+                paymentStatus.innerHTML =
+                    '<div style="color:#2ecc71;margin:8px 0;">✅ ' + (currentLang === 'ar' ? 'تم التفعيل' : 'Activated') +
+                    '</div><button class="btn btn-secondary" onclick="logout()" style="margin-top:4px;background:rgba(255,255,255,0.05);color:#8ba0c7;border:none;border-radius:12px;padding:10px;width:100%;cursor:pointer;">🚪 ' +
+                    (currentLang === 'ar' ? 'تسجيل خروج' : 'Logout') + '</button>';
+            } else {
+                statusBadge.textContent = t.locked;
+                statusBadge.className = 'status-badge locked';
+                daysLeft.innerHTML = t.payToUnlock + businessConfig.price + ' EGP ' +
+                    (currentLang === 'ar' ? 'للتفعيل لمدة 30 يوماً' : 'to unlock for 30 days');
+                paymentStatus.innerHTML =
+                    '<button class="btn btn-pay" onclick="verifyPayment()">' + t.verifyPayBtn + '</button>';
+                document.getElementById('mainApp').classList.remove('active');
+                isMainAppInitialized = false;
+            }
+        }
+
+        async function logout() {
+            var t = translations[currentLang];
+            if (confirm(t.confirmLogout)) {
+                var data = getUserDataLocal();
+                if (data) {
+                    data.isActive = false;
+                    data.expiryDate = null;
+                    saveUserDataLocal(data);
+                    await saveUserDataSupabase(currentBusiness, getDeviceId(), data);
+                }
+                sessions = {};
+                noodleOrders = {};
+                drinkOrders = {};
+                completedSessions = {};
+                completedOrders = { noodles: {}, drinks: {} };
+                saveSessionsToStorage();
+                saveNoodleOrdersToStorage();
+                saveDrinkOrdersToStorage();
+                saveCompletedSessionsToStorage();
+                saveCompletedOrdersToStorage();
+                Object.keys(activeTimers).forEach(function(k) { clearInterval(activeTimers[k]);
+                    delete activeTimers[k]; });
+                updateLockScreen();
+                document.getElementById('mainApp').classList.remove('active');
+                isMainAppInitialized = false;
+                document.getElementById('lockScreen').classList.add('active');
+                showToast(t.toastLogout, 'warning');
+            }
+        }
+
+        // ============================================
+        // DRINKS MANAGEMENT
+        // ============================================
+
+        function addDrinkSetting() {
+            document.getElementById('addDrinkModal').classList.add('show');
+            document.getElementById('newDrinkName').value = '';
+            document.getElementById('newDrinkPrice').value = '10';
+            document.getElementById('newDrinkIcon').value = '🥤';
+            document.getElementById('newDrinkName').focus();
+        }
+
+        function closeAddDrinkModal() {
+            document.getElementById('addDrinkModal').classList.remove('show');
+        }
+
+        function confirmAddDrink() {
+            var t = translations[currentLang];
+            var name = document.getElementById('newDrinkName').value.trim();
+            var price = parseFloat(document.getElementById('newDrinkPrice').value);
+            var icon = document.getElementById('newDrinkIcon').value.trim() || '🥤';
+
+            if (!name) {
+                showToast('❌ ' + (currentLang === 'ar' ? 'الرجاء إدخال اسم المشروب' : 'Please enter drink name'), 'error');
+                return;
+            }
+            if (isNaN(price) || price <= 0) {
+                showToast('❌ ' + (currentLang === 'ar' ? 'الرجاء إدخال سعر صحيح' : 'Please enter a valid price'), 'error');
+                return;
+            }
+
+            var id = 'drink_' + (++drinkIdCounter);
+            drinks[id] = { id: id, name: name, price: price, icon: icon };
+            saveDrinksToStorage();
+
+            if (currentBusiness) {
+                var updatedConfig = {};
+                Object.assign(updatedConfig, businessConfig);
+                updatedConfig.drinks = drinks;
+                saveBusinessConfig(currentBusiness, updatedConfig);
+            }
+
+            closeAddDrinkModal();
+            renderDrinksSettings();
+            renderMain();
+            showToast(t.toastDrinkAdded + name, 'success');
+        }
+
+        function removeDrink(drinkId) {
+            var t = translations[currentLang];
+            if (confirm(t.confirmDeleteDrink)) {
+                delete drinks[drinkId];
+                saveDrinksToStorage();
+
+                Object.keys(drinkOrders).forEach(function(deviceId) {
+                    if (drinkOrders[deviceId] && drinkOrders[deviceId][drinkId]) {
+                        delete drinkOrders[deviceId][drinkId];
+                    }
+                });
+                saveDrinkOrdersToStorage();
+
+                if (currentBusiness) {
+                    var updatedConfig = {};
+                    Object.assign(updatedConfig, businessConfig);
+                    updatedConfig.drinks = drinks;
+                    saveBusinessConfig(currentBusiness, updatedConfig);
+                }
+
+                renderDrinksSettings();
+                renderMain();
+                showToast(t.toastDrinkRemoved, 'success');
+            }
+        }
+
+        function renderDrinksSettings() {
+            var t = translations[currentLang];
+            var container = document.getElementById('drinksSettingsList');
+            if (!container) return;
+
+            var drinkEntries = Object.entries(drinks);
+            if (drinkEntries.length === 0) {
+                container.innerHTML =
+                    '<div style="color:#5a6f8a;font-size:13px;text-align:center;padding:8px;">' + (currentLang ===
+                        'ar' ? 'لا توجد مشروبات مضافة' : 'No drinks added') + '</div>';
+                return;
+            }
+
+            var html = '';
+            drinkEntries.forEach(function(_ref10) {
+                var id = _ref10[0],
+                    drink = _ref10[1];
+                var currentIcon = drink.icon || '🥤';
+                html +=
+                    '<div class="drink-item-settings">' +
+                    '<span class="drink-icon" id="drink_icon_display_' + id + '">' + currentIcon + '</span>' +
+                    '<input type="text" value="' + drink.name +
+                    '" onchange="updateDrinkName(\'' + id + '\', this.value)" placeholder="' + (currentLang ===
+                        'ar' ? 'اسم المشروب' : 'Drink name') + '">' +
+                    '<input type="number" value="' + drink.price +
+                    '" onchange="updateDrinkPrice(\'' + id + '\', this.value)" min="1" step="0.5">' +
+                    '<button class="btn-remove-drink" onclick="removeDrink(\'' + id + '\')">✕</button>' +
+                    '<button class="btn-remove-drink" onclick="editDrinkIcon(\'' + id + '\')" style="background:rgba(0,212,255,0.1);color:#00d4ff;">🔄</button>' +
+                    '</div>';
+            });
+            container.innerHTML = html;
+        }
+
+        function editDrinkIcon(drinkId) {
+            var drink = drinks[drinkId];
+            if (!drink) return;
+            var newIcon = prompt('أدخل الأيقونة الجديدة (رمز تعبيري واحد):', drink.icon || '🥤');
+            if (newIcon && newIcon.trim().length > 0) {
+                drinks[drinkId].icon = newIcon.trim();
+                saveDrinksToStorage();
+                if (currentBusiness) {
+                    var updatedConfig = {};
+                    Object.assign(updatedConfig, businessConfig);
+                    updatedConfig.drinks = drinks;
+                    saveBusinessConfig(currentBusiness, updatedConfig);
+                }
+                renderDrinksSettings();
+                renderMain();
+                showToast('✅ تم تحديث الأيقونة', 'success');
+            }
+        }
+
+        function updateDrinkName(id, value) {
+            if (drinks[id]) {
+                drinks[id].name = value.trim() || (currentLang === 'ar' ? 'مشروب' : 'Drink');
+                saveDrinksToStorage();
+                if (currentBusiness) {
+                    var updatedConfig = {};
+                    Object.assign(updatedConfig, businessConfig);
+                    updatedConfig.drinks = drinks;
+                    saveBusinessConfig(currentBusiness, updatedConfig);
+                }
+                renderDrinksSettings();
+                renderMain();
+            }
+        }
+
+        function updateDrinkPrice(id, value) {
+            var price = parseFloat(value);
+            if (drinks[id] && !isNaN(price) && price > 0) {
+                drinks[id].price = price;
+                saveDrinksToStorage();
+                if (currentBusiness) {
+                    var updatedConfig = {};
+                    Object.assign(updatedConfig, businessConfig);
+                    updatedConfig.drinks = drinks;
+                    saveBusinessConfig(currentBusiness, updatedConfig);
+                }
+                renderDrinksSettings();
+                renderMain();
+            }
+        }
+
+        function addDrinkOrder(deviceId, drinkId) {
+            if (!drinkOrders[deviceId]) drinkOrders[deviceId] = {};
+            drinkOrders[deviceId][drinkId] = (drinkOrders[deviceId][drinkId] || 0) + 1;
+            saveDrinkOrdersToStorage();
+            renderMain();
+        }
+
+        function removeDrinkOrder(deviceId, drinkId) {
+            if (drinkOrders[deviceId] && drinkOrders[deviceId][drinkId] > 0) {
+                drinkOrders[deviceId][drinkId] = (drinkOrders[deviceId][drinkId] || 0) - 1;
+                if (drinkOrders[deviceId][drinkId] <= 0) {
+                    delete drinkOrders[deviceId][drinkId];
+                }
+                saveDrinkOrdersToStorage();
+                renderMain();
+            }
+        }
+
+        function getDeviceDrinkOrders(deviceId) {
+            return drinkOrders[deviceId] || {};
+        }
+
+        function getTotalDrinks() {
+            var total = 0;
+            Object.values(drinkOrders).forEach(function(deviceOrders) {
+                Object.values(deviceOrders).forEach(function(count) {
+                    total += count || 0;
+                });
+            });
+            return total;
+        }
+
+        function getTotalDrinkRevenue() {
+            var total = 0;
+            Object.entries(drinkOrders).forEach(function(_ref11) {
+                var deviceId = _ref11[0],
+                    deviceOrders = _ref11[1];
+                Object.entries(deviceOrders).forEach(function(_ref12) {
+                    var drinkId = _ref12[0],
+                        count = _ref12[1];
+                    var drink = drinks[drinkId];
+                    if (drink) total += drink.price * count;
+                });
+            });
+            return total;
+        }
+
+        function openSettings() {
+            var modal = document.getElementById('settingsModal');
+            document.getElementById('noodlePriceInput').value = noodlePrice;
+            renderDrinksSettings();
+            renderSettingsList();
+            modal.classList.add('show');
+        }
+
+        function closeSettings() {
+            var t = translations[currentLang];
+            var noodlePriceInput = document.getElementById('noodlePriceInput');
+            if (noodlePriceInput) {
+                var newPrice = parseFloat(noodlePriceInput.value);
+                if (!isNaN(newPrice) && newPrice > 0) noodlePrice = newPrice;
+            }
+
+            var totalStations = businessConfig ? businessConfig.totalStations : 11;
+            for (var i = 1; i <= totalStations; i++) {
+                var nameInput = document.getElementById('settings_name_' + i);
+                var rateInput = document.getElementById('settings_rate_' + i);
+                if (nameInput && !nameInput.disabled) {
+                    var newName = nameInput.value.trim() || 'PS ' + i;
+                    if (!deviceConfig[i]) deviceConfig[i] = {};
+                    deviceConfig[i].name = newName;
+                }
+                if (rateInput && !rateInput.disabled) {
+                    var newRate = parseFloat(rateInput.value);
+                    if (!isNaN(newRate) && newRate > 0) {
+                        if (!deviceConfig[i]) deviceConfig[i] = {};
+                        deviceConfig[i].rate = newRate;
+                    }
+                }
+            }
+
+            saveDrinksToStorage();
+
+            if (currentBusiness) {
+                var updatedConfig = {};
+                Object.assign(updatedConfig, businessConfig);
+                updatedConfig.deviceConfig = deviceConfig;
+                updatedConfig.drinks = drinks;
+                updatedConfig.noodlePrice = noodlePrice;
+                updatedConfig.totalStations = Object.keys(deviceConfig).length;
+                saveBusinessConfig(currentBusiness, updatedConfig);
+            }
+
+            renderMain();
+            document.getElementById('settingsModal').classList.remove('show');
+            document.getElementById('addDrinkModal').classList.remove('show');
+            showToast(t.toastSaved, 'success');
+        }
+
+        // ============================================
+        // SHIFT FUNCTIONS
+        // ============================================
+
+        function openShiftSummary() {
+            var t = translations[currentLang];
+            var shift = calculateShiftTotals();
+
+            document.getElementById('shiftDate').textContent = t.shiftDate +
+                new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+
+            document.getElementById('shiftNoodles').textContent = shift.totalNoodles || 0;
+            document.getElementById('shiftDrinksTotal').textContent = shift.totalDrinks || 0;
+            document.getElementById('shiftSessions').textContent = shift.totalSessions || 0;
+            document.getElementById('shiftHours').textContent = shift.totalHours || 0;
+            document.getElementById('shiftSessionRevenue').textContent = (shift.sessionRevenue || 0).toFixed(2);
+            document.getElementById('shiftNoodleRevenue').textContent = (shift.noodleRevenue || 0).toFixed(2);
+            document.getElementById('shiftDrinkRevenue').textContent = (shift.drinkRevenue || 0).toFixed(2);
+            document.getElementById('shiftGrandTotal').textContent = (shift.totalRevenue || 0).toFixed(2) + ' EGP';
+
+            var drinkList = document.getElementById('shiftDrinksList');
+            var drinkHtml = '';
+            var drinkEntries = Object.entries(shift.drinkDetails || {});
+            if (drinkEntries.length === 0) {
+                drinkHtml =
+                    '<div style="color:#5a6f8a;font-size:12px;text-align:center;padding:4px;">' + (currentLang ===
+                        'ar' ? 'لا توجد طلبات مشروبات' : 'No drink orders') + '</div>';
+            } else {
+                drinkEntries.forEach(function(_ref13) {
+                    var drinkId = _ref13[0],
+                        count = _ref13[1];
+                    var drink = drinks[drinkId];
+                    if (drink) {
+                        var total = drink.price * count;
+                        drinkHtml +=
+                            '<div class="shift-drink-item"><span class="drink-name">' + (drink.icon || '🥤') +
+                            ' ' + drink.name + '</span><span class="drink-total">' + count + ' × ' + drink.price
+                            .toFixed(2) + ' = ' + total.toFixed(2) + ' EGP</span></div>';
+                    }
+                });
+            }
+            drinkList.innerHTML = drinkHtml;
+
+            document.getElementById('shiftModal').classList.add('show');
+        }
+
+        function closeShiftModal() {
+            document.getElementById('shiftModal').classList.remove('show');
+        }
+
+        // ============================================
+        // CONFIRM CLOSE SHIFT - Check for active sessions
+        // ============================================
+        function confirmCloseShift() {
+            var t = translations[currentLang];
+
+            // ===== CHECK FOR ACTIVE SESSIONS =====
+            var activeSessions = Object.keys(sessions).filter(function(k) {
+                return sessions[k] && !sessions[k].completed;
+            });
+
+            if (activeSessions.length > 0) {
+                var deviceNames = activeSessions.map(function(k) {
+                    return getDeviceName(parseInt(k));
+                }).join('، ');
+
+                showToast(t.cannotCloseShift + deviceNames, 'error');
+                return;
+            }
+
+            if (confirm(t.shiftCloseConfirm)) {
+                closeShift();
+            }
+        }
+
+        // ============================================
+        // CLOSE SHIFT - WITH SUPABASE SYNC
+        // ============================================
+        async function closeShift() {
+            var t = translations[currentLang];
+
+            var shift = calculateShiftTotals();
+
+            var historyEntry = {
+                totalSessions: shift.totalSessions,
+                totalNoodles: shift.totalNoodles,
+                totalDrinks: shift.totalDrinks,
+                totalHours: shift.totalHours,
+                noodleRevenue: shift.noodleRevenue,
+                drinkRevenue: shift.drinkRevenue,
+                sessionRevenue: shift.sessionRevenue,
+                totalRevenue: shift.totalRevenue,
+                drinkDetails: shift.drinkDetails,
+                closedAt: new Date().toISOString(),
+                businessCode: currentBusiness,
+                businessName: businessConfig ? businessConfig.businessName : 'غير معروف'
+            };
+
+            // Save locally (backup)
+            saveShiftHistory(historyEntry);
+
+            // Send to Supabase
+            try {
+                console.log('🔄 محاولة حفظ السجل في Supabase...');
+                var { data, error } = await supabaseClient.from('السجل').insert({
+                    business_code: currentBusiness,
+                    closed_at: historyEntry.closedAt,
+                    total_sessions: historyEntry.totalSessions,
+                    total_hours: historyEntry.totalHours,
+                    total_noodles: historyEntry.totalNoodles,
+                    total_drinks: historyEntry.totalDrinks,
+                    session_revenue: historyEntry.sessionRevenue,
+                    noodle_revenue: historyEntry.noodleRevenue,
+                    drink_revenue: historyEntry.drinkRevenue,
+                    total_revenue: historyEntry.totalRevenue,
+                    drink_details: historyEntry.drinkDetails,
+                    device_id: getDeviceId()
+                });
+
+                if (error) {
+                    console.error('❌ خطأ في الإدراج:', error);
+                    showToast('⚠️ تم الحفظ محلياً، ولكن فشل الرفع للسيرفر: ' + error.message, 'warning');
+                } else {
+                    console.log('✅ تم الحفظ في Supabase بنجاح', data);
+                    showToast('✅ تم رفع السجل إلى السيرفر', 'success');
+                }
+            } catch (e) {
+                console.error('❌ استثناء أثناء الإدراج:', e);
+                showToast('⚠️ تم الحفظ محلياً، ولكن فشل الرفع للسيرفر', 'warning');
+            }
+
+            // Reset everything
+            resetShiftData();
+            noodleOrders = {};
+            drinkOrders = {};
+            sessions = {};
+            completedSessions = {};
+            completedOrders = { noodles: {}, drinks: {} };
+
+            saveNoodleOrdersToStorage();
+            saveDrinkOrdersToStorage();
+            saveSessionsToStorage();
+            saveCompletedSessionsToStorage();
+            saveCompletedOrdersToStorage();
+
+            closeShiftModal();
+            renderMain();
+        }
+
+        // ============================================
+        // VIEW HISTORY - SHOW SUPABASE DATA ONLY
+        // ============================================
+        async function viewShiftHistory() {
+            var t = translations[currentLang];
+            var container = document.getElementById('historyContainer');
+
+            // Show loading
+            container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">جارٍ التحميل من السيرفر...</div>';
+
+            // Fetch from Supabase
+            try {
+                console.log('🔄 محاولة جلب السجل من Supabase...');
+                var { data, error } = await supabaseClient.from('السجل')
+                    .select('*')
+                    .eq('business_code', currentBusiness)
+                    .order('closed_at', { ascending: false });
+
+                if (error) {
+                    console.error('❌ خطأ في جلب السجل:', error);
+                    // Fallback: Show local data if server fails
+                    var localHistory = getShiftHistory();
+                    if (localHistory.length > 0) {
+                        var html = '';
+                        var reversed = [].concat(localHistory).reverse();
+                        reversed.forEach(function(entry) {
+                            var date = new Date(entry.closedAt || entry.closed_at);
+                            var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+                            var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit',
+                                minute: '2-digit' });
+                            var businessName = entry.businessName || entry.business_code || 'غير معروف';
+                            var totalRevenue = entry.totalRevenue || entry.total_revenue || 0;
+                            var totalSessions = entry.totalSessions || entry.total_sessions || 0;
+                            var totalNoodles = entry.totalNoodles || entry.total_noodles || 0;
+                            var totalDrinks = entry.totalDrinks || entry.total_drinks || 0;
+                            var totalHours = entry.totalHours || entry.total_hours || 0;
+
+                            html +=
+                                '<div class="shift-history-item" style="border-color:rgba(255,165,0,0.3);">' +
+                                '<div class="hist-header">' +
+                                '<span class="hist-date">📅 ' + dateStr + ' ' + timeStr + ' (محلي)</span>' +
+                                '<span class="hist-total">' + (totalRevenue || 0).toFixed(2) + ' EGP</span>' +
+                                '</div>' +
+                                '<div style="font-size:12px;color:#8ba0c7;margin-top:2px;">🏢 ' + businessName +
+                                '</div>' +
+                                '<div class="hist-stats">' +
+                                '<span>🎮 ' + (totalSessions || 0) + '</span>' +
+                                '<span>🍜 ' + (totalNoodles || 0) + '</span>' +
+                                '<span>🥤 ' + (totalDrinks || 0) + '</span>' +
+                                '<span>⏱ ' + (totalHours || 0) + 'h</span>' +
+                                '</div>' +
+                                '</div>';
+                        });
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + t.noHistory +
+                        '</div>';
+                    }
+                    document.getElementById('historyModal').classList.add('show');
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    // Check if there's local data
+                    var localHistory = getShiftHistory();
+                    if (localHistory.length > 0) {
+                        var html = '';
+                        var reversed = [].concat(localHistory).reverse();
+                        reversed.forEach(function(entry) {
+                            var date = new Date(entry.closedAt || entry.closed_at);
+                            var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+                            var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit',
+                                minute: '2-digit' });
+                            var businessName = entry.businessName || entry.business_code || 'غير معروف';
+                            var totalRevenue = entry.totalRevenue || entry.total_revenue || 0;
+                            var totalSessions = entry.totalSessions || entry.total_sessions || 0;
+                            var totalNoodles = entry.totalNoodles || entry.total_noodles || 0;
+                            var totalDrinks = entry.totalDrinks || entry.total_drinks || 0;
+                            var totalHours = entry.totalHours || entry.total_hours || 0;
+
+                            html +=
+                                '<div class="shift-history-item" style="border-color:rgba(255,165,0,0.3);">' +
+                                '<div class="hist-header">' +
+                                '<span class="hist-date">📅 ' + dateStr + ' ' + timeStr + ' (محلي)</span>' +
+                                '<span class="hist-total">' + (totalRevenue || 0).toFixed(2) + ' EGP</span>' +
+                                '</div>' +
+                                '<div style="font-size:12px;color:#8ba0c7;margin-top:2px;">🏢 ' + businessName +
+                                '</div>' +
+                                '<div class="hist-stats">' +
+                                '<span>🎮 ' + (totalSessions || 0) + '</span>' +
+                                '<span>🍜 ' + (totalNoodles || 0) + '</span>' +
+                                '<span>🥤 ' + (totalDrinks || 0) + '</span>' +
+                                '<span>⏱ ' + (totalHours || 0) + 'h</span>' +
+                                '</div>' +
+                                '</div>';
+                        });
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + t.noHistory +
+                        '</div>';
+                    }
+                    document.getElementById('historyModal').classList.add('show');
+                    return;
+                }
+
+                // Display Supabase data
+                console.log('✅ تم جلب ' + data.length + ' سجل من Supabase');
+                var html = '';
+                data.forEach(function(entry) {
+                    var date = new Date(entry.closed_at);
+                    var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+                    var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit',
+                        minute: '2-digit' });
+                    var businessName = entry.business_name || entry.business_code || 'غير معروف';
+
+                    html +=
+                        '<div class="shift-history-item">' +
+                        '<div class="hist-header">' +
+                        '<span class="hist-date">📅 ' + dateStr + ' ' + timeStr + '</span>' +
+                        '<span class="hist-total">' + (entry.total_revenue || 0).toFixed(2) + ' EGP</span>' +
+                        '</div>' +
+                        '<div style="font-size:12px;color:#8ba0c7;margin-top:2px;">🏢 ' + businessName +
+                        '</div>' +
+                        '<div class="hist-stats">' +
+                        '<span>🎮 ' + (entry.total_sessions || 0) + '</span>' +
+                        '<span>🍜 ' + (entry.total_noodles || 0) + '</span>' +
+                        '<span>🥤 ' + (entry.total_drinks || 0) + '</span>' +
+                        '<span>⏱ ' + (entry.total_hours || 0) + 'h</span>' +
+                        '</div>' +
+                        '</div>';
+                });
+                container.innerHTML = html;
+
+            } catch (e) {
+                console.error('❌ استثناء أثناء جلب السجل:', e);
+                // Fallback: Show local data
+                var localHistory = getShiftHistory();
+                if (localHistory.length > 0) {
+                    var html = '';
+                    var reversed = [].concat(localHistory).reverse();
+                    reversed.forEach(function(entry) {
+                        var date = new Date(entry.closedAt || entry.closed_at);
+                        var dateStr = date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+                        var timeStr = date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit',
+                            minute: '2-digit' });
+                        var businessName = entry.businessName || entry.business_code || 'غير معروف';
+                        var totalRevenue = entry.totalRevenue || entry.total_revenue || 0;
+                        var totalSessions = entry.totalSessions || entry.total_sessions || 0;
+                        var totalNoodles = entry.totalNoodles || entry.total_noodles || 0;
+                        var totalDrinks = entry.totalDrinks || entry.total_drinks || 0;
+                        var totalHours = entry.totalHours || entry.total_hours || 0;
+
+                        html +=
+                            '<div class="shift-history-item" style="border-color:rgba(255,165,0,0.3);">' +
+                            '<div class="hist-header">' +
+                            '<span class="hist-date">📅 ' + dateStr + ' ' + timeStr + ' (محلي)</span>' +
+                            '<span class="hist-total">' + (totalRevenue || 0).toFixed(2) + ' EGP</span>' +
+                            '</div>' +
+                            '<div style="font-size:12px;color:#8ba0c7;margin-top:2px;">🏢 ' + businessName +
+                            '</div>' +
+                            '<div class="hist-stats">' +
+                            '<span>🎮 ' + (totalSessions || 0) + '</span>' +
+                            '<span>🍜 ' + (totalNoodles || 0) + '</span>' +
+                            '<span>🥤 ' + (totalDrinks || 0) + '</span>' +
+                            '<span>⏱ ' + (totalHours || 0) + 'h</span>' +
+                            '</div>' +
+                            '</div>';
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div style="text-align:center;color:#5a6f8a;padding:20px;">' + t.noHistory +
+                    '</div>';
+                }
+            }
+
+            document.getElementById('historyModal').classList.add('show');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('show');
+        }
+
+        // ============================================
+        // MAIN APP - HELPERS
+        // ============================================
+
+        function getRate(d) { return deviceConfig[d] ? deviceConfig[d].rate : 25; }
+
+        function getDeviceName(d) { return deviceConfig[d] ? deviceConfig[d].name : 'PS ' + d; }
+
+        function getNoodlePrice() { return noodlePrice || 15; }
+
+        function now() { return new Date(); }
+
+        function formatTime(date) {
+            if (!date) return '--';
+            return date.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatDurationFull(ms) {
+            if (ms < 0) return '0ث';
+            var totalSeconds = Math.floor(ms / 1000);
+            var hours = Math.floor(totalSeconds / 3600);
+            var minutes = Math.floor((totalSeconds % 3600) / 60);
+            var seconds = totalSeconds % 60;
+
+            if (hours > 0) {
+                if (currentLang === 'ar') return hours + 'س ' + minutes + 'د ' + seconds + 'ث';
+                return hours + 'h ' + minutes + 'm ' + seconds + 's';
+            }
+            if (minutes > 0) {
+                if (currentLang === 'ar') return minutes + 'د ' + seconds + 'ث';
+                return minutes + 'm ' + seconds + 's';
+            }
+            if (currentLang === 'ar') return seconds + 'ث';
+            return seconds + 's';
+        }
+
+        function formatDuration(ms) {
+            return formatDurationFull(ms);
+        }
+
+        function formatCurrency(amount) { return amount.toFixed(2) + ' EGP'; }
+
+        function calculateAmount(startTime, endTime, rate) {
+            if (!startTime || !endTime) return 0;
+            var diffMs = endTime - startTime;
+            if (diffMs < 0) return 0;
+            var hours = diffMs / (1000 * 60 * 60);
+            return Math.round(hours * rate * 100) / 100;
+        }
+
+        function getTotalNoodles() {
+            var total = 0;
+            Object.values(noodleOrders).forEach(function(c) { total += c || 0; });
+            return total;
+        }
+
+        function getTotalNoodleRevenue() { return getTotalNoodles() * getNoodlePrice(); }
+
+        function getTotalSessionRevenue() {
+            var total = 0;
+            Object.values(sessions).forEach(function(s) { if (s.completed) total += s.amount || 0; });
+            return total;
+        }
+
+        function getGrandTotal() {
+            return getTotalSessionRevenue() + getTotalNoodleRevenue() + getTotalDrinkRevenue();
+        }
+
+        function getActiveCount() {
+            return Object.keys(sessions).filter(function(k) { return sessions[k] && !sessions[k].completed; }).length;
+        }
+
+        function getAvailableCount() {
+            var activeCount = getActiveCount();
+            var total = businessConfig ? businessConfig.totalStations : 11;
+            return total - activeCount;
+        }
+
+        function addNoodle(d) {
+            noodleOrders[d] = (noodleOrders[d] || 0) + 1;
+            saveNoodleOrdersToStorage();
+            renderMain();
+        }
+
+        function removeNoodle(d) {
+            if ((noodleOrders[d] || 0) > 0) {
+                noodleOrders[d] = (noodleOrders[d] || 0) - 1;
+                saveNoodleOrdersToStorage();
+                renderMain();
+            }
+        }
+
+        function startSession(d) {
+            var t = translations[currentLang];
+            if (sessions[d] && !sessions[d].completed) {
+                showToast((currentLang === 'ar' ? 'الجهاز' : 'Station') + ' ' + d + ' ' + (currentLang === 'ar' ?
+                    'مشغول بالفعل!' : 'is already in use!'), 'warning');
+                return;
+            }
+            var nowTime = now();
+            sessions[d] = {
+                startTime: nowTime,
+                endTime: null,
+                completed: false,
+                amount: 0,
+                duration: 0,
+                rate: getRate(d)
+            };
+            saveSessionsToStorage();
+            renderMain();
+            startPlayTimer(d);
+            showToast('✅ ' + (currentLang === 'ar' ? 'بدأت جلسة' : 'Started session') + ' ' + getDeviceName(d),
+            'success');
+        }
+
+        function endSession(d) {
+            var session = sessions[d];
+            if (!session || session.completed) return;
+
+            var endTime = now();
+            session.endTime = endTime;
+            session.completed = true;
+            session.duration = endTime.getTime() - session.startTime.getTime();
+            var hours = session.duration / (1000 * 60 * 60);
+            session.amount = Math.round(hours * session.rate * 100) / 100;
+
+            var sessionId = 's_' + d + '_' + Date.now();
+            completedSessions[sessionId] = {
+                deviceId: d,
+                deviceName: getDeviceName(d),
+                startTime: session.startTime.toISOString(),
+                endTime: session.endTime.toISOString(),
+                duration: session.duration,
+                amount: session.amount,
+                rate: session.rate,
+                completedAt: new Date().toISOString()
+            };
+            saveCompletedSessionsToStorage();
+
+            var noodleCount = noodleOrders[d] || 0;
+            if (noodleCount > 0) {
+                completedOrders.noodles[d] = (completedOrders.noodles[d] || 0) + noodleCount;
+            }
+
+            var deviceDrinks = drinkOrders[d] || {};
+            Object.entries(deviceDrinks).forEach(function(_ref16) {
+                var drinkId = _ref16[0],
+                    count = _ref16[1];
+                if (count > 0) {
+                    completedOrders.drinks[drinkId] = (completedOrders.drinks[drinkId] || 0) + count;
+                }
+            });
+            saveCompletedOrdersToStorage();
+
+            saveSessionsToStorage();
+            showSessionModal(d);
+
+            noodleOrders[d] = 0;
+            saveNoodleOrdersToStorage();
+            if (drinkOrders[d]) {
+                drinkOrders[d] = {};
+                saveDrinkOrdersToStorage();
+            }
+
+            delete sessions[d];
+            saveSessionsToStorage();
+
+            stopPlayTimer(d);
+            renderMain();
+            calculateShiftTotals();
+        }
+
+        function startPlayTimer(d) {
+            if (activeTimers[d]) return;
+            activeTimers[d] = setInterval(function() {
+                var session = sessions[d];
+                if (!session || session.completed) { stopPlayTimer(d); return; }
+                updateStationDisplay(d);
+            }, 1000);
+        }
+
+        function stopPlayTimer(d) {
+            if (activeTimers[d]) { clearInterval(activeTimers[d]);
+                delete activeTimers[d]; }
+        }
+
+        function updateStationDisplay(d) {
+            var t = translations[currentLang];
+            var session = sessions[d];
+            if (!session) return;
+            var card = document.querySelector('[data-device="' + d + '"]');
+            if (!card) return;
+            var statusEl = card.querySelector('.status');
+            var durationEl = card.querySelector('.duration');
+            var startTimeEl = card.querySelector('.start-time');
+            if (!session.completed) {
+                var duration = Date.now() - session.startTime.getTime();
+                durationEl.textContent = formatDurationFull(duration);
+                statusEl.textContent = t.inUse;
+                statusEl.className = 'status active-text';
+                startTimeEl.textContent = t.started + ' ' + formatTime(session.startTime);
+            }
+        }
+
+        function renderMain() {
+            var t = translations[currentLang];
+            if (!businessConfig) return;
+            var grid = document.getElementById('stationGrid');
+            if (!grid) return;
+
+            var totalStations = businessConfig.totalStations || 11;
+            var activeCount = getActiveCount();
+            var availableCount = getAvailableCount();
+
+            document.getElementById('totalStations').textContent = totalStations;
+            document.getElementById('inUseCount').textContent = activeCount;
+            document.getElementById('availableCount').textContent = availableCount;
+            document.getElementById('currentTime').textContent = formatTime(now());
+
+            var html = '';
+            for (var i = 1; i <= totalStations; i++) {
+                var session = sessions[i];
+                var isActive = session && !session.completed;
+                var rate = getRate(i);
+                var name = getDeviceName(i);
+                var isSpecial = rate !== 25;
+                var noodleCount = noodleOrders[i] || 0;
+                var deviceDrinkOrders = getDeviceDrinkOrders(i);
+
+                var statusText = t.available;
+                var statusClass = '';
+                var durationText = '';
+                var startTimeText = '';
+                var buttonHtml = '';
+                var cardClass = 'station-card';
+
+                if (isActive) {
+                    statusText = t.inUse;
+                    statusClass = 'active-text';
+                    var duration = Date.now() - session.startTime.getTime();
+                    durationText = formatDurationFull(duration);
+                    startTimeText = t.started + ' ' + formatTime(session.startTime);
+                    cardClass += ' active';
+                    buttonHtml = '<button class="btn btn-end btn-small" onclick="endSession(' + i +
+                    ')">' + t.endSession + '</button>';
+                } else {
+                    buttonHtml = '<button class="btn btn-start btn-small" onclick="startSession(' + i +
+                        ')">' + t.start + '</button>';
+                }
+
+                var rateLabel = isSpecial ? rate + ' EGP/' + (currentLang === 'ar' ? 'س' : 'hr') : '';
+                var rateClass = isSpecial ? 'rate-badge special' : 'rate-badge';
+
+                var itemsHtml = '';
+
+                itemsHtml +=
+                    '<div class="item-control noodle-control"><span class="item-icon">🍜</span><span class="item-name">' +
+                    t.noodles +
+                    '</span><button class="item-btn minus" onclick="removeNoodle(' + i +
+                    ')">−</button><span class="item-count" data-noodle-count="' + i + '">' + noodleCount +
+                    '</span><button class="item-btn plus" onclick="addNoodle(' + i + ')">+</button></div>';
+
+                var drinkEntries = Object.entries(drinks);
+                drinkEntries.forEach(function(_ref17) {
+                    var drinkId = _ref17[0],
+                        drink = _ref17[1];
+                    var count = deviceDrinkOrders[drinkId] || 0;
+                    itemsHtml +=
+                        '<div class="item-control drink-control"><span class="item-icon">' + (drink.icon ||
+                            '🥤') +
+                        '</span><span class="item-name">' + drink.name +
+                        '</span><button class="item-btn minus" onclick="removeDrinkOrder(' + i + ', \'' +
+                        drinkId + '\')">−</button><span class="item-count" data-drink-count="' + i + '_' +
+                        drinkId + '">' + count +
+                        '</span><button class="item-btn plus" onclick="addDrinkOrder(' + i + ', \'' +
+                        drinkId + '\')">+</button></div>';
+                });
+
+                if (drinkEntries.length > 0) {
+                    itemsHtml +=
+                        '<button class="btn-add-drink" onclick="openSettings()">➕</button>';
+                } else {
+                    itemsHtml +=
+                        '<button class="btn-add-drink" onclick="openSettings()">' + t.addDrink +
+                        '</button>';
+                }
+
+                html +=
+                    '<div class="' + cardClass + '" data-device="' + i +
+                    '"><div class="top-row"><div class="info"><div class="name">' + name +
+                    '</div><div class="status ' + statusClass + '">' + statusText + '</div>' + (isActive ?
+                        '<div class="duration">' + durationText + '</div>' : '') + (isActive ?
+                        '<div class="start-time">' + startTimeText + '</div>' : '') +
+                    '</div><div class="right">' + (isSpecial ? '<span class="' + rateClass + '">' +
+                        rateLabel + '</span>' : '') +
+                    '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">' +
+                    buttonHtml +
+                    '</div></div></div><div class="items-section"><span class="items-label">' + t.orders +
+                    '</span>' + itemsHtml + '</div></div>';
+            }
+            grid.innerHTML = html;
+        }
+
+        function showSessionModal(d) {
+            var t = translations[currentLang];
+            var session = sessions[d];
+            if (!session) return;
+
+            var noodleCount = noodleOrders[d] || 0;
+            var noodlePriceVal = getNoodlePrice();
+            var noodleTotal = noodleCount * noodlePriceVal;
+            var sessionTotal = session.amount || 0;
+
+            var deviceDrinkOrders = getDeviceDrinkOrders(d);
+            var drinkTotal = 0;
+            var drinkItemsHtml = '';
+
+            Object.entries(deviceDrinkOrders).forEach(function(_ref18) {
+                var drinkId = _ref18[0],
+                    count = _ref18[1];
+                var drink = drinks[drinkId];
+                if (drink && count > 0) {
+                    var cost = drink.price * count;
+                    drinkTotal += cost;
+                    drinkItemsHtml +=
+                        '<div class="detail-row drink-row"><span class="label">' + (drink.icon || '🥤') +
+                        ' ' + drink.name + '</span><span class="value">' + count + ' × ' + drink.price
+                        .toFixed(2) + ' EGP = ' + cost.toFixed(2) + ' EGP</span></div>';
+                }
+            });
+
+            var grandTotal = sessionTotal + noodleTotal + drinkTotal;
+
+            document.getElementById('modalSub').textContent = getDeviceName(d);
+            document.getElementById('modalDuration').textContent = formatDurationFull(session.duration || 0);
+            document.getElementById('modalTimePrice').textContent = formatCurrency(sessionTotal);
+
+            var itemsContainer = document.getElementById('modalItemsContainer');
+            var itemsHtml = '';
+
+            if (noodleCount > 0) {
+                itemsHtml +=
+                    '<div class="detail-row noodle-row"><span class="label">🍜 ' + t.noodles +
+                    '</span><span class="value">' + noodleCount + ' × ' + noodlePriceVal.toFixed(2) +
+                    ' EGP = ' + noodleTotal.toFixed(2) + ' EGP</span></div>';
+            }
+
+            itemsHtml += drinkItemsHtml;
+            itemsContainer.innerHTML = itemsHtml;
+
+            document.getElementById('modalTotal').textContent = formatCurrency(grandTotal);
+            document.getElementById('sessionModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('sessionModal').classList.remove('show');
+        }
+
+        async function initializeApp() {
+            document.getElementById('demoDeviceId').textContent = getDeviceId();
+            applyTranslations();
+
+            var savedBusiness = localStorage.getItem(BUSINESS_KEY);
+            if (savedBusiness) {
+                var config = await loadBusiness(savedBusiness);
+                if (config) {
+                    document.getElementById('businessCodeInput').value = savedBusiness;
+                    await enterBusiness();
+                    return;
+                } else {
+                    localStorage.removeItem(BUSINESS_KEY);
+                }
+            }
+
+            document.getElementById('setupScreen').classList.add('active');
+            document.getElementById('lockScreen').classList.remove('active');
+            document.getElementById('mainApp').classList.remove('active');
+            isMainAppInitialized = false;
+        }
+
+        document.getElementById('sessionModal').addEventListener('click', function(e) {
+            if (e.target === e.currentTarget) closeModal();
+        });
+        document.getElementById('settingsModal').addEventListener('click', function(e) {
+            if (e.target === e.currentTarget) closeSettings();
+        });
+        document.getElementById('addDrinkModal').addEventListener('click', function(e) {
+            if (e.target === e.currentTarget) closeAddDrinkModal();
+        });
+        document.getElementById('shiftModal').addEventListener('click', function(e) {
+            if (e.target === e.currentTarget) closeShiftModal();
+        });
+        document.getElementById('historyModal').addEventListener('click', function(e) {
+            if (e.target === e.currentTarget) closeHistoryModal();
+        });
+
+        setInterval(function() {
+            document.getElementById('currentTime').textContent = formatTime(now());
+            Object.keys(sessions).forEach(function(key) {
+                if (!sessions[key].completed) updateStationDisplay(parseInt(key));
+            });
+        }, 1000);
+
+        setInterval(function() {
+            saveSessionsToStorage();
+            saveNoodleOrdersToStorage();
+            saveDrinkOrdersToStorage();
+            saveDrinksToStorage();
+            saveCompletedSessionsToStorage();
+            saveCompletedOrdersToStorage();
+        }, 5000);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                var active = document.activeElement;
+                if (active && active.id === 'businessCodeInput') {
+                    enterBusiness();
+                }
+                if (active && active.id === 'newDrinkName') {
+                    confirmAddDrink();
+                }
+            }
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('settingsModal').classList.remove('show');
+                closeAddDrinkModal();
+                closeShiftModal();
+                closeHistoryModal();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        console.log('========================================');
+        console.log('🎮 PS Rental Pro - v' + APP_VERSION);
+        console.log('✅ Connected to Supabase');
+        console.log('✅ Completed orders storage active');
+        console.log('✅ Shift system sends data to Supabase');
+        console.log('✅ Cannot close shift with active sessions');
+        console.log('✅ History shows server data only (local backup only)');
+        console.log('✅ Drink icons can be edited via 🔄 button');
+        console.log('========================================');
+    </script>
+</body>
+</html>
