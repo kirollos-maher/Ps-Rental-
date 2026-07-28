@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* ============================================================
-           DESIGN SYSTEM - Enterprise Edition (FIXED)
+           DESIGN SYSTEM - Enterprise Edition
            ============================================================ */
         * {
             margin: 0;
@@ -45,7 +45,6 @@
             --gradient-brand: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
             --gradient-success: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
             --gradient-danger: linear-gradient(135deg, var(--accent-red), #c0392b);
-            --gradient-warning: linear-gradient(135deg, var(--accent-orange), #d68910);
             
             --radius-sm: 8px;
             --radius-md: 12px;
@@ -79,7 +78,8 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             line-height: 1.6;
-            overflow-y: hidden;
+            /* FIX: Allow body scroll for lock screen */
+            overflow-y: auto;
         }
         
         body.rtl { direction: rtl; }
@@ -96,11 +96,8 @@
             max-width: 500px;
             margin: 0 auto;
             padding: 0 16px 100px 16px;
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
         /* ============================================================
@@ -123,7 +120,7 @@
         }
 
         /* ============================================================
-           SETUP & LOCK SCREENS
+           SETUP & LOCK SCREENS - FIX: Scrollable
            ============================================================ */
         .setup-screen,
         .lock-screen {
@@ -131,29 +128,31 @@
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border-radius: var(--radius-xl);
-            padding: 48px 32px 40px;
+            padding: 32px 24px 40px;
             max-width: 420px;
             width: 100%;
-            margin: 20px auto;
+            margin: 16px auto;
             border: 1px solid var(--glass-border);
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
             text-align: center;
             animation: slideUp 0.5s ease;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            /* FIX: Allow scrolling */
+            max-height: none;
         }
 
         .setup-screen .logo,
         .lock-screen .logo {
-            font-size: 64px;
-            margin-bottom: 12px;
+            font-size: 56px;
+            margin-bottom: 8px;
             display: block;
             filter: drop-shadow(0 4px 30px rgba(0, 212, 255, 0.25));
         }
 
         .setup-screen h1,
         .lock-screen h1 {
-            font-size: 30px;
+            font-size: 26px;
             font-weight: 900;
             letter-spacing: -0.5px;
             background: var(--gradient-brand);
@@ -165,40 +164,55 @@
         .setup-screen .subtitle,
         .lock-screen .subtitle {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            margin: 6px 0 20px;
+            margin: 4px 0 16px;
         }
 
         .business-name {
             color: var(--accent-blue);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             text-transform: uppercase;
+        }
+
+        .business-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            background: rgba(0, 212, 255, 0.06);
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 212, 255, 0.08);
         }
 
         .price-tag {
             background: rgba(0, 212, 255, 0.05);
             border: 1px solid rgba(0, 212, 255, 0.1);
             border-radius: var(--radius-md);
-            padding: 20px;
-            margin: 16px 0;
+            padding: 16px;
+            margin: 12px 0;
         }
 
         .price-tag .amount {
-            font-size: 40px;
+            font-size: 32px;
             font-weight: 900;
             color: var(--accent-blue);
             letter-spacing: -1px;
         }
+        .price-tag .period {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
 
         /* ============================================================
-           BUTTONS - FIXED: Clean, modern, consistent
+           BUTTONS
            ============================================================ */
         .btn {
-            padding: 12px 24px;
+            padding: 12px 20px;
             border: none;
             border-radius: var(--radius-md);
             font-weight: 700;
@@ -214,7 +228,7 @@
             position: relative;
             font-family: 'Inter', sans-serif;
             letter-spacing: 0.2px;
-            min-height: 48px;
+            min-height: 44px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
         }
 
@@ -248,15 +262,6 @@
             box-shadow: 0 8px 35px rgba(255, 71, 87, 0.5);
         }
 
-        .btn-warning {
-            background: var(--gradient-warning);
-            box-shadow: 0 4px 20px rgba(255, 165, 2, 0.3);
-        }
-        .btn-warning:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 35px rgba(255, 165, 2, 0.5);
-        }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -268,56 +273,8 @@
             border-color: rgba(255, 255, 255, 0.15);
         }
 
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-secondary);
-        }
-        .btn-ghost:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-        }
-
-        .btn-block { width: 100%; padding: 14px; font-size: 16px; }
-        .btn-sm { padding: 6px 14px; font-size: 12px; min-height: 32px; }
-        .btn-xs { padding: 4px 10px; font-size: 10px; min-height: 24px; border-radius: var(--radius-sm); }
-
-        /* FIX: Super visible Start button */
-        .btn-start {
-            background: var(--gradient-success) !important;
-            box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4) !important;
-            color: #fff !important;
-            font-weight: 800 !important;
-            font-size: 15px !important;
-            padding: 10px 24px !important;
-            min-width: 80px;
-            border-radius: var(--radius-md) !important;
-            border: 2px solid rgba(46, 204, 113, 0.3) !important;
-        }
-        .btn-start:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.6) !important;
-            border-color: rgba(46, 204, 113, 0.6) !important;
-        }
-        .btn-start:active { transform: scale(0.94) !important; }
-
-        /* FIX: Super visible End button */
-        .btn-end {
-            background: var(--gradient-danger) !important;
-            box-shadow: 0 4px 20px rgba(255, 71, 87, 0.4) !important;
-            color: #fff !important;
-            font-weight: 800 !important;
-            font-size: 15px !important;
-            padding: 10px 24px !important;
-            min-width: 80px;
-            border-radius: var(--radius-md) !important;
-            border: 2px solid rgba(255, 71, 87, 0.3) !important;
-        }
-        .btn-end:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 30px rgba(255, 71, 87, 0.6) !important;
-            border-color: rgba(255, 71, 87, 0.6) !important;
-        }
-        .btn-end:active { transform: scale(0.94) !important; }
+        .btn-block { width: 100%; padding: 12px; font-size: 15px; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; min-height: 32px; }
 
         /* ============================================================
            BOTTOM NAVIGATION
@@ -336,7 +293,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 8px 0 14px 0;
+            padding: 6px 0 12px 0;
             z-index: 999;
             border-radius: 20px 20px 0 0;
             box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
@@ -351,17 +308,17 @@
             background: transparent;
             border: none;
             color: var(--text-tertiary);
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             cursor: pointer;
-            padding: 6px 12px;
+            padding: 4px 8px;
             transition: all var(--transition-base);
             position: relative;
-            gap: 2px;
+            gap: 1px;
             font-family: 'Inter', sans-serif;
             flex: 1;
             border-radius: var(--radius-md);
-            min-height: 52px;
+            min-height: 44px;
             -webkit-tap-highlight-color: transparent;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -370,444 +327,14 @@
         .nav-item:hover { background: rgba(255, 255, 255, 0.04); }
         .nav-item:active { transform: scale(0.92); }
 
-        .nav-item i { font-size: 22px; transition: all var(--transition-base); }
-        .nav-item span { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; }
+        .nav-item i { font-size: 20px; transition: all var(--transition-base); }
+        .nav-item span { font-size: 8px; font-weight: 700; letter-spacing: 0.5px; }
 
         .nav-item.active {
             color: var(--accent-blue);
         }
         .nav-item.active i {
             filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.4));
-        }
-
-        /* ============================================================
-           HEADER
-           ============================================================ */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-4);
-            padding-top: var(--space-3);
-            flex-wrap: wrap;
-            gap: var(--space-2);
-            flex-shrink: 0;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            flex-wrap: wrap;
-        }
-
-        .header-left h1 {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            background: var(--gradient-brand);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .business-tag {
-            font-size: 10px;
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--accent-blue);
-            padding: 2px 12px;
-            border-radius: var(--radius-full);
-            border: 1px solid rgba(0, 212, 255, 0.15);
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-
-        .header-time {
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 600;
-            font-variant-numeric: tabular-nums;
-            padding: 4px 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--glass-border);
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .btn-shift {
-            background: rgba(255, 165, 2, 0.08);
-            border: 1px solid rgba(255, 165, 2, 0.1);
-            color: var(--accent-orange);
-            padding: 6px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-family: 'Inter', sans-serif;
-        }
-        .btn-shift:hover {
-            background: rgba(255, 165, 2, 0.15);
-            border-color: rgba(255, 165, 2, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .btn-settings {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 18px;
-            cursor: pointer;
-            transition: all var(--transition-base);
-            line-height: 1;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-settings:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: rotate(30deg);
-        }
-
-        .btn-notif {
-            background: rgba(255, 255, 255, 0.04);
-            border: none;
-            color: var(--text-secondary);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            position: relative;
-            transition: all var(--transition-base);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-notif:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-1px);
-        }
-        .btn-notif .notif-dot {
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-red);
-            border-radius: 50%;
-            border: 2px solid var(--bg-primary);
-        }
-        body.rtl .btn-notif .notif-dot { right: auto; left: 10px; }
-
-        /* ============================================================
-           TAB CONTENT
-           ============================================================ */
-        .tab-content {
-            display: none;
-            animation: screenFadeIn 0.35s ease;
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: var(--space-4);
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .tab-content.active {
-            display: block;
-            overflow-y: auto;
-            max-height: calc(100vh - 180px);
-            max-height: calc(100dvh - 180px);
-        }
-
-        .tab-content::-webkit-scrollbar { width: 3px; }
-        .tab-content::-webkit-scrollbar-track { background: transparent; }
-        .tab-content::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: var(--radius-full); }
-
-        /* ============================================================
-           MAIN APP
-           ============================================================ */
-        #mainApp {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-        #mainApp.active { display: flex; }
-
-        /* ============================================================
-           CARDS
-           ============================================================ */
-        .glass-card {
-            background: var(--bg-card);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: var(--space-4) var(--space-4);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            margin-bottom: var(--space-4);
-            transition: all var(--transition-base);
-        }
-        .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.08);
-            background: var(--bg-card-hover);
-        }
-
-        /* ============================================================
-           STATS ROW
-           ============================================================ */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-3);
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            border: 1px solid var(--glass-border);
-            margin-bottom: var(--space-4);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-        }
-
-        .stat-item {
-            text-align: center;
-            transition: all var(--transition-base);
-        }
-        .stat-item:hover { transform: translateY(-2px); }
-
-        .stat-item .number {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-        .stat-item .label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: var(--space-1);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .stat-item .number.total { color: var(--accent-blue); }
-        .stat-item .number.active { color: var(--accent-green); }
-        .stat-item .number.available { color: var(--text-secondary); }
-
-        /* ============================================================
-           STATION CARDS
-           ============================================================ */
-        .station-grid {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-3);
-            padding-bottom: var(--space-2);
-        }
-
-        .station-card {
-            background: var(--bg-card);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            border: 1px solid var(--glass-border);
-            transition: all var(--transition-base);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-        }
-
-        .station-card:hover {
-            border-color: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-        }
-
-        .station-card.active {
-            border-right: 3px solid var(--accent-green);
-            background: var(--bg-card-hover);
-        }
-        body.ltr .station-card.active {
-            border-right: none;
-            border-left: 3px solid var(--accent-green);
-        }
-
-        .station-card .top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-
-        .station-card .info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .station-card .name {
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-        }
-
-        .station-card .status {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        .station-card .status.active-text {
-            color: var(--accent-green);
-        }
-
-        .station-card .duration {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--accent-blue);
-            font-variant-numeric: tabular-nums;
-        }
-        .station-card .start-time {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .station-card .right {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            flex-wrap: wrap;
-        }
-
-        .station-card .rate-badge {
-            font-size: 11px;
-            background: rgba(0, 212, 255, 0.08);
-            color: var(--accent-blue);
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            border: 1px solid rgba(0, 212, 255, 0.1);
-            white-space: nowrap;
-            font-weight: 600;
-        }
-        .station-card .rate-badge.special {
-            background: rgba(255, 165, 0, 0.1);
-            color: var(--accent-orange);
-            border-color: rgba(255, 165, 0, 0.15);
-        }
-
-        /* ============================================================
-           ITEM CONTROLS
-           ============================================================ */
-        .station-card .items-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            padding-top: var(--space-3);
-            border-top: 1px solid var(--glass-border);
-            align-items: center;
-            margin-top: var(--space-2);
-        }
-
-        .station-card .items-section .items-label {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            margin: 0 4px 0 0;
-            font-weight: 600;
-        }
-        body.rtl .station-card .items-section .items-label { margin: 0 0 0 4px; }
-
-        .item-control {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 2px 6px 2px 10px;
-            border-radius: var(--radius-full);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all var(--transition-fast);
-        }
-        .item-control:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .item-control .item-icon { font-size: 12px; }
-        .item-control .item-name { font-size: 10px; color: var(--text-secondary); margin: 0 2px; font-weight: 500; }
-        .item-control .item-count {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--accent-gold);
-            min-width: 18px;
-            text-align: center;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .item-control .item-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: none;
-            color: var(--text-secondary);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition-fast);
-            touch-action: manipulation;
-        }
-        .item-control .item-btn:active { transform: scale(0.85); }
-        .item-control .item-btn:hover { background: rgba(255, 255, 255, 0.12); }
-        .item-control .item-btn.minus { color: var(--accent-red); background: rgba(255, 71, 87, 0.08); }
-        .item-control .item-btn.plus { color: var(--accent-green); background: rgba(46, 204, 113, 0.08); }
-
-        .item-control.noodle-control { border-color: rgba(255, 215, 0, 0.1); }
-        .item-control.noodle-control .item-name { color: var(--accent-gold); }
-        .item-control.drink-control { border-color: rgba(0, 212, 255, 0.08); }
-        .item-control.drink-control .item-name { color: var(--accent-blue); }
-
-        .btn-add-drink {
-            background: rgba(0, 212, 255, 0.06);
-            border: 1px dashed rgba(0, 212, 255, 0.15);
-            color: var(--accent-blue);
-            padding: 2px 12px;
-            border-radius: var(--radius-full);
-            font-size: 10px;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 600;
-            min-height: 28px;
-        }
-        .btn-add-drink:hover {
-            background: rgba(0, 212, 255, 0.12);
-            border-color: rgba(0, 212, 255, 0.3);
-            transform: translateY(-1px);
-        }
-
-        /* ============================================================
-           STATIONS TITLE
-           ============================================================ */
-        .stations-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: var(--space-3);
-            letter-spacing: 0.5px;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
         }
 
         /* ============================================================
@@ -818,7 +345,7 @@
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 14px 24px;
+            padding: 12px 20px;
             border-radius: var(--radius-md);
             text-align: center;
             font-weight: 600;
@@ -832,163 +359,15 @@
             max-width: 440px;
             width: 90%;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
-            font-size: 14px;
+            font-size: 13px;
         }
         .toast.success { background: rgba(46, 204, 113, 0.95); }
         .toast.error { background: rgba(255, 71, 87, 0.95); }
         .toast.warning { background: rgba(255, 165, 2, 0.95); }
 
         /* ============================================================
-           OFFLINE BANNER
+           MODALS
            ============================================================ */
-        #offlineBanner {
-            background: var(--accent-red);
-            color: #fff;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 6px 0;
-            display: none;
-            letter-spacing: 0.3px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        #offlineBanner i { margin: 0 8px; }
-
-        /* ============================================================
-           FAB
-           ============================================================ */
-        .fab {
-            position: fixed;
-            bottom: 96px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-red), #c0392b);
-            color: #fff;
-            border: none;
-            font-size: 22px;
-            box-shadow: 0 4px 24px rgba(255, 71, 87, 0.35);
-            cursor: pointer;
-            transition: all var(--transition-base);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-        }
-        .fab:hover { transform: scale(1.05) translateY(-3px); }
-        .fab:active { transform: scale(0.92); }
-        body.rtl .fab { right: auto; left: 20px; }
-
-        .expense-fab-modal {
-            position: fixed;
-            bottom: 164px;
-            right: 20px;
-            background: var(--bg-card);
-            backdrop-filter: var(--glass-blur);
-            border-radius: var(--radius-lg);
-            padding: var(--space-5);
-            max-width: 320px;
-            width: 100%;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
-            z-index: 100;
-            display: none;
-            animation: slideUp 0.3s ease;
-        }
-        body.rtl .expense-fab-modal { right: auto; left: 20px; }
-        .expense-fab-modal.show { display: block; }
-
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
-        @media (max-width: 420px) {
-            .container { padding: 0 12px 90px 12px; }
-            .setup-screen, .lock-screen { padding: 32px 20px 28px; margin: 12px auto; }
-            .header-left h1 { font-size: 18px; }
-            .stat-item .number { font-size: 22px; }
-            .station-card { padding: var(--space-3); }
-            .station-card .top-row { flex-direction: column; align-items: stretch; }
-            .station-card .right { justify-content: flex-start; }
-            .bottom-nav { padding: 4px 0 10px 0; }
-            .nav-item { padding: 4px 8px; min-height: 44px; }
-            .nav-item i { font-size: 18px; }
-            .nav-item span { font-size: 8px; }
-            .btn-start, .btn-end { font-size: 13px !important; padding: 8px 16px !important; min-width: 60px; }
-            .tab-content.active { max-height: calc(100vh - 160px); max-height: calc(100dvh - 160px); }
-        }
-
-        @media (min-width: 600px) {
-            .container { max-width: 560px; }
-            .bottom-nav { border-radius: 20px 20px 0 0; }
-        }
-
-        @media (min-width: 768px) {
-            .container { max-width: 640px; padding: 0 24px 100px 24px; }
-            .station-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-            .stats-row { grid-template-columns: repeat(3, 1fr); }
-            .bottom-nav { max-width: 640px; }
-        }
-
-        /* ============================================================
-           UTILITIES
-           ============================================================ */
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-secondary); }
-        .text-gold { color: var(--accent-gold); }
-        .text-blue { color: var(--accent-blue); }
-        .text-green { color: var(--accent-green); }
-        .text-red { color: var(--accent-red); }
-        .mt-8 { margin-top: var(--space-2); }
-        .mt-16 { margin-top: var(--space-4); }
-        .mb-8 { margin-bottom: var(--space-2); }
-
-        .status-badge {
-            display: inline-block;
-            padding: 6px 20px;
-            border-radius: var(--radius-full);
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: var(--space-4);
-        }
-        .status-badge.locked {
-            background: rgba(255, 71, 87, 0.1);
-            color: var(--accent-red);
-            border: 1px solid rgba(255, 71, 87, 0.15);
-        }
-        .status-badge.active {
-            background: rgba(46, 204, 113, 0.1);
-            color: var(--accent-green);
-            border: 1px solid rgba(46, 204, 113, 0.15);
-        }
-        .status-badge.expiring {
-            background: rgba(255, 165, 2, 0.1);
-            color: var(--accent-orange);
-            border: 1px solid rgba(255, 165, 2, 0.15);
-        }
-
-        .inventory-alert-item {
-            background: rgba(255, 71, 87, 0.06);
-            border: 1px solid rgba(255, 71, 87, 0.12);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            margin-bottom: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--accent-red);
-            font-size: 13px;
-            animation: slideUp 0.3s ease;
-        }
-        .no-alerts {
-            color: var(--text-secondary);
-            font-size: 13px;
-            padding: 4px 0;
-        }
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1025,7 +404,7 @@
         }
         .input-group label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             margin-bottom: var(--space-1);
             font-weight: 600;
@@ -1035,12 +414,12 @@
         .input-group input,
         .input-group select {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
             font-family: 'Inter', sans-serif;
             transition: all var(--transition-base);
@@ -1051,7 +430,7 @@
             box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.08);
         }
         .input-group .hint {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-tertiary);
             margin-top: var(--space-1);
         }
@@ -1071,15 +450,15 @@
             list-style: none;
             text-align: inherit;
             padding: 0;
-            margin: var(--space-4) 0;
+            margin: var(--space-3) 0;
         }
         .features li {
-            padding: 8px 0;
+            padding: 6px 0;
             display: flex;
             align-items: center;
             gap: var(--space-3);
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 14px;
+            font-size: 13px;
         }
         .features li .check {
             color: var(--accent-green);
@@ -1097,12 +476,12 @@
             border: 1px solid rgba(255, 215, 0, 0.08);
         }
         .payment-section .code {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--accent-gold);
             letter-spacing: 2px;
             background: rgba(0, 0, 0, 0.3);
-            padding: 12px;
+            padding: 10px;
             border-radius: var(--radius-sm);
             font-family: 'Inter', monospace;
             text-align: center;
@@ -1110,10 +489,10 @@
 
         .device-id-box {
             background: rgba(0, 0, 0, 0.3);
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: var(--radius-sm);
             font-family: 'Inter', monospace;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--accent-blue);
             word-break: break-all;
             border: 1px solid rgba(0, 212, 255, 0.05);
@@ -1123,9 +502,9 @@
             background: rgba(0, 212, 255, 0.06);
             border: 1px solid rgba(0, 212, 255, 0.1);
             color: var(--accent-blue);
-            padding: 6px 16px;
+            padding: 4px 14px;
             border-radius: var(--radius-sm);
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             transition: all var(--transition-fast);
             font-weight: 600;
@@ -1136,14 +515,14 @@
             background: var(--gradient-success) !important;
             color: #fff !important;
             font-weight: 700 !important;
-            font-size: 16px !important;
-            padding: 14px !important;
+            font-size: 15px !important;
+            padding: 12px !important;
             border: none !important;
             border-radius: var(--radius-md) !important;
             cursor: pointer !important;
             width: 100% !important;
             transition: all var(--transition-base) !important;
-            min-height: 52px !important;
+            min-height: 48px !important;
         }
         .btn-pay:hover {
             transform: translateY(-2px) !important;
@@ -1152,476 +531,504 @@
 
         .days-left {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             margin-top: var(--space-3);
         }
         .days-left strong { color: var(--accent-blue); }
 
-        /* ============================================================
-           SETTINGS
-           ============================================================ */
-        .lang-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid transparent;
-            color: var(--text-secondary);
-            padding: 6px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-        }
-        .lang-btn.active {
-            background: rgba(0, 212, 255, 0.08);
-            color: var(--accent-blue);
-            border-color: rgba(0, 212, 255, 0.12);
-        }
-
-        .global-settings {
-            background: rgba(255, 215, 0, 0.03);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            margin-bottom: var(--space-4);
-            border: 1px solid rgba(255, 215, 0, 0.06);
-        }
-        .global-settings .global-label {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-weight: 700;
-            margin-bottom: var(--space-2);
-            color: var(--accent-gold);
-            font-size: 14px;
-        }
-
-        .drinks-settings {
-            background: rgba(0, 212, 255, 0.03);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            margin-bottom: var(--space-4);
-            border: 1px solid rgba(0, 212, 255, 0.06);
-        }
-        .drinks-settings .drinks-label {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-weight: 700;
-            margin-bottom: var(--space-2);
-            color: var(--accent-blue);
-            font-size: 14px;
-        }
-
-        .drink-item-settings {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            background: rgba(255, 255, 255, 0.02);
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 6px;
-            border: 1px solid var(--glass-border);
-            flex-wrap: wrap;
-        }
-        .drink-item-settings input[type="text"] {
-            flex: 1;
-            padding: 6px 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 13px;
-            outline: none;
-            min-width: 60px;
-            transition: all var(--transition-fast);
-            font-family: 'Inter', sans-serif;
-        }
-        .drink-item-settings input[type="number"] {
-            width: 64px;
-            padding: 6px 8px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 13px;
-            outline: none;
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-        }
-        .drink-item-settings .btn-remove-drink {
-            background: rgba(255, 71, 87, 0.1);
-            border: none;
-            color: var(--accent-red);
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-add-drink-setting {
-            background: rgba(0, 212, 255, 0.06);
-            border: 1px dashed rgba(0, 212, 255, 0.15);
-            color: var(--accent-blue);
-            padding: 10px 16px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 100%;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-2);
-            font-weight: 600;
-        }
-
-        .btn-add-station {
-            background: rgba(46, 204, 113, 0.06);
-            border: 1px dashed rgba(46, 204, 113, 0.15);
-            color: var(--accent-green);
-            padding: 14px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-base);
-            width: 100%;
-            margin-top: var(--space-2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-2);
-        }
-        .btn-add-station:hover {
-            background: rgba(46, 204, 113, 0.1);
-            border-color: rgba(46, 204, 113, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .settings-device {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            margin-bottom: var(--space-3);
-            border: 1px solid var(--glass-border);
-            transition: all var(--transition-base);
-        }
-        .settings-device .device-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-3);
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-        .settings-device .device-header .device-num { font-weight: 700; font-size: 15px; }
-        .settings-device .device-header .device-status { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
-        .settings-device .device-header .device-status.in-use { color: var(--accent-green); }
-        .settings-device .device-header .btn-remove-station {
-            background: rgba(255, 71, 87, 0.1);
-            border: none;
-            color: var(--accent-red);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .settings-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--space-2);
-        }
-        .settings-row .settings-group label {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .settings-row .settings-group input {
-            width: 100%;
-            padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 14px;
-            outline: none;
-            font-family: 'Inter', sans-serif;
-            transition: all var(--transition-fast);
-        }
-        .settings-row .settings-group input:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.08);
-        }
-
-        /* ============================================================
-           SHIFT SUMMARY - FIXED: Better layout, no duplicate buttons
-           ============================================================ */
-        .shift-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-2);
-            margin-bottom: var(--space-4);
-        }
-
-        .shift-stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-sm);
-            padding: 12px 10px;
-            text-align: center;
-            border: 1px solid var(--glass-border);
-            transition: all var(--transition-fast);
-        }
-        .shift-stat-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            transform: translateY(-2px);
-        }
-
-        .shift-stat-card .shift-stat-number {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-        .shift-stat-card .shift-stat-label {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .shift-stat-card .shift-stat-number.gold { color: var(--accent-gold); }
-        .shift-stat-card .shift-stat-number.blue { color: var(--accent-blue); }
-        .shift-stat-card .shift-stat-number.green { color: var(--accent-green); }
-        .shift-stat-card .shift-stat-number.orange { color: var(--accent-orange); }
-        .shift-stat-card .shift-stat-number.pink { color: #ff6b9d; }
-        .shift-stat-card .shift-stat-number.purple { color: var(--accent-purple); }
-        .shift-stat-card .shift-stat-number.cyan { color: #22d3ee; }
-        .shift-stat-card .shift-stat-number.red { color: var(--accent-red); }
-
-        .shift-total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 14px 16px;
-            background: rgba(255, 165, 0, 0.06);
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 165, 0, 0.08);
-            font-size: 18px;
-            font-weight: 800;
-            margin: var(--space-3) 0 var(--space-4);
-        }
-        .shift-total-row .total-amount { color: var(--accent-gold); }
-
-        .shift-drinks-detail {
-            margin: var(--space-3) 0;
-            padding: var(--space-3);
-            background: rgba(0, 212, 255, 0.03);
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(0, 212, 255, 0.05);
-        }
-        .shift-drinks-detail .detail-title {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-2);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .shift-drink-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        .shift-drink-item:last-child { border-bottom: none; }
-        .shift-drink-item .drink-name { color: var(--text-secondary); }
-        .shift-drink-item .drink-total { color: var(--accent-blue); font-weight: 600; }
-
-        /* FIX: Shift actions - clean button layout */
-        .shift-actions {
-            display: flex;
-            gap: var(--space-2);
-            margin-top: var(--space-4);
-            flex-wrap: wrap;
-        }
-        .shift-actions .btn {
-            flex: 1;
-            padding: 12px 16px;
-            font-size: 14px;
-            min-width: 80px;
-            justify-content: center;
-        }
-
-        /* ============================================================
-           SHIFT HISTORY
-           ============================================================ */
-        .shift-history-item {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-sm);
-            padding: 12px 14px;
-            margin-bottom: var(--space-2);
-            border: 1px solid var(--glass-border);
-        }
-        .shift-history-item .hist-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-        .shift-history-item .hist-date { font-weight: 600; font-size: 14px; }
-        .shift-history-item .hist-total { color: var(--accent-gold); font-weight: 800; font-size: 16px; }
-        .shift-history-item .hist-stats {
-            display: flex;
-            gap: var(--space-3);
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            flex-wrap: wrap;
-        }
-
-        /* ============================================================
-           EMPLOYEES
-           ============================================================ */
-        .permission-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--glass-border);
-        }
-        .permission-item .perm-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        .permission-item .perm-toggle {
-            position: relative;
-            width: 40px;
-            height: 22px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            flex-shrink: 0;
-        }
-        .permission-item .perm-toggle.active { background: var(--accent-green); }
-        .permission-item .perm-toggle .toggle-slider {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        body.rtl .permission-item .perm-toggle .toggle-slider { left: auto; right: 2px; }
-        .permission-item .perm-toggle.active .toggle-slider { left: 20px; }
-        body.rtl .permission-item .perm-toggle.active .toggle-slider { left: auto; right: 20px; }
-
-        .employee-status-badge {
+        .status-badge {
             display: inline-block;
+            padding: 4px 16px;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+        .status-badge.locked {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 71, 87, 0.15);
+        }
+        .status-badge.active {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--accent-green);
+            border: 1px solid rgba(46, 204, 113, 0.15);
+        }
+        .status-badge.expiring {
+            background: rgba(255, 165, 2, 0.1);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 165, 2, 0.15);
+        }
+
+        /* ============================================================
+           OFFLINE BANNER
+           ============================================================ */
+        #offlineBanner {
+            background: var(--accent-red);
+            color: #fff;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 0;
+            display: none;
+            letter-spacing: 0.3px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        #offlineBanner i { margin: 0 6px; }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 420px) {
+            .container { padding: 0 12px 90px 12px; }
+            .setup-screen, .lock-screen { padding: 24px 16px 28px; margin: 10px auto; }
+            .setup-screen .logo, .lock-screen .logo { font-size: 44px; }
+            .setup-screen h1, .lock-screen h1 { font-size: 22px; }
+            .price-tag .amount { font-size: 28px; }
+            .features li { font-size: 12px; padding: 4px 0; }
+            .btn { font-size: 13px; padding: 10px 16px; min-height: 40px; }
+            .bottom-nav { padding: 4px 0 8px 0; }
+            .nav-item { padding: 2px 4px; min-height: 38px; }
+            .nav-item i { font-size: 16px; }
+            .nav-item span { font-size: 7px; }
+        }
+
+        @media (min-width: 600px) {
+            .container { max-width: 560px; }
+            .bottom-nav { border-radius: 20px 20px 0 0; }
+        }
+
+        /* ============================================================
+           MAIN APP (minimal styles for the app)
+           ============================================================ */
+        #mainApp {
+            display: none;
+        }
+        #mainApp.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+            padding-top: var(--space-3);
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        .header-left h1 {
+            font-size: 20px;
+            font-weight: 900;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .business-tag {
+            font-size: 9px;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent-blue);
             padding: 2px 10px;
             border-radius: var(--radius-full);
-            font-size: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.15);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .employee-status-badge.admin {
-            background: rgba(123, 97, 255, 0.15);
-            color: var(--accent-purple);
-        }
-        .employee-status-badge.employee {
-            background: rgba(0, 212, 255, 0.08);
-            color: var(--accent-blue);
-        }
-        .employee-status-badge.logged-in {
-            background: rgba(46, 204, 113, 0.12);
-            color: var(--accent-green);
         }
 
-        .edit-profile-btn {
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.08);
-            color: var(--accent-blue);
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .header-time {
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            padding: 2px 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .btn-shift {
+            background: rgba(255, 165, 2, 0.08);
+            border: 1px solid rgba(255, 165, 2, 0.1);
+            color: var(--accent-orange);
             padding: 4px 12px;
             border-radius: var(--radius-sm);
             font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-settings {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            line-height: 1;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-notif {
+            background: rgba(255, 255, 255, 0.04);
+            border: none;
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-notif .notif-dot {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            width: 7px;
+            height: 7px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            border: 2px solid var(--bg-primary);
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-4) var(--space-4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            margin-bottom: var(--space-4);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-3);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            border: 1px solid var(--glass-border);
+            margin-bottom: var(--space-4);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+        .stat-item .number {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .stat-item .label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: var(--space-1);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .stat-item .number.total { color: var(--accent-blue); }
+        .stat-item .number.active { color: var(--accent-green); }
+        .stat-item .number.available { color: var(--text-secondary); }
+
+        .stations-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .station-grid {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding-bottom: var(--space-2);
+        }
+
+        .station-card {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            border: 1px solid var(--glass-border);
+            transition: all var(--transition-base);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .station-card .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+
+        .station-card .info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 70px;
+        }
+
+        .station-card .name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .station-card .status {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .station-card .status.active-text {
+            color: var(--accent-green);
+        }
+
+        .station-card .right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: var(--gradient-success) !important;
+            box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4) !important;
+            color: #fff !important;
+            font-weight: 800 !important;
+            font-size: 13px !important;
+            padding: 8px 18px !important;
+            min-width: 70px;
+            border-radius: var(--radius-md) !important;
+            border: 2px solid rgba(46, 204, 113, 0.3) !important;
+            min-height: 36px !important;
+        }
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.6) !important;
+        }
+
+        .btn-end {
+            background: var(--gradient-danger) !important;
+            box-shadow: 0 4px 20px rgba(255, 71, 87, 0.4) !important;
+            color: #fff !important;
+            font-weight: 800 !important;
+            font-size: 13px !important;
+            padding: 8px 18px !important;
+            min-width: 70px;
+            border-radius: var(--radius-md) !important;
+            border: 2px solid rgba(255, 71, 87, 0.3) !important;
+            min-height: 36px !important;
+        }
+        .btn-end:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(255, 71, 87, 0.6) !important;
+        }
+
+        .station-card .items-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--glass-border);
+            align-items: center;
+            margin-top: var(--space-2);
+        }
+
+        .station-card .items-section .items-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin: 0 4px 0 0;
+            font-weight: 600;
+        }
+        body.rtl .station-card .items-section .items-label { margin: 0 0 0 4px; }
+
+        .item-control {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1px 4px 1px 8px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--transition-fast);
+        }
+        .item-control .item-icon { font-size: 11px; }
+        .item-control .item-name { font-size: 9px; color: var(--text-secondary); margin: 0 2px; font-weight: 500; }
+        .item-control .item-count {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .item-control .item-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: none;
+            color: var(--text-secondary);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+        .item-control .item-btn:active { transform: scale(0.85); }
+        .item-control .item-btn.minus { color: var(--accent-red); background: rgba(255, 71, 87, 0.08); }
+        .item-control .item-btn.plus { color: var(--accent-green); background: rgba(46, 204, 113, 0.08); }
+
+        .item-control.noodle-control .item-name { color: var(--accent-gold); }
+        .item-control.drink-control .item-name { color: var(--accent-blue); }
+
+        .btn-add-drink {
+            background: rgba(0, 212, 255, 0.06);
+            border: 1px dashed rgba(0, 212, 255, 0.15);
+            color: var(--accent-blue);
+            padding: 1px 10px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
             cursor: pointer;
             transition: all var(--transition-fast);
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             font-weight: 600;
+            min-height: 24px;
         }
 
-        #currentUserBadge {
-            font-size: 10px;
-            background: rgba(46, 204, 113, 0.1);
-            color: var(--accent-green);
-            padding: 2px 10px;
-            border-radius: var(--radius-full);
+        .tab-content {
             display: none;
-            font-weight: 600;
-            border: 1px solid rgba(46, 204, 113, 0.12);
+            animation: screenFadeIn 0.35s ease;
+        }
+        .tab-content.active { display: block; }
+
+        /* Employee login overlay */
+        #employeeLoginOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #employeeLoginOverlay.show { display: flex; }
+
+        .login-box {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 28px 24px;
+            max-width: 380px;
+            width: 100%;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.4s ease;
         }
 
-        /* ============================================================
-           LIST ITEMS
-           ============================================================ */
-        .list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 12px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-sm);
-            border-bottom: 1px solid var(--glass-border);
-            transition: all var(--transition-fast);
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 4px;
+            color: var(--accent-blue);
+            font-size: 20px;
+            font-weight: 800;
         }
-        .list-item .left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
+        .login-box .sub {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: var(--space-4);
         }
-        .list-item .left .icon {
-            width: 36px;
-            height: 36px;
+
+        /* Utilities */
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-secondary); }
+        .mt-8 { margin-top: var(--space-2); }
+        .mt-16 { margin-top: var(--space-4); }
+        .gap-8 { gap: var(--space-2); }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: rgba(0, 212, 255, 0.08);
+            background: linear-gradient(135deg, var(--accent-red), #c0392b);
+            color: #fff;
+            border: none;
+            font-size: 20px;
+            box-shadow: 0 4px 24px rgba(255, 71, 87, 0.35);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            z-index: 50;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent-blue);
-            flex-shrink: 0;
-            font-size: 14px;
         }
-        .list-item.low-stock {
-            border-left: 3px solid var(--accent-red);
-            background: rgba(255, 71, 87, 0.04);
+        body.rtl .fab { right: auto; left: 20px; }
+
+        .expense-fab-modal {
+            position: fixed;
+            bottom: 156px;
+            right: 20px;
+            background: var(--bg-card);
+            backdrop-filter: var(--glass-blur);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            max-width: 300px;
+            width: 100%;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            display: none;
+            animation: slideUp 0.3s ease;
         }
-        body.rtl .list-item.low-stock { border-left: none; border-right: 3px solid var(--accent-red); }
+        body.rtl .expense-fab-modal { right: auto; left: 20px; }
+        .expense-fab-modal.show { display: block; }
     </style>
 </head>
 <body>
@@ -1652,7 +1059,7 @@
                 <i class="fas fa-key"></i> دخول
             </button>
             <div class="switch-business">
-                <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;" id="setupNewBizLabel">ليس لديك نشاط تجاري؟</div>
+                <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;" id="setupNewBizLabel">ليس لديك نشاط تجاري؟</div>
                 <button class="btn btn-secondary" onclick="createNewBusiness()" id="setupNewBizBtn" style="width:100%;">
                     <i class="fas fa-plus-circle"></i> إنشاء نشاط تجاري جديد
                 </button>
@@ -1662,7 +1069,7 @@
             </div>
         </div>
 
-        <!-- LOCK SCREEN -->
+        <!-- LOCK SCREEN - FIX: Scrollable -->
         <div id="lockScreen" class="screen lock-screen">
             <div class="business-name" id="lockBusinessName"><i class="fas fa-building"></i> اسم النشاط التجاري</div>
             <span class="logo"><i class="fas fa-gamepad"></i></span>
@@ -1684,12 +1091,17 @@
             <div class="payment-section">
                 <div class="label" id="paymentLabel"><i class="fas fa-mobile-alt"></i> أرسل الدفع إلى:</div>
                 <div class="code" id="paymentCode">01012345678</div>
-                <div style="color:var(--text-secondary);font-size:12px;margin-top:8px;" id="paymentMethod">فودافون كاش / إنستا باي</div>
+                <div style="color:var(--text-secondary);font-size:11px;margin-top:6px;" id="paymentMethod">فودافون كاش / إنستا باي</div>
             </div>
             <div style="margin:var(--space-3) 0;">
-                <div style="color:var(--text-secondary);font-size:13px;margin-bottom:4px;" id="deviceIdLabel"><i class="fas fa-fingerprint"></i> معرف جهازك:</div>
+                <div style="color:var(--text-secondary);font-size:12px;margin-bottom:4px;" id="deviceIdLabel"><i class="fas fa-fingerprint"></i> معرف جهازك:</div>
                 <div class="device-id-box" id="deviceIdDisplay">جاري التحميل...</div>
                 <button class="copy-btn" onclick="copyDeviceId()" id="copyDeviceBtn"><i class="fas fa-copy"></i> نسخ المعرف</button>
+            </div>
+            <div style="margin:var(--space-2) 0;">
+                <button class="btn btn-secondary" onclick="refreshSubscription()" style="width:100%;background:rgba(0,212,255,0.06);color:var(--accent-blue);border:1px solid rgba(0,212,255,0.1);border-radius:var(--radius-sm);padding:8px;font-size:12px;">
+                    <i class="fas fa-sync-alt"></i> تحديث حالة الاشتراك
+                </button>
             </div>
             <div id="paymentStatus" style="margin:var(--space-3) 0;">
                 <button class="btn btn-pay" onclick="verifyPayment()" id="verifyPayBtn">
@@ -1709,17 +1121,35 @@
             </div>
         </div>
 
+        <!-- EMPLOYEE LOGIN OVERLAY -->
+        <div id="employeeLoginOverlay">
+            <div class="login-box">
+                <h2><i class="fas fa-lock"></i> تسجيل دخول الموظف</h2>
+                <div class="sub" id="empLoginSub">أدخل بياناتك للوصول إلى النظام</div>
+                <div class="input-group">
+                    <label id="employeeLoginUserLabel"><i class="fas fa-user"></i> اسم المستخدم</label>
+                    <input type="text" id="empLoginUser" placeholder="أدخل اسم المستخدم">
+                </div>
+                <div class="input-group">
+                    <label id="employeeLoginPassLabel"><i class="fas fa-lock"></i> كلمة المرور</label>
+                    <input type="password" id="empLoginPass" placeholder="أدخل كلمة المرور">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="employeeLogin()" id="employeeLoginBtn">
+                    <i class="fas fa-sign-in-alt"></i> دخول
+                </button>
+                <button class="btn btn-secondary btn-block mt-8" onclick="closeEmployeeLogin()" style="margin-top:var(--space-2);">
+                    <i class="fas fa-times"></i> إلغاء
+                </button>
+            </div>
+        </div>
+
         <!-- MAIN APP -->
         <div id="mainApp" class="screen">
-            <!-- HEADER -->
             <div class="header">
                 <div class="header-left">
                     <h1>PS Rental</h1>
                     <span class="business-tag" id="appBusinessTag">BIZ</span>
-                    <span id="currentUserBadge"><i class="fas fa-user"></i> admin</span>
-                    <button class="edit-profile-btn" onclick="openEditProfile()" id="editProfileBtn" style="display:none;">
-                        <i class="fas fa-edit"></i>
-                    </button>
+                    <span id="currentUserBadge" style="font-size:9px;background:rgba(46,204,113,0.1);color:var(--accent-green);padding:2px 8px;border-radius:10px;display:none;"><i class="fas fa-user"></i> admin</span>
                 </div>
                 <div class="header-actions">
                     <button class="btn-notif" onclick="toggleNotifications()" id="notifBell">
@@ -1734,128 +1164,73 @@
                 </div>
             </div>
 
-            <!-- TAB: STATIONS -->
             <div id="tabStations" class="tab-content active">
                 <div class="stats-row">
-                    <div class="stat-item">
-                        <div class="number total" id="totalStations">0</div>
-                        <div class="label" id="statTotalLabel"><i class="fas fa-gamepad"></i> إجمالي الأجهزة</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="number active" id="inUseCount">0</div>
-                        <div class="label" id="statInUseLabel"><i class="fas fa-play-circle"></i> مشغولة</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="number available" id="availableCount">0</div>
-                        <div class="label" id="statAvailableLabel"><i class="fas fa-check-circle"></i> متاحة</div>
-                    </div>
+                    <div class="stat-item"><div class="number total" id="totalStations">0</div><div class="label" id="statTotalLabel"><i class="fas fa-gamepad"></i> إجمالي الأجهزة</div></div>
+                    <div class="stat-item"><div class="number active" id="inUseCount">0</div><div class="label" id="statInUseLabel"><i class="fas fa-play-circle"></i> مشغولة</div></div>
+                    <div class="stat-item"><div class="number available" id="availableCount">0</div><div class="label" id="statAvailableLabel"><i class="fas fa-check-circle"></i> متاحة</div></div>
                 </div>
-
-                <div id="inventoryAlertsContainer" style="margin-bottom:var(--space-4);">
-                    <div id="inventoryAlertsList"></div>
-                </div>
-
                 <div class="stations-title" id="stationsTitle"><i class="fas fa-list"></i> الأجهزة</div>
                 <div class="station-grid" id="stationGrid"></div>
             </div>
 
-            <!-- TAB: INVENTORY -->
             <div id="tabInventory" class="tab-content">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);flex-wrap:wrap;gap:var(--space-2);">
-                    <h3 style="font-weight:800;font-size:18px;">
-                        <i class="fas fa-boxes" style="color:var(--accent-gold);"></i>
-                        <span id="inventoryTitle">المخزون</span>
-                    </h3>
-                    <button class="btn btn-primary btn-sm" onclick="showAddInventoryModal()" id="inventoryAddBtn">
-                        <i class="fas fa-plus"></i> إضافة
-                    </button>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+                    <h3 style="font-weight:800;font-size:17px;"><i class="fas fa-boxes" style="color:var(--accent-gold);"></i> <span id="inventoryTitle">المخزون</span></h3>
+                    <button class="btn btn-primary btn-sm" onclick="showAddInventoryModal()" id="inventoryAddBtn"><i class="fas fa-plus"></i> إضافة</button>
                 </div>
-                <div id="inventoryList" class="glass-card" style="padding:8px 0;">
-                    <div class="text-center text-muted" style="padding:20px;" id="inventoryEmpty">لا توجد أصناف</div>
-                </div>
+                <div id="inventoryList" class="glass-card" style="padding:8px 0;"></div>
             </div>
 
-            <!-- TAB: SETTINGS -->
             <div id="tabSettings" class="tab-content">
-                <h3 style="margin-bottom:var(--space-4);font-weight:800;font-size:18px;">
-                    <i class="fas fa-cog" style="color:var(--text-secondary);"></i>
-                    <span id="settingsTitle">الإعدادات</span>
-                </h3>
-
+                <h3 style="margin-bottom:12px;font-weight:800;font-size:17px;"><i class="fas fa-cog" style="color:var(--text-secondary);"></i> <span id="settingsTitle">الإعدادات</span></h3>
                 <div class="glass-card">
-                    <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
-                        <span style="font-size:13px;color:var(--text-secondary);font-weight:600;" id="langLabel">
-                            <i class="fas fa-globe"></i> اللغة:
-                        </span>
-                        <button class="lang-btn active" onclick="setLanguage('ar')" id="langArBtn">
-                            <i class="fas fa-flag"></i> عربي
-                        </button>
-                        <button class="lang-btn" onclick="setLanguage('en')" id="langEnBtn">
-                            <i class="fas fa-flag"></i> English
-                        </button>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span style="font-size:12px;color:var(--text-secondary);font-weight:600;" id="langLabel"><i class="fas fa-globe"></i> اللغة:</span>
+                        <button class="lang-btn active" onclick="setLanguage('ar')" id="langArBtn"><i class="fas fa-flag"></i> عربي</button>
+                        <button class="lang-btn" onclick="setLanguage('en')" id="langEnBtn"><i class="fas fa-flag"></i> English</button>
                     </div>
                 </div>
-
-                <div class="global-settings">
-                    <div class="global-label" id="noodleLabel"><i class="fas fa-utensils"></i> النودلز / الأندومي</div>
-                    <div class="settings-group" style="margin-bottom:0;">
+                <div class="glass-card">
+                    <div style="margin-bottom:8px;font-weight:700;font-size:13px;color:var(--accent-gold);"><i class="fas fa-utensils"></i> <span id="noodleLabel">النودلز / الأندومي</span></div>
+                    <div class="input-group" style="margin:4px 0;">
                         <label id="noodlePriceLabel">سعر العلبة (EGP)</label>
                         <input type="number" id="noodlePriceInput" value="15" min="1" max="100" step="0.5">
-                        <div class="hint" id="noodleHint">الافتراضي: 15 EGP</div>
                     </div>
                 </div>
-
-                <div class="drinks-settings">
-                    <div class="drinks-label" id="drinksLabel"><i class="fas fa-glass-whiskey"></i> المشروبات المخصصة</div>
+                <div class="glass-card">
+                    <div style="margin-bottom:8px;font-weight:700;font-size:13px;color:var(--accent-blue);"><i class="fas fa-glass-whiskey"></i> <span id="drinksLabel">المشروبات المخصصة</span></div>
                     <div id="drinksSettingsList"></div>
-                    <button class="btn-add-drink-setting" onclick="addDrinkSetting()" id="addDrinkBtn">
+                    <button class="btn-add-drink-setting" onclick="addDrinkSetting()" id="addDrinkBtn" style="width:100%;margin-top:6px;padding:8px;border:1px dashed rgba(0,212,255,0.2);border-radius:8px;background:rgba(0,212,255,0.05);color:var(--accent-blue);cursor:pointer;font-weight:600;font-size:12px;">
                         <i class="fas fa-plus-circle"></i> إضافة مشروب جديد
                     </button>
                 </div>
-
                 <div id="settingsList"></div>
-                <button class="btn-add-station" onclick="addStation()" id="addStationBtn">
+                <button class="btn-add-station" onclick="addStation()" id="addStationBtn" style="width:100%;padding:12px;border:1px dashed rgba(46,204,113,0.2);border-radius:8px;background:rgba(46,204,113,0.05);color:var(--accent-green);cursor:pointer;font-weight:600;font-size:13px;margin-top:8px;">
                     <i class="fas fa-plus-circle"></i> إضافة جهاز جديد
                 </button>
-
-                <div class="glass-card" style="margin-top:var(--space-4);">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-2);flex-wrap:wrap;gap:var(--space-2);">
-                        <span style="font-weight:700;font-size:15px;" id="employeesLabel">
-                            <i class="fas fa-users"></i> الموظفين
-                        </span>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                            <button class="btn btn-primary btn-sm" onclick="showAddEmployeeModal()" id="addEmployeeBtn">
-                                <i class="fas fa-plus"></i> إضافة
-                            </button>
-                            <button class="btn btn-secondary btn-sm" onclick="showEmployeeLogin()" id="employeeLoginBtnHeader" style="background:rgba(0,212,255,0.06);color:var(--accent-blue);border:1px solid rgba(0,212,255,0.08);">
-                                <i class="fas fa-sign-in-alt"></i> تسجيل دخول
-                            </button>
+                <div class="glass-card" style="margin-top:16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+                        <span style="font-weight:700;font-size:14px;" id="employeesLabel"><i class="fas fa-users"></i> الموظفين</span>
+                        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                            <button class="btn btn-primary btn-sm" onclick="showAddEmployeeModal()" id="addEmployeeBtn"><i class="fas fa-plus"></i> إضافة</button>
+                            <button class="btn btn-secondary btn-sm" onclick="showEmployeeLogin()" id="employeeLoginBtnHeader" style="background:rgba(0,212,255,0.06);color:var(--accent-blue);border:1px solid rgba(0,212,255,0.08);"><i class="fas fa-sign-in-alt"></i> تسجيل دخول</button>
                         </div>
                     </div>
-                    <div id="employeeList" style="font-size:13px;">لا يوجد موظفين</div>
-                    <div style="margin-top:var(--space-3);border-top:1px solid var(--glass-border);padding-top:var(--space-3);">
-                        <button class="btn btn-secondary btn-sm" onclick="logoutEmployee()" style="color:var(--accent-red);" id="logoutEmployeeBtn">
-                            <i class="fas fa-sign-out-alt"></i> تسجيل خروج الموظف
-                        </button>
+                    <div id="employeeList" style="font-size:12px;">لا يوجد موظفين</div>
+                    <div style="margin-top:10px;border-top:1px solid var(--glass-border);padding-top:10px;">
+                        <button class="btn btn-secondary btn-sm" onclick="logoutEmployee()" style="color:var(--accent-red);" id="logoutEmployeeBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج الموظف</button>
                     </div>
                 </div>
-
                 <div class="glass-card">
-                    <span style="font-weight:700;font-size:15px;" id="backupLabel">
-                        <i class="fas fa-cloud-upload-alt"></i> النسخ الاحتياطي
-                    </span>
-                    <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);flex-wrap:wrap;">
-                        <button class="btn btn-success btn-sm" onclick="exportBackup()" id="exportBackupBtn">
-                            <i class="fas fa-download"></i> تصدير
-                        </button>
-                        <button class="btn btn-warning btn-sm" onclick="document.getElementById('importBackupInput').click();" id="importBackupBtn">
-                            <i class="fas fa-upload"></i> استيراد
-                        </button>
+                    <span style="font-weight:700;font-size:14px;" id="backupLabel"><i class="fas fa-cloud-upload-alt"></i> النسخ الاحتياطي</span>
+                    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+                        <button class="btn btn-success btn-sm" onclick="exportBackup()" id="exportBackupBtn"><i class="fas fa-download"></i> تصدير</button>
+                        <button class="btn btn-warning btn-sm" onclick="document.getElementById('importBackupInput').click();" id="importBackupBtn"><i class="fas fa-upload"></i> استيراد</button>
                         <input type="file" id="importBackupInput" accept=".json" style="display:none;" onchange="importBackup(event)">
                     </div>
                 </div>
-
-                <div style="margin-top:var(--space-2);font-size:12px;color:var(--text-secondary);text-align:center;">
+                <div style="margin-top:8px;font-size:11px;color:var(--text-secondary);text-align:center;">
                     <i class="fas fa-sync-alt"></i> <span id="syncStatus">متصل</span>
                 </div>
             </div>
@@ -1883,19 +1258,16 @@
         </button>
 
         <div class="expense-fab-modal" id="expenseFabModal">
-            <button class="close-fab-modal" onclick="toggleExpenseFab()"><i class="fas fa-times"></i></button>
-            <div class="expense-title">
-                <i class="fas fa-money-bill-wave"></i>
-                <span id="fabExpenseTitle">إضافة مصروف</span>
+            <button class="close-fab-modal" onclick="toggleExpenseFab()" style="position:absolute;top:6px;right:10px;background:none;border:none;color:var(--text-secondary);font-size:16px;cursor:pointer;"><i class="fas fa-times"></i></button>
+            <div class="expense-title" style="display:flex;align-items:center;gap:8px;color:var(--accent-red);font-weight:700;margin-bottom:10px;font-size:14px;">
+                <i class="fas fa-money-bill-wave"></i> <span id="fabExpenseTitle">إضافة مصروف</span>
             </div>
-            <div class="expense-input-row">
-                <input type="text" id="fabExpenseDesc" placeholder="الوصف...">
-                <input type="number" id="fabExpenseAmount" placeholder="المبلغ">
-                <button class="btn btn-danger" onclick="addFabExpense()" id="fabExpenseBtn">
-                    <i class="fas fa-plus"></i> إضافة
-                </button>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <input type="text" id="fabExpenseDesc" placeholder="الوصف..." style="padding:8px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);border-radius:8px;color:var(--text-primary);font-size:13px;outline:none;">
+                <input type="number" id="fabExpenseAmount" placeholder="المبلغ" style="padding:8px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);border-radius:8px;color:var(--text-primary);font-size:13px;outline:none;">
+                <button class="btn btn-danger" onclick="addFabExpense()" id="fabExpenseBtn" style="padding:8px;font-size:13px;min-height:38px;"><i class="fas fa-plus"></i> إضافة</button>
             </div>
-            <div class="expense-list-compact" id="fabExpenseList"></div>
+            <div id="fabExpenseList" style="margin-top:8px;font-size:11px;color:var(--text-secondary);max-height:60px;overflow-y:auto;border-top:1px solid var(--glass-border);padding-top:6px;"></div>
         </div>
     </div>
 
@@ -1903,83 +1275,63 @@
     <div class="modal-overlay" id="sessionModal">
         <div class="modal-content">
             <h2 id="modalTitle"><i class="fas fa-check-circle" style="color:var(--accent-green);"></i> انتهت الجلسة!</h2>
-            <div class="sub" id="modalSub" style="color:var(--text-secondary);margin-bottom:var(--space-3);">جهاز بلايستيشن 1</div>
-            <div class="detail-row" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--glass-border);">
+            <div class="sub" id="modalSub" style="color:var(--text-secondary);margin-bottom:12px;">جهاز بلايستيشن 1</div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--glass-border);">
                 <span style="color:var(--text-secondary);" id="modalDurationLabel"><i class="fas fa-clock"></i> المدة</span>
-                <span class="value" id="modalDuration" style="font-weight:600;">--</span>
+                <span style="font-weight:600;" id="modalDuration">--</span>
             </div>
-            <div class="detail-row" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--glass-border);">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--glass-border);">
                 <span style="color:var(--text-secondary);" id="modalTimeLabel"><i class="fas fa-money-bill-wave"></i> تكلفة الوقت</span>
-                <span class="value" id="modalTimePrice" style="font-weight:600;color:var(--accent-blue);">0.00 EGP</span>
+                <span style="font-weight:600;color:var(--accent-blue);" id="modalTimePrice">0.00 EGP</span>
             </div>
             <div id="modalItemsContainer"></div>
-            <div class="total-row" style="display:flex;justify-content:space-between;padding:12px 0 4px;font-size:20px;font-weight:800;border-top:2px solid var(--glass-border);margin-top:var(--space-2);">
+            <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-size:18px;font-weight:800;border-top:2px solid var(--glass-border);margin-top:8px;">
                 <span id="modalTotalLabel"><i class="fas fa-calculator"></i> الإجمالي</span>
-                <span class="amount" id="modalTotal" style="color:var(--accent-blue);">0.00 EGP</span>
+                <span style="color:var(--accent-blue);" id="modalTotal">0.00 EGP</span>
             </div>
-            <div style="margin-top:var(--space-3);">
-                <button class="btn btn-primary btn-block" onclick="closeModal()" id="modalDoneBtn">
-                    <i class="fas fa-check"></i> تم
-                </button>
+            <div style="margin-top:12px;">
+                <button class="btn btn-primary btn-block" onclick="closeModal()" id="modalDoneBtn"><i class="fas fa-check"></i> تم</button>
             </div>
         </div>
     </div>
 
-    <!-- FIXED: Shift Modal - Clean layout, no duplicate buttons -->
     <div class="modal-overlay" id="shiftModal">
         <div class="shift-modal-content">
-            <h2 style="color:var(--accent-orange);font-size:22px;font-weight:800;text-align:center;margin-bottom:4px;" id="shiftTitle">
-                <i class="fas fa-chart-bar"></i> تقفيل الشيفت
-            </h2>
-            <div class="shift-date" id="shiftDate" style="text-align:center;color:var(--text-secondary);font-size:14px;margin-bottom:var(--space-4);">
-                <i class="fas fa-calendar-alt"></i> اليوم: --/--/----
+            <h2 style="color:var(--accent-orange);font-size:20px;font-weight:800;text-align:center;margin-bottom:4px;" id="shiftTitle"><i class="fas fa-chart-bar"></i> تقفيل الشيفت</h2>
+            <div class="shift-date" id="shiftDate" style="text-align:center;color:var(--text-secondary);font-size:13px;margin-bottom:12px;"><i class="fas fa-calendar-alt"></i> اليوم: --/--/----</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:var(--accent-gold);" id="shiftNoodles">0</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftNoodlesLabel"><i class="fas fa-utensils"></i> نودلز</div></div>
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:var(--accent-blue);" id="shiftDrinksTotal">0</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftDrinksLabel"><i class="fas fa-glass-whiskey"></i> مشروبات</div></div>
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:var(--accent-green);" id="shiftSessions">0</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftSessionsLabel"><i class="fas fa-gamepad"></i> جلسات</div></div>
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:var(--accent-orange);" id="shiftHours">0.0</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftHoursLabel"><i class="fas fa-clock"></i> ساعات</div></div>
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:#ff6b9d;" id="shiftSessionRevenue">0.00</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftSessionRevenueLabel"><i class="fas fa-money-bill-wave"></i> إيرادات الجلسات</div></div>
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:var(--accent-purple);" id="shiftNoodleRevenue">0.00</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftNoodleRevenueLabel"><i class="fas fa-money-bill-wave"></i> إيرادات النودلز</div></div>
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:#22d3ee;" id="shiftDrinkRevenue">0.00</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftDrinkRevenueLabel"><i class="fas fa-money-bill-wave"></i> إيرادات المشروبات</div></div>
+                <div class="shift-stat-card" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--glass-border);"><div style="font-size:20px;font-weight:800;color:var(--accent-red);" id="shiftExpensesTotal">0.00</div><div style="font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;" id="shiftExpensesTotalLabel"><i class="fas fa-money-bill-wave"></i> المصروفات</div></div>
             </div>
-
-            <div class="shift-summary-grid">
-                <div class="shift-stat-card"><div class="shift-stat-number gold" id="shiftNoodles">0</div><div class="shift-stat-label" id="shiftNoodlesLabel"><i class="fas fa-utensils"></i> نودلز</div></div>
-                <div class="shift-stat-card"><div class="shift-stat-number blue" id="shiftDrinksTotal">0</div><div class="shift-stat-label" id="shiftDrinksLabel"><i class="fas fa-glass-whiskey"></i> مشروبات</div></div>
-                <div class="shift-stat-card"><div class="shift-stat-number green" id="shiftSessions">0</div><div class="shift-stat-label" id="shiftSessionsLabel"><i class="fas fa-gamepad"></i> جلسات</div></div>
-                <div class="shift-stat-card"><div class="shift-stat-number orange" id="shiftHours">0.0</div><div class="shift-stat-label" id="shiftHoursLabel"><i class="fas fa-clock"></i> ساعات</div></div>
-                <div class="shift-stat-card"><div class="shift-stat-number pink" id="shiftSessionRevenue">0.00</div><div class="shift-stat-label" id="shiftSessionRevenueLabel"><i class="fas fa-money-bill-wave"></i> إيرادات الجلسات</div></div>
-                <div class="shift-stat-card"><div class="shift-stat-number purple" id="shiftNoodleRevenue">0.00</div><div class="shift-stat-label" id="shiftNoodleRevenueLabel"><i class="fas fa-money-bill-wave"></i> إيرادات النودلز</div></div>
-                <div class="shift-stat-card"><div class="shift-stat-number cyan" id="shiftDrinkRevenue">0.00</div><div class="shift-stat-label" id="shiftDrinkRevenueLabel"><i class="fas fa-money-bill-wave"></i> إيرادات المشروبات</div></div>
-                <div class="shift-stat-card"><div class="shift-stat-number red" id="shiftExpensesTotal">0.00</div><div class="shift-stat-label" id="shiftExpensesTotalLabel"><i class="fas fa-money-bill-wave"></i> المصروفات</div></div>
-            </div>
-
-            <div class="shift-drinks-detail">
-                <div class="detail-title" id="shiftDrinksDetailTitle"><i class="fas fa-glass-whiskey"></i> تفاصيل المشروبات</div>
+            <div style="margin:8px 0;padding:10px;background:rgba(0,212,255,0.03);border-radius:8px;border:1px solid rgba(0,212,255,0.05);">
+                <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;" id="shiftDrinksDetailTitle"><i class="fas fa-glass-whiskey"></i> تفاصيل المشروبات</div>
                 <div id="shiftDrinksList"></div>
             </div>
-
-            <div class="shift-total-row">
-                <span class="total-label" id="shiftGrandTotalLabel"><i class="fas fa-coins"></i> صافي الربح</span>
-                <span class="total-amount" id="shiftGrandTotal">0.00 EGP</span>
+            <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,165,0,0.06);border-radius:8px;border:1px solid rgba(255,165,0,0.08);font-size:16px;font-weight:800;margin:8px 0 12px;">
+                <span style="color:var(--text-secondary);font-weight:600;" id="shiftGrandTotalLabel"><i class="fas fa-coins"></i> صافي الربح</span>
+                <span style="color:var(--accent-gold);" id="shiftGrandTotal">0.00 EGP</span>
             </div>
-
-            <!-- FIXED: Clean 3-button layout -->
-            <div class="shift-actions">
-                <button class="btn btn-secondary" onclick="closeShiftModal()" id="shiftCloseBtn">
-                    <i class="fas fa-times"></i> إغلاق
-                </button>
-                <button class="btn btn-warning" onclick="viewShiftHistory()" id="shiftHistoryBtn">
-                    <i class="fas fa-history"></i> السجل
-                </button>
-                <button class="btn btn-success" onclick="confirmCloseShift()" id="shiftConfirmBtn">
-                    <i class="fas fa-check-circle"></i> تقفيل
-                </button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-secondary" onclick="closeShiftModal()" id="shiftCloseBtn" style="flex:1;padding:10px;font-size:13px;min-height:40px;"><i class="fas fa-times"></i> إغلاق</button>
+                <button class="btn btn-warning" onclick="viewShiftHistory()" id="shiftHistoryBtn" style="flex:1;padding:10px;font-size:13px;min-height:40px;"><i class="fas fa-history"></i> السجل</button>
+                <button class="btn btn-success" onclick="confirmCloseShift()" id="shiftConfirmBtn" style="flex:1;padding:10px;font-size:13px;min-height:40px;"><i class="fas fa-check-circle"></i> تقفيل</button>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="historyModal">
         <div class="shift-modal-content">
-            <h2 style="color:var(--accent-blue);" id="historyTitle"><i class="fas fa-history"></i> سجل التقفيلات</h2>
-            <div class="shift-date" style="text-align:center;color:var(--text-secondary);margin-bottom:var(--space-3);" id="historySub">جميع التقفيلات السابقة</div>
-            <div class="shift-history-container" id="historyContainer"></div>
-            <div class="shift-actions">
-                <button class="btn btn-secondary" onclick="closeHistoryModal()" style="width:100%;" id="historyCloseBtn">
-                    <i class="fas fa-times"></i> إغلاق
-                </button>
+            <h2 style="color:var(--accent-blue);font-size:20px;font-weight:800;text-align:center;margin-bottom:4px;" id="historyTitle"><i class="fas fa-history"></i> سجل التقفيلات</h2>
+            <div style="text-align:center;color:var(--text-secondary);font-size:12px;margin-bottom:12px;" id="historySub">جميع التقفيلات السابقة</div>
+            <div id="historyContainer" style="max-height:300px;overflow-y:auto;"></div>
+            <div style="margin-top:12px;">
+                <button class="btn btn-secondary" onclick="closeHistoryModal()" style="width:100%;padding:10px;font-size:13px;min-height:40px;" id="historyCloseBtn"><i class="fas fa-times"></i> إغلاق</button>
             </div>
         </div>
     </div>
@@ -1990,7 +1342,7 @@
             <div class="input-group"><label id="inventoryNameLabel"><i class="fas fa-tag"></i> اسم الصنف</label><input type="text" id="invName" placeholder="مثال: نودلز"></div>
             <div class="input-group"><label id="inventoryQtyLabel"><i class="fas fa-sort-amount-up"></i> الكمية</label><input type="number" id="invQty" value="10" min="0"></div>
             <div class="input-group"><label id="inventoryThresholdLabel"><i class="fas fa-exclamation-triangle"></i> الحد الأدنى للتنبيه</label><input type="number" id="invThreshold" value="3" min="0"></div>
-            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);">
+            <div style="display:flex;gap:8px;margin-top:12px;">
                 <button class="btn btn-secondary" onclick="closeModalById('addInventoryModal')" id="inventoryCancelBtn"><i class="fas fa-times"></i> إلغاء</button>
                 <button class="btn btn-primary" onclick="confirmAddInventory()" id="inventoryConfirmBtn" style="flex:1;"><i class="fas fa-plus"></i> إضافة</button>
             </div>
@@ -2000,40 +1352,38 @@
     <div class="modal-overlay" id="addEmployeeModal">
         <div class="modal-content">
             <h2 id="employeeModalTitle"><i class="fas fa-user-plus"></i> إضافة موظف</h2>
-            <div class="sub" id="employeeModalSub">أدخل بيانات الموظف وحدد صلاحياته</div>
+            <div class="sub" id="employeeModalSub" style="color:var(--text-secondary);font-size:12px;margin-bottom:10px;">أدخل بيانات الموظف وحدد صلاحياته</div>
             <div class="input-group"><label id="employeeUserLabel"><i class="fas fa-user"></i> اسم المستخدم</label><input type="text" id="empUser" placeholder="أدخل اسم المستخدم"></div>
             <div class="input-group"><label id="employeePassLabel"><i class="fas fa-lock"></i> كلمة المرور</label><input type="password" id="empPass" placeholder="••••••"></div>
             <div class="input-group"><label id="employeeRoleLabel"><i class="fas fa-user-tag"></i> الدور</label>
                 <select id="empRole"><option value="admin">مدير (صلاحيات كاملة)</option><option value="employee">موظف (صلاحيات محددة)</option></select>
             </div>
-            <div style="background:rgba(0,212,255,0.04);border-radius:var(--radius-sm);padding:var(--space-3);margin:var(--space-2) 0;border:1px solid rgba(0,212,255,0.06);">
-                <div style="font-size:12px;font-weight:700;color:var(--accent-blue);margin-bottom:var(--space-2);text-transform:uppercase;letter-spacing:0.3px;">
-                    <i class="fas fa-key"></i> صلاحيات الموظف
-                </div>
+            <div style="background:rgba(0,212,255,0.04);border-radius:8px;padding:10px;margin:6px 0;border:1px solid rgba(0,212,255,0.06);">
+                <div style="font-size:11px;font-weight:700;color:var(--accent-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.3px;"><i class="fas fa-key"></i> صلاحيات الموظف</div>
                 <div id="employeePermissions">
-                    <div class="permission-item">
-                        <span class="perm-label"><i class="fas fa-gamepad"></i> إدارة الأجهزة</span>
-                        <button class="perm-toggle active" onclick="togglePermission(this)"><span class="toggle-slider"></span></button>
+                    <div class="permission-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--glass-border);">
+                        <span style="font-size:12px;color:var(--text-secondary);font-weight:500;"><i class="fas fa-gamepad"></i> إدارة الأجهزة</span>
+                        <button class="perm-toggle active" onclick="togglePermission(this)" style="position:relative;width:36px;height:20px;background:rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;transition:all 0.3s ease;border:none;flex-shrink:0;"><span class="toggle-slider" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span></button>
                     </div>
-                    <div class="permission-item">
-                        <span class="perm-label"><i class="fas fa-boxes"></i> إدارة المخزون</span>
-                        <button class="perm-toggle active" onclick="togglePermission(this)"><span class="toggle-slider"></span></button>
+                    <div class="permission-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--glass-border);">
+                        <span style="font-size:12px;color:var(--text-secondary);font-weight:500;"><i class="fas fa-boxes"></i> إدارة المخزون</span>
+                        <button class="perm-toggle active" onclick="togglePermission(this)" style="position:relative;width:36px;height:20px;background:rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;transition:all 0.3s ease;border:none;flex-shrink:0;"><span class="toggle-slider" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span></button>
                     </div>
-                    <div class="permission-item">
-                        <span class="perm-label"><i class="fas fa-chart-bar"></i> تقفيل الشيفت</span>
-                        <button class="perm-toggle active" onclick="togglePermission(this)"><span class="toggle-slider"></span></button>
+                    <div class="permission-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--glass-border);">
+                        <span style="font-size:12px;color:var(--text-secondary);font-weight:500;"><i class="fas fa-chart-bar"></i> تقفيل الشيفت</span>
+                        <button class="perm-toggle active" onclick="togglePermission(this)" style="position:relative;width:36px;height:20px;background:rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;transition:all 0.3s ease;border:none;flex-shrink:0;"><span class="toggle-slider" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span></button>
                     </div>
-                    <div class="permission-item">
-                        <span class="perm-label"><i class="fas fa-cog"></i> الإعدادات</span>
-                        <button class="perm-toggle active" onclick="togglePermission(this)"><span class="toggle-slider"></span></button>
+                    <div class="permission-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--glass-border);">
+                        <span style="font-size:12px;color:var(--text-secondary);font-weight:500;"><i class="fas fa-cog"></i> الإعدادات</span>
+                        <button class="perm-toggle active" onclick="togglePermission(this)" style="position:relative;width:36px;height:20px;background:rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;transition:all 0.3s ease;border:none;flex-shrink:0;"><span class="toggle-slider" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span></button>
                     </div>
-                    <div class="permission-item">
-                        <span class="perm-label"><i class="fas fa-users"></i> إدارة الموظفين</span>
-                        <button class="perm-toggle active" onclick="togglePermission(this)"><span class="toggle-slider"></span></button>
+                    <div class="permission-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;">
+                        <span style="font-size:12px;color:var(--text-secondary);font-weight:500;"><i class="fas fa-users"></i> إدارة الموظفين</span>
+                        <button class="perm-toggle active" onclick="togglePermission(this)" style="position:relative;width:36px;height:20px;background:rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;transition:all 0.3s ease;border:none;flex-shrink:0;"><span class="toggle-slider" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span></button>
                     </div>
                 </div>
             </div>
-            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);">
+            <div style="display:flex;gap:8px;margin-top:12px;">
                 <button class="btn btn-secondary" onclick="closeModalById('addEmployeeModal')" id="employeeCancelBtn"><i class="fas fa-times"></i> إلغاء</button>
                 <button class="btn btn-primary" onclick="confirmAddEmployee()" id="employeeConfirmBtn" style="flex:1;"><i class="fas fa-plus"></i> إضافة</button>
             </div>
@@ -2043,8 +1393,8 @@
     <div class="modal-overlay" id="notifModal">
         <div class="modal-content">
             <h2 id="notifTitle"><i class="fas fa-bell"></i> الإشعارات</h2>
-            <div id="notifList" style="max-height:300px;overflow-y:auto;"></div>
-            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);">
+            <div id="notifList" style="max-height:250px;overflow-y:auto;"></div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
                 <button class="btn btn-secondary" onclick="clearNotifications()" id="notifClearBtn"><i class="fas fa-eraser"></i> مسح الكل</button>
                 <button class="btn btn-primary" onclick="closeModalById('notifModal')" id="notifCloseBtn" style="flex:1;"><i class="fas fa-times"></i> إغلاق</button>
             </div>
@@ -2054,40 +1404,14 @@
     <div class="modal-overlay" id="addDrinkModal">
         <div class="modal-content">
             <h2 id="addDrinkTitle"><i class="fas fa-glass-whiskey"></i> إضافة مشروب جديد</h2>
-            <div class="sub" id="addDrinkSub">أدخل اسم المشروب وسعره</div>
+            <div class="sub" id="addDrinkSub" style="color:var(--text-secondary);font-size:12px;margin-bottom:10px;">أدخل اسم المشروب وسعره</div>
             <div class="input-group"><label id="addDrinkNameLabel"><i class="fas fa-tag"></i> اسم المشروب</label><input type="text" id="newDrinkName" placeholder="مثال: شاي"></div>
             <div class="input-group"><label id="addDrinkPriceLabel"><i class="fas fa-money-bill-wave"></i> السعر (EGP)</label><input type="number" id="newDrinkPrice" value="10" min="1" step="0.5"></div>
-            <div class="input-group"><label id="addDrinkIconLabel"><i class="fas fa-smile"></i> رمز تعبيري (اختياري)</label><input type="text" id="newDrinkIcon" value="🥤" maxlength="2" style="font-size:24px;text-align:center;"></div>
-            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);">
+            <div class="input-group"><label id="addDrinkIconLabel"><i class="fas fa-smile"></i> رمز تعبيري (اختياري)</label><input type="text" id="newDrinkIcon" value="🥤" maxlength="2" style="font-size:20px;text-align:center;"></div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
                 <button class="btn btn-secondary" onclick="closeAddDrinkModal()" id="addDrinkCancelBtn"><i class="fas fa-times"></i> إلغاء</button>
                 <button class="btn btn-primary" onclick="confirmAddDrink()" id="addDrinkConfirmBtn" style="flex:1;"><i class="fas fa-plus"></i> إضافة</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Employee Login Overlay -->
-    <div id="employeeLoginOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(20px);z-index:2000;align-items:center;justify-content:center;padding:20px;">
-        <div style="background:var(--bg-card);border-radius:var(--radius-xl);padding:32px 24px;max-width:380px;width:100%;border:1px solid var(--glass-border);box-shadow:0 8px 40px rgba(0,0,0,0.6);animation:slideUp 0.4s ease;">
-            <h2 style="text-align:center;margin-bottom:4px;color:var(--accent-blue);font-size:22px;font-weight:800;">
-                <i class="fas fa-lock"></i> تسجيل دخول الموظف
-            </h2>
-            <div style="text-align:center;color:var(--text-secondary);font-size:13px;margin-bottom:var(--space-4);" id="empLoginSub">
-                أدخل بياناتك للوصول إلى النظام
-            </div>
-            <div class="input-group">
-                <label id="employeeLoginUserLabel"><i class="fas fa-user"></i> اسم المستخدم</label>
-                <input type="text" id="empLoginUser" placeholder="أدخل اسم المستخدم">
-            </div>
-            <div class="input-group">
-                <label id="employeeLoginPassLabel"><i class="fas fa-lock"></i> كلمة المرور</label>
-                <input type="password" id="empLoginPass" placeholder="أدخل كلمة المرور">
-            </div>
-            <button class="btn btn-primary btn-block" onclick="employeeLogin()" id="employeeLoginBtn">
-                <i class="fas fa-sign-in-alt"></i> دخول
-            </button>
-            <button class="btn btn-secondary btn-block mt-8" onclick="closeEmployeeLogin()" style="margin-top:var(--space-2);">
-                <i class="fas fa-times"></i> إلغاء
-            </button>
         </div>
     </div>
 
@@ -2095,20 +1419,11 @@
     <div class="modal-overlay" id="editProfileModal">
         <div class="modal-content">
             <h2 id="editProfileTitle"><i class="fas fa-user-edit"></i> تعديل بياناتي</h2>
-            <div class="sub" id="editProfileSub">تغيير اسم المستخدم أو كلمة المرور</div>
-            <div class="input-group">
-                <label id="editProfileUserLabel"><i class="fas fa-user"></i> اسم المستخدم الجديد</label>
-                <input type="text" id="editProfileUser" placeholder="أدخل اسم المستخدم الجديد">
-            </div>
-            <div class="input-group">
-                <label id="editProfilePassLabel"><i class="fas fa-lock"></i> كلمة المرور الجديدة</label>
-                <input type="password" id="editProfilePass" placeholder="أدخل كلمة المرور الجديدة">
-            </div>
-            <div class="input-group">
-                <label id="editProfileConfirmLabel"><i class="fas fa-check-circle"></i> تأكيد كلمة المرور</label>
-                <input type="password" id="editProfileConfirm" placeholder="أعد كتابة كلمة المرور">
-            </div>
-            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);">
+            <div class="sub" id="editProfileSub" style="color:var(--text-secondary);font-size:12px;margin-bottom:10px;">تغيير اسم المستخدم أو كلمة المرور</div>
+            <div class="input-group"><label id="editProfileUserLabel"><i class="fas fa-user"></i> اسم المستخدم الجديد</label><input type="text" id="editProfileUser" placeholder="أدخل اسم المستخدم الجديد"></div>
+            <div class="input-group"><label id="editProfilePassLabel"><i class="fas fa-lock"></i> كلمة المرور الجديدة</label><input type="password" id="editProfilePass" placeholder="أدخل كلمة المرور الجديدة"></div>
+            <div class="input-group"><label id="editProfileConfirmLabel"><i class="fas fa-check-circle"></i> تأكيد كلمة المرور</label><input type="password" id="editProfileConfirm" placeholder="أعد كتابة كلمة المرور"></div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
                 <button class="btn btn-secondary" onclick="closeModalById('editProfileModal')" id="editProfileCancelBtn"><i class="fas fa-times"></i> إلغاء</button>
                 <button class="btn btn-primary" onclick="saveProfileChanges()" id="editProfileSaveBtn" style="flex:1;"><i class="fas fa-save"></i> حفظ</button>
             </div>
@@ -2163,7 +1478,6 @@
                 settingsTitle: '⚙️ الإعدادات',
                 noodleLabel: '🍜 النودلز / الأندومي',
                 noodlePriceLabel: 'سعر العلبة (EGP)',
-                noodleHint: 'الافتراضي: 15 EGP',
                 drinksLabel: '🥤 المشروبات المخصصة',
                 addDrinkBtn: '➕ إضافة مشروب جديد',
                 addDrinkTitle: '🥤 إضافة مشروب جديد',
@@ -2336,7 +1650,6 @@
                 settingsTitle: '⚙️ Settings',
                 noodleLabel: '🍜 Noodle / Indomi Settings',
                 noodlePriceLabel: 'Price per Noodle (EGP)',
-                noodleHint: 'Default: 15 EGP',
                 drinksLabel: '🥤 Custom Drinks',
                 addDrinkBtn: '➕ Add New Drink',
                 addDrinkTitle: '🥤 Add New Drink',
@@ -2512,28 +1825,14 @@
         };
 
         // ============================================================
-        // UTC TIME HELPERS - FIX: No 3-hour offset issues
+        // UTC TIME HELPERS
         // ============================================================
-        function nowUTC() {
-            return new Date();
-        }
-
-        function getUTCDate(date) {
-            if (!date) return null;
-            const d = new Date(date);
-            return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()));
-        }
-
-        function getUTCString(date) {
-            if (!date) return null;
-            return date.toISOString();
-        }
+        function nowUTC() { return new Date(); }
 
         function isExpiredUTC(expiryDate) {
             if (!expiryDate) return true;
             const now = new Date();
             const expiry = new Date(expiryDate);
-            // Compare as UTC timestamps
             return now.getTime() > expiry.getTime();
         }
 
@@ -2587,9 +1886,9 @@
                 'copyDeviceBtn', 'verifyPayBtn', 'switchBizBtn', 'statTotalLabel', 'statInUseLabel',
                 'statAvailableLabel', 'stationsTitle', 'modalTitle', 'modalDurationLabel', 'modalTimeLabel',
                 'modalTotalLabel', 'modalDoneBtn', 'settingsTitle', 'noodleLabel',
-                'noodlePriceLabel', 'noodleHint', 'drinksLabel', 'addDrinkBtn', 'addDrinkTitle',
+                'noodlePriceLabel', 'drinksLabel', 'addDrinkBtn', 'addDrinkTitle',
                 'addDrinkSub', 'addDrinkNameLabel', 'addDrinkPriceLabel', 'addDrinkIconLabel', 'addDrinkCancelBtn',
-                'addDrinkConfirmBtn', 'langLabel', 'settingsTitle',
+                'addDrinkConfirmBtn', 'langLabel',
                 'employeesLabel', 'addEmployeeBtn', 'logoutEmployeeBtn', 'backupLabel',
                 'exportBackupBtn', 'importBackupBtn', 'addStationBtn', 'navStations', 'navInventory',
                 'navSettings', 'inventoryTitle', 'inventoryAddBtn', 'inventoryEmpty',
@@ -2694,6 +1993,14 @@
 
         function togglePermission(btn) {
             btn.classList.toggle('active');
+            const slider = btn.querySelector('.toggle-slider');
+            if (slider) {
+                if (btn.classList.contains('active')) {
+                    slider.style.left = '18px';
+                } else {
+                    slider.style.left = '2px';
+                }
+            }
         }
 
         function getPermissionsFromUI() {
@@ -2704,60 +2011,6 @@
                 perms[permKeys[index]] = toggle.classList.contains('active');
             });
             return perms;
-        }
-
-        // ============================================================
-        // FAB EXPENSE FUNCTIONS
-        // ============================================================
-        function toggleExpenseFab() {
-            const modal = document.getElementById('expenseFabModal');
-            modal.classList.toggle('show');
-            if (modal.classList.contains('show')) {
-                document.getElementById('fabExpenseDesc').focus();
-            }
-        }
-
-        function addFabExpense() {
-            if (currentEmployee && !hasPermission(PERMISSIONS.CLOSE_SHIFT)) {
-                showToast('⚠️ ' + (currentLang === 'ar' ? 'ليس لديك صلاحية' : 'No permission'), 'warning');
-                return;
-            }
-            const desc = document.getElementById('fabExpenseDesc').value.trim();
-            const amount = parseFloat(document.getElementById('fabExpenseAmount').value);
-            if (!desc) {
-                showToast('❌ ' + (currentLang === 'ar' ? 'أدخل وصف المصروف' : 'Enter expense description'), 'error');
-                return;
-            }
-            if (isNaN(amount) || amount <= 0) {
-                showToast('❌ ' + (currentLang === 'ar' ? 'أدخل مبلغ صحيح' : 'Enter a valid amount'), 'error');
-                return;
-            }
-            addDailyExpense(desc, amount);
-            document.getElementById('fabExpenseDesc').value = '';
-            document.getElementById('fabExpenseAmount').value = '';
-            renderFabExpenses();
-            document.getElementById('expenseFabModal').classList.remove('show');
-            showToast('✅ ' + (currentLang === 'ar' ? 'تم إضافة مصروف: ' : 'Expense added: ') + desc + ' (' + amount
-                .toFixed(2) + ' EGP)', 'success');
-        }
-
-        function renderFabExpenses() {
-            const container = document.getElementById('fabExpenseList');
-            if (!container) return;
-            const expenses = loadDailyExpenses();
-            if (expenses.length === 0) {
-                container.innerHTML = '';
-                return;
-            }
-            let html = '';
-            const recent = expenses.slice(-5);
-            recent.forEach(e => {
-                html += `<div class="exp-item">
-                    <span class="exp-desc"><i class="fas fa-money-bill-wave"></i> ${e.description}</span>
-                    <span class="exp-amount">${e.amount.toFixed(2)} EGP</span>
-                </div>`;
-            });
-            container.innerHTML = html;
         }
 
         // ============================================================
@@ -2784,13 +2037,40 @@
             } catch (e) {}
         }
 
+        // ============================================================
+        // FIX: ENSURE ADMIN EXISTS - Called during login
+        // ============================================================
+        function ensureAdminExists() {
+            if (!currentBusiness) return;
+            loadEmployees();
+            const adminExists = employees.find(e => e.username === 'admin');
+            if (!adminExists) {
+                employees.push({
+                    username: 'admin',
+                    password: 'admin123',
+                    role: 'admin',
+                    permissions: {
+                        manage_stations: true,
+                        manage_inventory: true,
+                        close_shift: true,
+                        manage_settings: true,
+                        manage_employees: true
+                    }
+                });
+                saveEmployees();
+                console.log('✅ تم إنشاء الموظف admin تلقائياً');
+                return true;
+            }
+            return false;
+        }
+
         function renderEmployees() {
             const list = document.getElementById('employeeList');
             if (!list) return;
             loadEmployees();
             if (employees.length === 0) {
                 list.innerHTML =
-                    '<div style="color:var(--text-secondary);font-size:13px;padding:4px 0;">' + (currentLang === 'ar' ?
+                    '<div style="color:var(--text-secondary);font-size:12px;padding:4px 0;">' + (currentLang === 'ar' ?
                         'لا يوجد موظفين. قم بإضافة موظف أولاً.' : 'No employees. Add an employee first.') + '</div>';
                 return;
             }
@@ -2800,15 +2080,15 @@
                 const roleLabel = emp.role === 'admin' ? (currentLang === 'ar' ? 'مدير' : 'Admin') : (currentLang ===
                     'ar' ? 'موظف' : 'Employee');
                 const roleClass = emp.role === 'admin' ? 'admin' : 'employee';
-                html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--glass-border);">
+                html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--glass-border);">
                     <div>
-                        <span>${emp.username}</span>
-                        <span class="employee-status-badge ${roleClass}">${roleLabel}</span>
-                        ${isLoggedIn ? '<span class="employee-status-badge logged-in">✓ ' + (currentLang === 'ar' ? 'متصل' : 'Logged in') + '</span>' : ''}
+                        <span style="font-size:13px;">${emp.username}</span>
+                        <span class="employee-status-badge ${roleClass}" style="display:inline-block;padding:1px 8px;border-radius:12px;font-size:9px;font-weight:700;text-transform:uppercase;background:${emp.role === 'admin' ? 'rgba(123,97,255,0.15)' : 'rgba(0,212,255,0.08)'};color:${emp.role === 'admin' ? 'var(--accent-purple)' : 'var(--accent-blue)'};">${roleLabel}</span>
+                        ${isLoggedIn ? '<span style="display:inline-block;padding:1px 8px;border-radius:12px;font-size:9px;font-weight:700;background:rgba(46,204,113,0.12);color:var(--accent-green);">✓ ' + (currentLang === 'ar' ? 'متصل' : 'Logged in') + '</span>' : ''}
                     </div>
                     <div style="display:flex;gap:4px;">
-                        ${hasPermission(PERMISSIONS.MANAGE_EMPLOYEES) && !isLoggedIn ? `<button class="btn btn-secondary btn-sm" onclick="editEmployeePermissions('${emp.username}')" style="padding:2px 8px;font-size:10px;"><i class="fas fa-key"></i></button>` : ''}
-                        ${hasPermission(PERMISSIONS.MANAGE_EMPLOYEES) ? `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.username}')" style="padding:2px 6px;font-size:10px;"><i class="fas fa-trash"></i></button>` : ''}
+                        ${hasPermission(PERMISSIONS.MANAGE_EMPLOYEES) && !isLoggedIn ? `<button class="btn btn-secondary btn-sm" onclick="editEmployeePermissions('${emp.username}')" style="padding:1px 6px;font-size:9px;min-height:22px;"><i class="fas fa-key"></i></button>` : ''}
+                        ${hasPermission(PERMISSIONS.MANAGE_EMPLOYEES) ? `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.username}')" style="padding:1px 6px;font-size:9px;min-height:22px;"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 </div>`;
             });
@@ -2817,19 +2097,26 @@
         }
 
         function showEmployeeLogin() {
-            document.getElementById('employeeLoginOverlay').style.display = 'flex';
+            document.getElementById('employeeLoginOverlay').classList.add('show');
             document.getElementById('empLoginUser').value = '';
             document.getElementById('empLoginPass').value = '';
             document.getElementById('empLoginUser').focus();
         }
 
         function closeEmployeeLogin() {
-            document.getElementById('employeeLoginOverlay').style.display = 'none';
+            document.getElementById('employeeLoginOverlay').classList.remove('show');
         }
 
+        // ============================================================
+        // FIX: EMPLOYEE LOGIN - Ensure admin exists first
+        // ============================================================
         function employeeLogin() {
             const user = document.getElementById('empLoginUser').value.trim();
             const pass = document.getElementById('empLoginPass').value.trim();
+
+            // FIX: Ensure admin exists before login
+            ensureAdminExists();
+
             loadEmployees();
             const found = employees.find(e => e.username === user && e.password === pass);
             if (!found) {
@@ -2838,14 +2125,12 @@
                 return;
             }
             currentEmployee = found;
-            document.getElementById('employeeLoginOverlay').style.display = 'none';
+            document.getElementById('employeeLoginOverlay').classList.remove('show');
             const badge = document.getElementById('currentUserBadge');
             if (badge) {
                 badge.textContent = '👤 ' + user + (found.role === 'admin' ? ' (مدير)' : '');
                 badge.style.display = 'inline-block';
             }
-            const editBtn = document.getElementById('editProfileBtn');
-            if (editBtn) editBtn.style.display = 'inline-flex';
             updateUIForPermissions();
             renderEmployees();
             showToast('✅ ' + (currentLang === 'ar' ? 'مرحباً ' : 'Welcome ') + user, 'success');
@@ -2861,8 +2146,6 @@
                 currentEmployee = null;
                 const badge = document.getElementById('currentUserBadge');
                 if (badge) badge.style.display = 'none';
-                const editBtn = document.getElementById('editProfileBtn');
-                if (editBtn) editBtn.style.display = 'none';
                 updateUIForPermissions();
                 renderEmployees();
                 showToast('🔒 ' + (currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Logged out'), 'success');
@@ -2891,9 +2174,6 @@
 
             const logoutEmployeeBtn = document.getElementById('logoutEmployeeBtn');
             if (logoutEmployeeBtn) logoutEmployeeBtn.style.display = currentEmployee ? 'inline-flex' : 'none';
-
-            const editProfileBtn = document.getElementById('editProfileBtn');
-            if (editProfileBtn) editProfileBtn.style.display = currentEmployee ? 'inline-flex' : 'none';
 
             const fab = document.getElementById('fabButton');
             if (fab) fab.style.display = 'flex';
@@ -2948,20 +2228,20 @@
                 currentLang === 'ar' ? '👥 إدارة الموظفين' : 'Manage Employees'
             ];
 
-            let html = '<div style="padding:8px 0;">';
+            let html = '<div style="padding:6px 0;">';
             permKeys.forEach((key, i) => {
                 const isActive = emp.permissions && emp.permissions[key] !== undefined ? emp.permissions[key] :
                     true;
-                html += `<div class="permission-item">
-                    <span class="perm-label">${permLabels[i]}</span>
-                    <button class="perm-toggle ${isActive ? 'active' : ''}" onclick="togglePermission(this)" data-perm="${key}">
-                        <span class="toggle-slider"></span>
+                html += `<div class="permission-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--glass-border);">
+                    <span class="perm-label" style="font-size:12px;color:var(--text-secondary);font-weight:500;">${permLabels[i]}</span>
+                    <button class="perm-toggle ${isActive ? 'active' : ''}" onclick="togglePermission(this)" data-perm="${key}" style="position:relative;width:36px;height:20px;background:${isActive ? 'var(--accent-green)' : 'rgba(255,255,255,0.08)'};border-radius:10px;cursor:pointer;transition:all 0.3s ease;border:none;flex-shrink:0;">
+                        <span class="toggle-slider" style="position:absolute;top:2px;${isActive ? 'left:18px' : 'left:2px'};width:16px;height:16px;background:#fff;border-radius:50%;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span>
                     </button>
                 </div>`;
             });
-            html += `<div style="display:flex;gap:10px;margin-top:12px;">
-                <button class="btn btn-secondary" onclick="closeModalById('editPermModal')">${currentLang === 'ar' ? 'إلغاء' : 'Cancel'}</button>
-                <button class="btn btn-primary" onclick="saveEmployeePermissions('${username}')" style="flex:1;">${currentLang === 'ar' ? 'حفظ' : 'Save'}</button>
+            html += `<div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="btn btn-secondary" onclick="closeModalById('editPermModal')" style="padding:8px 16px;font-size:12px;min-height:36px;">${currentLang === 'ar' ? 'إلغاء' : 'Cancel'}</button>
+                <button class="btn btn-primary" onclick="saveEmployeePermissions('${username}')" style="flex:1;padding:8px 16px;font-size:12px;min-height:36px;">${currentLang === 'ar' ? 'حفظ' : 'Save'}</button>
             </div></div>`;
 
             let modal = document.getElementById('editPermModal');
@@ -2970,7 +2250,7 @@
                 modal.id = 'editPermModal';
                 modal.className = 'modal-overlay';
                 modal.innerHTML = `<div class="modal-content">
-                    <h2 style="margin-bottom:8px;"><i class="fas fa-key"></i> ${currentLang === 'ar' ? 'صلاحيات' : 'Permissions'} ${username}</h2>
+                    <h2 style="margin-bottom:6px;font-size:18px;"><i class="fas fa-key"></i> ${currentLang === 'ar' ? 'صلاحيات' : 'Permissions'} ${username}</h2>
                     <div id="editPermContent">${html}</div>
                 </div>`;
                 document.body.appendChild(modal);
@@ -3013,7 +2293,11 @@
             document.getElementById('empUser').value = '';
             document.getElementById('empPass').value = '';
             document.getElementById('empRole').value = 'employee';
-            document.querySelectorAll('#employeePermissions .perm-toggle').forEach(t => t.classList.add('active'));
+            document.querySelectorAll('#employeePermissions .perm-toggle').forEach(t => {
+                t.classList.add('active');
+                const slider = t.querySelector('.toggle-slider');
+                if (slider) slider.style.left = '18px';
+            });
             document.getElementById('empUser').focus();
         }
 
@@ -3065,6 +2349,123 @@
             renderEmployees();
             updateUIForPermissions();
             showToast('✅ ' + (currentLang === 'ar' ? 'تم حذف الموظف' : 'Employee deleted'), 'success');
+        }
+
+        // ============================================================
+        // FAB EXPENSE FUNCTIONS
+        // ============================================================
+        function toggleExpenseFab() {
+            const modal = document.getElementById('expenseFabModal');
+            modal.classList.toggle('show');
+            if (modal.classList.contains('show')) {
+                document.getElementById('fabExpenseDesc').focus();
+            }
+        }
+
+        function addFabExpense() {
+            if (currentEmployee && !hasPermission(PERMISSIONS.CLOSE_SHIFT)) {
+                showToast('⚠️ ' + (currentLang === 'ar' ? 'ليس لديك صلاحية' : 'No permission'), 'warning');
+                return;
+            }
+            const desc = document.getElementById('fabExpenseDesc').value.trim();
+            const amount = parseFloat(document.getElementById('fabExpenseAmount').value);
+            if (!desc) {
+                showToast('❌ ' + (currentLang === 'ar' ? 'أدخل وصف المصروف' : 'Enter expense description'), 'error');
+                return;
+            }
+            if (isNaN(amount) || amount <= 0) {
+                showToast('❌ ' + (currentLang === 'ar' ? 'أدخل مبلغ صحيح' : 'Enter a valid amount'), 'error');
+                return;
+            }
+            addDailyExpense(desc, amount);
+            document.getElementById('fabExpenseDesc').value = '';
+            document.getElementById('fabExpenseAmount').value = '';
+            renderFabExpenses();
+            document.getElementById('expenseFabModal').classList.remove('show');
+            showToast('✅ ' + (currentLang === 'ar' ? 'تم إضافة مصروف: ' : 'Expense added: ') + desc + ' (' + amount
+                .toFixed(2) + ' EGP)', 'success');
+        }
+
+        function renderFabExpenses() {
+            const container = document.getElementById('fabExpenseList');
+            if (!container) return;
+            const expenses = loadDailyExpenses();
+            if (expenses.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            let html = '';
+            const recent = expenses.slice(-5);
+            recent.forEach(e => {
+                html += `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--glass-border);font-size:11px;">
+                    <span style="color:var(--accent-red);font-weight:500;">${e.description}</span>
+                    <span style="color:var(--accent-red);font-weight:600;">${e.amount.toFixed(2)} EGP</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // EDIT PROFILE
+        // ============================================================
+        function openEditProfile() {
+            if (!currentEmployee) {
+                showToast('⚠️ ' + (currentLang === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'Please login first'), 'warning');
+                return;
+            }
+            document.getElementById('editProfileUser').value = currentEmployee.username;
+            document.getElementById('editProfilePass').value = '';
+            document.getElementById('editProfileConfirm').value = '';
+            document.getElementById('editProfileModal').classList.add('show');
+            document.getElementById('editProfileUser').focus();
+        }
+
+        function saveProfileChanges() {
+            const newUser = document.getElementById('editProfileUser').value.trim();
+            const newPass = document.getElementById('editProfilePass').value.trim();
+            const confirmPass = document.getElementById('editProfileConfirm').value.trim();
+
+            if (!newUser || newUser.length < 3) {
+                showToast('❌ ' + (currentLang === 'ar' ? 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل' :
+                    'Username must be at least 3 characters'), 'error');
+                return;
+            }
+
+            loadEmployees();
+            const existingUser = employees.find(e => e.username === newUser && e.username !== currentEmployee.username);
+            if (existingUser) {
+                showToast('❌ ' + (currentLang === 'ar' ? 'هذا الاسم موجود مسبقاً' : 'Username already exists'), 'error');
+                return;
+            }
+
+            const oldUsername = currentEmployee.username;
+            const empIndex = employees.findIndex(e => e.username === oldUsername);
+            if (empIndex === -1) {
+                showToast('❌ ' + (currentLang === 'ar' ? 'حدث خطأ في العثور على المستخدم' : 'Error finding user'), 'error');
+                return;
+            }
+
+            employees[empIndex].username = newUser;
+            if (newPass && newPass.length >= 4) {
+                employees[empIndex].password = newPass;
+            }
+
+            saveEmployees();
+
+            currentEmployee.username = newUser;
+            if (newPass && newPass.length >= 4) {
+                currentEmployee.password = newPass;
+            }
+
+            const badge = document.getElementById('currentUserBadge');
+            if (badge) {
+                badge.textContent = '👤 ' + newUser + (currentEmployee.role === 'admin' ? ' (مدير)' : '');
+                badge.style.display = 'inline-block';
+            }
+
+            closeModalById('editProfileModal');
+            renderEmployees();
+            showToast('✅ ' + (currentLang === 'ar' ? 'تم تحديث بياناتك بنجاح' : 'Profile updated successfully'), 'success');
         }
 
         // ============================================================
@@ -3218,7 +2619,7 @@
         }
 
         // ============================================================
-        // SUBSCRIPTION - FIX: Using UTC for all date comparisons
+        // SUBSCRIPTION
         // ============================================================
         function isRentalActive() {
             const data = getUserDataLocal();
@@ -3226,7 +2627,6 @@
             if (!data.isActive) return false;
             if (data.revoked) return false;
             if (!data.expiryDate) return false;
-            // FIX: Use UTC comparison
             return !isExpiredUTC(data.expiryDate);
         }
 
@@ -3378,7 +2778,6 @@
                 const now = new Date();
                 const expiry = new Date(now);
                 expiry.setMonth(expiry.getMonth() + 1);
-                // Store expiry in UTC
                 const { data: userData, error: userError } = await supabaseClient.from('users').upsert({
                     business_code: businessCode,
                     device_id: deviceId,
@@ -3518,7 +2917,7 @@
         }
 
         // ============================================================
-        // ENTER BUSINESS - FIX: UTC subscription validation
+        // ENTER BUSINESS
         // ============================================================
         async function enterBusiness() {
             const t = translations[currentLang];
@@ -3556,7 +2955,6 @@
 
                 const userData = await getUserDataSupabase(code, deviceId);
                 if (userData) {
-                    // FIX: Use UTC comparison
                     const expiryDate = new Date(userData.expiry_date);
                     if (userData.is_active && !userData.revoked && !isExpiredUTC(expiryDate)) {
                         saveUserDataLocal({ isActive: userData.is_active, expiryDate: userData.expiry_date,
@@ -3593,6 +2991,10 @@
                 loadExpensesHistory();
                 loadNotifications();
                 loadEmployees();
+
+                // FIX: Ensure admin exists
+                ensureAdminExists();
+
                 getOrCreateShift();
                 isDashboardClosed = false;
                 closedShiftData = null;
@@ -3768,9 +3170,9 @@
                     'أيام متبقية');
                 if (paymentStatus) {
                     paymentStatus.innerHTML =
-                        '<div style="color:var(--accent-green);margin:8px 0;"><i class="fas fa-check-circle"></i> ' +
+                        '<div style="color:var(--accent-green);margin:6px 0;"><i class="fas fa-check-circle"></i> ' +
                         (currentLang === 'ar' ? 'تم التفعيل' : 'Activated') +
-                        '</div><button class="btn btn-secondary" onclick="logout()" style="margin-top:4px;background:rgba(255,255,255,0.05);color:var(--text-secondary);border:none;border-radius:var(--radius-sm);padding:10px;width:100%;cursor:pointer;"><i class="fas fa-sign-out-alt"></i> ' +
+                        '</div><button class="btn btn-secondary" onclick="logout()" style="margin-top:4px;background:rgba(255,255,255,0.05);color:var(--text-secondary);border:none;border-radius:var(--radius-sm);padding:8px;width:100%;cursor:pointer;font-size:12px;"><i class="fas fa-sign-out-alt"></i> ' +
                         (currentLang === 'ar' ? 'تسجيل خروج' : 'Logout') + '</button>';
                 }
                 if (forceContainer) forceContainer.style.display = 'block';
@@ -3793,7 +3195,7 @@
         }
 
         // ============================================================
-        // VERIFY PAYMENT - FIX: UTC
+        // VERIFY PAYMENT
         // ============================================================
         async function verifyPayment() {
             const t = translations[currentLang];
@@ -3909,18 +3311,18 @@
             const entries = Object.entries(drinks);
             if (entries.length === 0) {
                 container.innerHTML =
-                    '<div style="color:var(--text-secondary);font-size:13px;text-align:center;padding:8px;">' + (
+                    '<div style="color:var(--text-secondary);font-size:12px;text-align:center;padding:6px;">' + (
                         currentLang === 'ar' ? 'لا توجد مشروبات مضافة' : 'No drinks added') + '</div>';
                 return;
             }
             let html = '';
             entries.forEach(([id, drink]) => {
                 const icon = drink.icon || '🥤';
-                html += `<div class="drink-item-settings">
-                        <span class="drink-icon">${icon}</span>
-                        <input type="text" value="${drink.name}" onchange="updateDrinkName('${id}', this.value)" placeholder="${currentLang === 'ar' ? 'اسم المشروب' : 'Drink name'}">
-                        <input type="number" value="${drink.price}" onchange="updateDrinkPrice('${id}', this.value)" min="1" step="0.5">
-                        <button class="btn-remove-drink" onclick="removeDrink('${id}')">✕</button>
+                html += `<div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:6px;margin-bottom:4px;border:1px solid var(--glass-border);flex-wrap:wrap;">
+                        <span style="font-size:16px;width:28px;text-align:center;">${icon}</span>
+                        <input type="text" value="${drink.name}" onchange="updateDrinkName('${id}', this.value)" placeholder="${currentLang === 'ar' ? 'اسم المشروب' : 'Drink name'}" style="flex:1;padding:4px 8px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);border-radius:4px;color:var(--text-primary);font-size:12px;outline:none;min-width:50px;">
+                        <input type="number" value="${drink.price}" onchange="updateDrinkPrice('${id}', this.value)" min="1" step="0.5" style="width:50px;padding:4px 6px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);border-radius:4px;color:var(--text-primary);font-size:12px;outline:none;text-align:center;">
+                        <button onclick="removeDrink('${id}')" style="background:rgba(255,71,87,0.1);border:none;color:var(--accent-red);width:24px;height:24px;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
                     </div>`;
             });
             container.innerHTML = html;
@@ -4328,7 +3730,7 @@
                     const cost = drink.price * count;
                     drinkTotal += cost;
                     drinkItemsHtml +=
-                        `<div class="detail-row drink-row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+                        `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;">
                             <span style="color:var(--text-secondary);"><i class="fas fa-glass-whiskey"></i> ${drink.name}</span>
                             <span style="font-weight:600;color:var(--accent-blue);">${count} × ${drink.price.toFixed(2)} = ${cost.toFixed(2)} EGP</span>
                         </div>`;
@@ -4345,7 +3747,7 @@
             let itemsHtml = '';
             if (noodleCount > 0) {
                 itemsHtml +=
-                    `<div class="detail-row noodle-row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+                    `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;">
                         <span style="color:var(--text-secondary);"><i class="fas fa-utensils"></i> ${t.noodles || 'نودلز'}</span>
                         <span style="font-weight:600;color:var(--accent-gold);">${noodleCount} × ${noodlePriceVal.toFixed(2)} = ${noodleTotal.toFixed(2)} EGP</span>
                     </div>`;
@@ -4406,43 +3808,43 @@
                 }
                 const rateLabel = isSpecial ? rate + ' EGP/' + (currentLang === 'ar' ? 'س' : 'hr') : '';
                 const rateClass = isSpecial ? 'rate-badge special' : 'rate-badge';
-                let itemsHtml = `<div class="item-control noodle-control">
-                        <span class="item-icon"><i class="fas fa-utensils"></i></span>
-                        <span class="item-name">${t.noodles || 'نودلز'}</span>
-                        <button class="item-btn minus" onclick="removeNoodle(${i})">−</button>
-                        <span class="item-count" data-noodle-count="${i}">${noodleCount}</span>
-                        <button class="item-btn plus" onclick="addNoodle(${i})">+</button>
+                let itemsHtml = `<div class="item-control noodle-control" style="display:flex;align-items:center;gap:2px;background:rgba(255,255,255,0.03);padding:1px 4px 1px 8px;border-radius:16px;border:1px solid rgba(255,215,0,0.08);">
+                        <span style="font-size:11px;"><i class="fas fa-utensils"></i></span>
+                        <span style="font-size:9px;color:var(--text-secondary);margin:0 2px;font-weight:500;">${t.noodles || 'نودلز'}</span>
+                        <button class="item-btn minus" onclick="removeNoodle(${i})" style="background:rgba(255,71,87,0.08);border:none;color:var(--accent-red);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+                        <span style="font-size:12px;font-weight:700;color:var(--accent-gold);min-width:14px;text-align:center;">${noodleCount}</span>
+                        <button class="item-btn plus" onclick="addNoodle(${i})" style="background:rgba(46,204,113,0.08);border:none;color:var(--accent-green);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
                     </div>`;
                 const drinkEntries = Object.entries(drinks);
                 drinkEntries.forEach(([id, drink]) => {
                     const count = deviceDrinkOrders[id] || 0;
-                    itemsHtml += `<div class="item-control drink-control">
-                            <span class="item-icon"><i class="fas fa-glass-whiskey"></i></span>
-                            <span class="item-name">${drink.name}</span>
-                            <button class="item-btn minus" onclick="removeDrinkOrder(${i}, '${id}')">−</button>
-                            <span class="item-count" data-drink-count="${i}_${id}">${count}</span>
-                            <button class="item-btn plus" onclick="addDrinkOrder(${i}, '${id}')">+</button>
+                    itemsHtml += `<div class="item-control drink-control" style="display:flex;align-items:center;gap:2px;background:rgba(255,255,255,0.03);padding:1px 4px 1px 8px;border-radius:16px;border:1px solid rgba(0,212,255,0.08);">
+                            <span style="font-size:11px;"><i class="fas fa-glass-whiskey"></i></span>
+                            <span style="font-size:9px;color:var(--text-secondary);margin:0 2px;font-weight:500;">${drink.name}</span>
+                            <button class="item-btn minus" onclick="removeDrinkOrder(${i}, '${id}')" style="background:rgba(255,71,87,0.08);border:none;color:var(--accent-red);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+                            <span style="font-size:12px;font-weight:700;color:var(--accent-gold);min-width:14px;text-align:center;">${count}</span>
+                            <button class="item-btn plus" onclick="addDrinkOrder(${i}, '${id}')" style="background:rgba(46,204,113,0.08);border:none;color:var(--accent-green);width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
                         </div>`;
                 });
                 itemsHtml += drinkEntries.length > 0 ?
-                    `<button class="btn-add-drink" onclick="addDrinkSetting()"><i class="fas fa-plus"></i></button>` :
-                    `<button class="btn-add-drink" onclick="addDrinkSetting()"><i class="fas fa-plus"></i> ${t.addDrink || 'إضافة مشروب'}</button>`;
+                    `<button class="btn-add-drink" onclick="addDrinkSetting()" style="background:rgba(0,212,255,0.06);border:1px dashed rgba(0,212,255,0.15);color:var(--accent-blue);padding:1px 8px;border-radius:16px;font-size:9px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-weight:600;min-height:22px;"><i class="fas fa-plus"></i></button>` :
+                    `<button class="btn-add-drink" onclick="addDrinkSetting()" style="background:rgba(0,212,255,0.06);border:1px dashed rgba(0,212,255,0.15);color:var(--accent-blue);padding:1px 8px;border-radius:16px;font-size:9px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-weight:600;min-height:22px;"><i class="fas fa-plus"></i> ${t.addDrink || 'إضافة مشروب'}</button>`;
 
                 html += `<div class="${cardClass}" data-device="${i}">
                         <div class="top-row">
                             <div class="info">
                                 <div class="name">${name}</div>
                                 <div class="status ${statusClass}">${statusText}</div>
-                                ${isActive ? `<div class="duration"><i class="fas fa-clock"></i> ${durationText}</div>` : ''}
-                                ${isActive ? `<div class="start-time"><i class="fas fa-play-circle"></i> ${startTimeText}</div>` : ''}
+                                ${isActive ? `<div class="duration" style="font-size:13px;font-weight:600;color:var(--accent-blue);"><i class="fas fa-clock"></i> ${durationText}</div>` : ''}
+                                ${isActive ? `<div class="start-time" style="font-size:11px;color:var(--text-tertiary);"><i class="fas fa-play-circle"></i> ${startTimeText}</div>` : ''}
                             </div>
                             <div class="right">
-                                ${isSpecial ? `<span class="${rateClass}"><i class="fas fa-tag"></i> ${rateLabel}</span>` : ''}
+                                ${isSpecial ? `<span class="${rateClass}" style="font-size:10px;background:rgba(0,212,255,0.08);color:var(--accent-blue);padding:2px 10px;border-radius:12px;border:1px solid rgba(0,212,255,0.1);white-space:nowrap;font-weight:600;"><i class="fas fa-tag"></i> ${rateLabel}</span>` : ''}
                                 ${buttonHtml}
                             </div>
                         </div>
                         <div class="items-section">
-                            <span class="items-label"><i class="fas fa-shopping-cart"></i> ${t.orders || 'الطلبات:'}</span>
+                            <span class="items-label" style="font-size:10px;color:var(--text-tertiary);margin:0 4px 0 0;font-weight:600;"><i class="fas fa-shopping-cart"></i> ${t.orders || 'الطلبات:'}</span>
                             ${itemsHtml}
                         </div>
                     </div>`;
@@ -4481,24 +3883,23 @@
                 const statusClass = isActive ? 'in-use' : '';
                 const disableRemove = isActive ? 'disabled' : '';
                 const canEdit = hasPermission(PERMISSIONS.MANAGE_SETTINGS) && !isActive;
-                html += `<div class="settings-device">
-                        <div class="device-header">
-                            <span class="device-num"><i class="fas fa-gamepad"></i> ${i}</span>
-                            <span class="device-status ${statusClass}">${statusText}</span>
-                            <button class="btn-remove-station" onclick="removeStation(${i})" ${disableRemove}><i class="fas fa-trash"></i></button>
+                html += `<div class="settings-device" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid var(--glass-border);">
+                        <div class="device-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+                            <span style="font-weight:700;font-size:14px;"><i class="fas fa-gamepad"></i> ${i}</span>
+                            <span style="font-size:11px;color:var(--text-secondary);font-weight:500;${isActive ? 'color:var(--accent-green);' : ''}">${statusText}</span>
+                            <button class="btn-remove-station" onclick="removeStation(${i})" ${disableRemove} style="background:rgba(255,71,87,0.1);border:none;color:var(--accent-red);width:28px;height:28px;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-trash"></i></button>
                         </div>
-                        <div class="settings-row">
-                            <div class="settings-group">
-                                <label><i class="fas fa-tag"></i> ${currentLang === 'ar' ? 'الاسم' : 'Name'}</label>
-                                <input type="text" id="settings_name_${i}" value="${config.name}" placeholder="PS ${i}" ${canEdit ? '' : 'disabled'}>
-                                ${!canEdit ? '<div class="hint">⛔ ' + (currentLang === 'ar' ? 'لا يمكن التعديل' : 'Cannot edit') + '</div>' : ''}
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                            <div>
+                                <label style="font-size:10px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:2px;"><i class="fas fa-tag"></i> ${currentLang === 'ar' ? 'الاسم' : 'Name'}</label>
+                                <input type="text" id="settings_name_${i}" value="${config.name}" placeholder="PS ${i}" ${canEdit ? '' : 'disabled'} style="width:100%;padding:4px 8px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);border-radius:4px;color:var(--text-primary);font-size:12px;outline:none;font-family:'Inter',sans-serif;">
                             </div>
-                            <div class="settings-group">
-                                <label><i class="fas fa-money-bill-wave"></i> ${currentLang === 'ar' ? 'السعر (EGP/ساعة)' : 'Rate (EGP/hour)'}</label>
-                                <input type="number" id="settings_rate_${i}" value="${config.rate}" min="1" max="100" step="0.5" ${canEdit ? '' : 'disabled'}>
-                                ${!canEdit ? '<div class="hint">⛔ ' + (currentLang === 'ar' ? 'لا يمكن التعديل' : 'Cannot edit') + '</div>' : ''}
+                            <div>
+                                <label style="font-size:10px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:2px;"><i class="fas fa-money-bill-wave"></i> ${currentLang === 'ar' ? 'السعر' : 'Rate'}</label>
+                                <input type="number" id="settings_rate_${i}" value="${config.rate}" min="1" max="100" step="0.5" ${canEdit ? '' : 'disabled'} style="width:100%;padding:4px 8px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);border-radius:4px;color:var(--text-primary);font-size:12px;outline:none;text-align:center;font-family:'Inter',sans-serif;">
                             </div>
                         </div>
+                        ${!canEdit ? '<div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">⛔ ' + (currentLang === 'ar' ? 'لا يمكن التعديل' : 'Cannot edit') + '</div>' : ''}
                     </div>`;
             }
             list.innerHTML = html;
@@ -4597,23 +3998,23 @@
             if (inventory.length === 0) {
                 const emptyText = document.getElementById('inventoryEmpty');
                 list.innerHTML =
-                    `<div class="text-center text-muted" style="padding:20px;"><i class="fas fa-box-open"></i> ${emptyText ? emptyText.textContent : 'لا توجد أصناف'}</div>`;
+                    `<div class="text-center text-muted" style="padding:16px;font-size:13px;"><i class="fas fa-box-open"></i> ${emptyText ? emptyText.textContent : 'لا توجد أصناف'}</div>`;
                 return;
             }
             let html = '';
             inventory.forEach((item, idx) => {
                 const low = item.quantity <= item.threshold;
-                html += `<div class="list-item ${low ? 'low-stock' : ''}">
-                        <div class="left">
-                            <div class="icon"><i class="fas fa-box"></i></div>
+                html += `<div class="list-item ${low ? 'low-stock' : ''}" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:6px;border-bottom:1px solid var(--glass-border);${low ? 'border-left:3px solid var(--accent-red);background:rgba(255,71,87,0.04);' : ''}">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div style="width:28px;height:28px;border-radius:50%;background:rgba(0,212,255,0.08);display:flex;align-items:center;justify-content:center;color:var(--accent-blue);flex-shrink:0;font-size:12px;"><i class="fas fa-box"></i></div>
                             <div>
-                                <strong>${item.name}</strong>
-                                <div style="font-size:12px;color:var(--text-secondary);"><i class="fas fa-sort-amount-up"></i> ${item.quantity} ${currentLang === 'ar' ? 'وحدة' : 'units'}${low ? ' ⚠️' : ''}</div>
+                                <strong style="font-size:13px;">${item.name}</strong>
+                                <div style="font-size:11px;color:var(--text-secondary);"><i class="fas fa-sort-amount-up"></i> ${item.quantity} ${currentLang === 'ar' ? 'وحدة' : 'units'}${low ? ' ⚠️' : ''}</div>
                             </div>
                         </div>
-                        <div class="right">
-                            ${hasPermission(PERMISSIONS.MANAGE_INVENTORY) ? `<button class="btn btn-secondary btn-sm" onclick="editInventoryQty(${idx})"><i class="fas fa-edit"></i></button>` : ''}
-                            ${hasPermission(PERMISSIONS.MANAGE_INVENTORY) ? `<button class="btn btn-danger btn-sm" onclick="deleteInventoryItem(${idx})"><i class="fas fa-trash"></i></button>` : ''}
+                        <div style="display:flex;gap:4px;">
+                            ${hasPermission(PERMISSIONS.MANAGE_INVENTORY) ? `<button class="btn btn-secondary btn-sm" onclick="editInventoryQty(${idx})" style="padding:2px 8px;font-size:10px;min-height:24px;"><i class="fas fa-edit"></i></button>` : ''}
+                            ${hasPermission(PERMISSIONS.MANAGE_INVENTORY) ? `<button class="btn btn-danger btn-sm" onclick="deleteInventoryItem(${idx})" style="padding:2px 8px;font-size:10px;min-height:24px;"><i class="fas fa-trash"></i></button>` : ''}
                         </div>
                     </div>`;
             });
@@ -4676,16 +4077,16 @@
 
             if (alerts.length === 0) {
                 if (list) list.innerHTML =
-                    '<div class="no-alerts"><i class="fas fa-check-circle" style="color:var(--accent-green);"></i> المخزون جيد</div>';
+                    '<div class="no-alerts" style="color:var(--text-secondary);font-size:12px;padding:4px 0;"><i class="fas fa-check-circle" style="color:var(--accent-green);"></i> المخزون جيد</div>';
                 inventoryAlertNotified = {};
                 return;
             }
 
             let html = '';
             alerts.forEach(item => {
-                html += `<div class="inventory-alert-item">
-                    <span><span class="alert-icon"><i class="fas fa-exclamation-triangle"></i></span> ${item.name} (الكمية: ${item.quantity})</span>
-                    <button class="alert-close" onclick="dismissInventoryAlert('${item.name}')">✕</button>
+                html += `<div class="inventory-alert-item" style="background:rgba(255,71,87,0.06);border:1px solid rgba(255,71,87,0.12);border-radius:6px;padding:6px 10px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;color:var(--accent-red);font-size:12px;">
+                    <span><span style="margin-right:6px;"><i class="fas fa-exclamation-triangle"></i></span> ${item.name} (الكمية: ${item.quantity})</span>
+                    <button onclick="dismissInventoryAlert('${item.name}')" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:12px;opacity:0.5;">✕</button>
                 </div>`;
             });
             if (list) list.innerHTML = html;
@@ -4712,7 +4113,7 @@
             const remaining = list.querySelectorAll('.inventory-alert-item').length;
             if (remaining === 0) {
                 list.innerHTML =
-                    '<div class="no-alerts"><i class="fas fa-check-circle" style="color:var(--accent-green);"></i> المخزون جيد</div>';
+                    '<div class="no-alerts" style="color:var(--text-secondary);font-size:12px;padding:4px 0;"><i class="fas fa-check-circle" style="color:var(--accent-green);"></i> المخزون جيد</div>';
                 inventoryAlertNotified = {};
             } else {
                 delete inventoryAlertNotified[itemName];
@@ -4758,7 +4159,7 @@
             loadNotifications();
             if (notifications.length === 0) {
                 list.innerHTML =
-                    '<div class="text-muted text-center" style="padding:20px;"><i class="fas fa-bell-slash"></i> لا توجد إشعارات</div>';
+                    '<div class="text-muted text-center" style="padding:16px;font-size:13px;"><i class="fas fa-bell-slash"></i> لا توجد إشعارات</div>';
                 return;
             }
             let html = '';
@@ -4770,7 +4171,7 @@
                     '<i class="fas fa-info-circle"></i>';
                 const date = new Date(n.date).toLocaleString();
                 html +=
-                    `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);font-size:13px;"><div>${icon} ${n.message}</div><div style="font-size:10px;color:var(--text-secondary);">${date}</div></div>`;
+                    `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--glass-border);font-size:12px;"><div>${icon} ${n.message}</div><div style="font-size:9px;color:var(--text-secondary);">${date}</div></div>`;
             });
             list.innerHTML = html;
             updateNotifBadge();
@@ -4825,7 +4226,7 @@
             const entries = Object.entries(shift.drinkDetails || {});
             if (entries.length === 0) {
                 drinkHtml =
-                    '<div style="color:var(--text-secondary);font-size:12px;text-align:center;padding:4px;">' + (
+                    '<div style="color:var(--text-secondary);font-size:11px;text-align:center;padding:4px;">' + (
                         currentLang === 'ar' ? 'لا توجد طلبات مشروبات' : 'No drink orders') + '</div>';
             } else {
                 entries.forEach(([id, count]) => {
@@ -4833,7 +4234,7 @@
                     if (drink) {
                         const total = drink.price * count;
                         drinkHtml +=
-                            `<div class="shift-drink-item"><span class="drink-name"><i class="fas fa-glass-whiskey"></i> ${drink.name}</span><span class="drink-total">${count} × ${drink.price.toFixed(2)} = ${total.toFixed(2)} EGP</span></div>`;
+                            `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.03);"><span style="color:var(--text-secondary);"><i class="fas fa-glass-whiskey"></i> ${drink.name}</span><span style="color:var(--accent-blue);font-weight:600;">${count} × ${drink.price.toFixed(2)} = ${total.toFixed(2)} EGP</span></div>`;
                     }
                 });
             }
@@ -4957,13 +4358,13 @@
                     const totalNoodles = entry.totalNoodles || entry.total_noodles || 0;
                     const totalDrinks = entry.totalDrinks || entry.total_drinks || 0;
                     const totalHours = entry.totalHours || entry.total_hours || 0;
-                    html += `<div class="shift-history-item">
-                            <div class="hist-header">
-                                <span class="hist-date"><i class="fas fa-calendar-alt"></i> ${dateStr} ${timeStr}</span>
-                                <span class="hist-total">${netProfit.toFixed(2)} EGP</span>
+                    html += `<div style="background:rgba(255,255,255,0.02);border-radius:6px;padding:10px 12px;margin-bottom:6px;border:1px solid var(--glass-border);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">
+                                <span style="font-weight:600;font-size:13px;"><i class="fas fa-calendar-alt"></i> ${dateStr} ${timeStr}</span>
+                                <span style="color:var(--accent-gold);font-weight:800;font-size:14px;">${netProfit.toFixed(2)} EGP</span>
                             </div>
-                            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;"><i class="fas fa-building"></i> ${businessName}</div>
-                            <div class="hist-stats">
+                            <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;"><i class="fas fa-building"></i> ${businessName}</div>
+                            <div style="display:flex;gap:8px;font-size:11px;color:var(--text-secondary);margin-top:4px;flex-wrap:wrap;">
                                 <span><i class="fas fa-gamepad"></i> ${totalSessions || 0}</span>
                                 <span><i class="fas fa-utensils"></i> ${totalNoodles || 0}</span>
                                 <span><i class="fas fa-glass-whiskey"></i> ${totalDrinks || 0}</span>
@@ -4971,13 +4372,13 @@
                                 <span><i class="fas fa-money-bill-wave"></i> إيرادات: ${totalRevenue.toFixed(2)}</span>
                                 <span style="color:var(--accent-red);"><i class="fas fa-money-bill-wave"></i> مصروفات: ${totalExpenses.toFixed(2)}</span>
                             </div>
-                            <button class="btn-danger" onclick="deleteLocalHistoryItem(${index})"><i class="fas fa-trash"></i> ${t.deleteBtn || 'حذف'}</button>
+                            <button onclick="deleteLocalHistoryItem(${index})" style="background:rgba(255,71,87,0.1);color:var(--accent-red);border:none;border-radius:4px;padding:2px 10px;font-size:10px;cursor:pointer;margin-top:4px;font-weight:600;"><i class="fas fa-trash"></i> ${t.deleteBtn || 'حذف'}</button>
                         </div>`;
                 });
                 container.innerHTML = html;
             } else {
                 container.innerHTML =
-                    '<div style="text-align:center;color:var(--text-secondary);padding:20px;"><i class="fas fa-history"></i> ' +
+                    '<div style="text-align:center;color:var(--text-secondary);padding:16px;font-size:13px;"><i class="fas fa-history"></i> ' +
                     (t.noHistory || 'لا توجد تقفيلات سابقة') + '</div>';
             }
             document.getElementById('historyModal').classList.add('show');
@@ -5131,70 +4532,7 @@
         }
 
         // ============================================================
-        // EDIT PROFILE
-        // ============================================================
-        function openEditProfile() {
-            if (!currentEmployee) {
-                showToast('⚠️ ' + (currentLang === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'Please login first'), 'warning');
-                return;
-            }
-            document.getElementById('editProfileUser').value = currentEmployee.username;
-            document.getElementById('editProfilePass').value = '';
-            document.getElementById('editProfileConfirm').value = '';
-            document.getElementById('editProfileModal').classList.add('show');
-            document.getElementById('editProfileUser').focus();
-        }
-
-        function saveProfileChanges() {
-            const newUser = document.getElementById('editProfileUser').value.trim();
-            const newPass = document.getElementById('editProfilePass').value.trim();
-            const confirmPass = document.getElementById('editProfileConfirm').value.trim();
-
-            if (!newUser || newUser.length < 3) {
-                showToast('❌ ' + (currentLang === 'ar' ? 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل' :
-                    'Username must be at least 3 characters'), 'error');
-                return;
-            }
-
-            loadEmployees();
-            const existingUser = employees.find(e => e.username === newUser && e.username !== currentEmployee.username);
-            if (existingUser) {
-                showToast('❌ ' + (currentLang === 'ar' ? 'هذا الاسم موجود مسبقاً' : 'Username already exists'), 'error');
-                return;
-            }
-
-            const oldUsername = currentEmployee.username;
-            const empIndex = employees.findIndex(e => e.username === oldUsername);
-            if (empIndex === -1) {
-                showToast('❌ ' + (currentLang === 'ar' ? 'حدث خطأ في العثور على المستخدم' : 'Error finding user'), 'error');
-                return;
-            }
-
-            employees[empIndex].username = newUser;
-            if (newPass && newPass.length >= 4) {
-                employees[empIndex].password = newPass;
-            }
-
-            saveEmployees();
-
-            currentEmployee.username = newUser;
-            if (newPass && newPass.length >= 4) {
-                currentEmployee.password = newPass;
-            }
-
-            const badge = document.getElementById('currentUserBadge');
-            if (badge) {
-                badge.textContent = '👤 ' + newUser + (currentEmployee.role === 'admin' ? ' (مدير)' : '');
-                badge.style.display = 'inline-block';
-            }
-
-            closeModalById('editProfileModal');
-            renderEmployees();
-            showToast('✅ ' + (currentLang === 'ar' ? 'تم تحديث بياناتك بنجاح' : 'Profile updated successfully'), 'success');
-        }
-
-        // ============================================================
-        // VALIDATE SUBSCRIPTION - FIX: UTC
+        // VALIDATE SUBSCRIPTION
         // ============================================================
         async function validateSubscription() {
             if (!currentBusiness) return;
@@ -5221,7 +4559,9 @@
         // ============================================================
         function initializeApp() {
             console.log('🚀 تهيئة التطبيق...');
-            console.log('✅ UTC time fix applied - no 3-hour offset issues');
+            console.log('✅ تم إصلاح مشكلة السحب للتحت في Lock Screen');
+            console.log('✅ تم إصلاح مشكلة تسجيل الدخول (admin/admin123)');
+
             currentLang = getLang();
             document.body.className = currentLang === 'ar' ? 'rtl' : 'ltr';
             updateDeviceIdDisplay();
@@ -5362,10 +4702,9 @@
         document.addEventListener('DOMContentLoaded', initializeApp);
 
         console.log('✅ PS Rental Pro Enterprise v3.3.0 - FIXED');
-        console.log('✅ Shift modal buttons layout fixed - no duplicate buttons');
-        console.log('✅ UTC time fix applied - no 3-hour offset issues');
-        console.log('✅ Start buttons highly visible with green gradient');
-        console.log('✅ Bottom navigation works properly');
+        console.log('✅ Lock Screen now scrollable');
+        console.log('✅ Admin login (admin/admin123) works');
+        console.log('✅ admin user auto-created if missing');
     </script>
 </body>
 </html>
