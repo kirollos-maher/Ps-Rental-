@@ -985,8 +985,10 @@ async function getSessionSegments(sessionId) {
 }
 
 async function createSegment(sessionId, mode, startedAt, rate) {
+    // IMPORTANT: Include business_id to satisfy RLS
     const { data, error } = await supabaseClient.from('session_segments').insert({
         session_id: sessionId,
+        business_id: business.id,
         mode: mode,
         started_at: startedAt,
         rate: rate
@@ -1685,6 +1687,7 @@ async function handleSwitchMode(sessionId, newMode, stationId) {
     } catch (e) {
         console.error('Error switching mode:', e);
         errEl.textContent = t('فشل التحويل، حاول تاني.', 'Switch failed, try again.');
+        showToast(t('فشل التحويل: ' + e.message, 'Switch failed: ' + e.message), 'error');
     } finally {
         pendingSwitch = false;
         if (btn) btn.disabled = false;
@@ -2103,52 +2106,6 @@ async function recoverActiveSession() {
         renderDashboard();
     }
 }
-
-// ============================================================
-// SQL MIGRATION (for reference)
-// ============================================================
-/*
--- Add single_rate and multi_rate to stations
-ALTER TABLE stations ADD COLUMN IF NOT EXISTS single_rate DECIMAL(10,2) DEFAULT 20;
-ALTER TABLE stations ADD COLUMN IF NOT EXISTS multi_rate DECIMAL(10,2) DEFAULT 30;
-
--- Update existing stations to have both rates
-UPDATE stations SET single_rate = rate, multi_rate = rate WHERE single_rate IS NULL AND multi_rate IS NULL;
-
--- Create session_segments table
-CREATE TABLE IF NOT EXISTS session_segments (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
-    mode VARCHAR(20) NOT NULL CHECK (mode IN ('single', 'multi')),
-    started_at TIMESTAMPTZ NOT NULL,
-    ended_at TIMESTAMPTZ,
-    rate DECIMAL(10,2) NOT NULL,
-    amount DECIMAL(10,2) DEFAULT 0,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Add current_mode to sessions (for quick reference)
-ALTER TABLE sessions ADD COLUMN IF NOT EXISTS current_mode VARCHAR(20) DEFAULT 'single';
-
--- Add index for performance
-CREATE INDEX IF NOT EXISTS idx_session_segments_session_id ON session_segments(session_id);
-CREATE INDEX IF NOT EXISTS idx_session_segments_ended_at ON session_segments(ended_at) WHERE ended_at IS NULL;
-
--- Add RLS policies
-ALTER TABLE session_segments ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY session_segments_select_policy ON session_segments
-    FOR SELECT USING (EXISTS (SELECT 1 FROM sessions WHERE sessions.id = session_segments.session_id AND sessions.business_id = (SELECT business_id FROM devices WHERE device_id = current_setting('app.device_id', true)::text)));
-
-CREATE POLICY session_segments_insert_policy ON session_segments
-    FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM sessions WHERE sessions.id = session_segments.session_id AND sessions.business_id = (SELECT business_id FROM devices WHERE device_id = current_setting('app.device_id', true)::text)));
-
-CREATE POLICY session_segments_update_policy ON session_segments
-    FOR UPDATE USING (EXISTS (SELECT 1 FROM sessions WHERE sessions.id = session_segments.session_id AND sessions.business_id = (SELECT business_id FROM devices WHERE device_id = current_setting('app.device_id', true)::text)));
-
-CREATE POLICY session_segments_delete_policy ON session_segments
-    FOR DELETE USING (EXISTS (SELECT 1 FROM sessions WHERE sessions.id = session_segments.session_id AND sessions.business_id = (SELECT business_id FROM devices WHERE device_id = current_setting('app.device_id', true)::text)));
-*/
 </script>
 
 </body>
