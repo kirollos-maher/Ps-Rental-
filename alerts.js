@@ -2,7 +2,7 @@
 // COUNTDOWN ALERTS - نظام التنبيهات المتقدم مع جرس في الـ Header
 // ============================================================
 
-// تخزين حالة التنبيهات لكل جهاز
+// تخزين حالة التنبيهات لكل جهاز (لمنع التكرار)
 const countdownAlertState = {};
 
 // الحد الأدنى للتنبيه (بالثواني) - 300 ثانية = 5 دقائق
@@ -16,7 +16,7 @@ let audioContext = null;
 let ringTimeout = null;
 
 // ========================
-// التحكم في أيقونة الجرس
+// التحكم في أيقونة الجرس (مستقل عن حالة التنبيهات)
 // ========================
 function setBellRinging(active) {
     const bell = document.getElementById('headerBell');
@@ -26,16 +26,6 @@ function setBellRinging(active) {
     } else {
         bell.classList.remove('bell-ringing');
     }
-}
-
-function updateBellState() {
-    for (const key in countdownAlertState) {
-        if (countdownAlertState[key] === 'warning' || countdownAlertState[key] === 'ended') {
-            setBellRinging(true);
-            return;
-        }
-    }
-    setBellRinging(false);
 }
 
 // ========================
@@ -66,7 +56,7 @@ function playRingSound(type = 'warning') {
         const now = audioContext.currentTime;
 
         if (type === 'warning') {
-            // نغمة تحذيرية (نغمتين متتاليتين)
+            // نغمة تحذيرية (نغمتين متتاليتين) - هادئة
             const frequencies = [800, 1000];
             const durations = [0.2, 0.2];
             let time = now;
@@ -84,7 +74,7 @@ function playRingSound(type = 'warning') {
                 time += durations[i] + 0.1;
             });
         } else if (type === 'ended') {
-            // ✅ صوت انتهاء الوقت: أعلى وأوضح (3 نغمات 1000-800-1000)
+            // صوت انتهاء الوقت: أعلى وأوضح (3 نغمات 1000-800-1000)
             const frequencies = [1000, 800, 1000];
             const durations = [0.3, 0.25, 0.35];
             let time = now;
@@ -114,41 +104,53 @@ function playRingSound(type = 'warning') {
 }
 
 // ========================
-// عرض إشعار مرئي + صوت
+// عرض إشعار مرئي + صوت (مع إدارة الجرس)
 // ========================
 function showRingNotification(title, message, type = 'warning') {
     // تشغيل الصوت
     playRingSound(type);
 
-    // 🔔 تفعيل الجرس
+    // 🔔 تفعيل الجرس (يظهر ويتحرك)
     setBellRinging(true);
 
+    // إلغاء أي تايمر سابق لإيقاف الجرس
+    clearTimeout(ringTimeout);
+
+    // جدولة إيقاف الجرس بعد 5 ثواني (سواء اختفى الإشعار أو لا)
+    ringTimeout = setTimeout(() => {
+        setBellRinging(false);
+    }, 5000);
+
+    // البحث عن عنصر الإشعار المنبثق
     const el = document.getElementById('ringNotification');
     if (!el) {
+        // إذا لم يوجد عنصر الإشعار، استخدم Toast
         if (typeof showToast === 'function') {
             showToast(`🔔 ${title}: ${message}`, type === 'ended' ? 'error' : 'warning');
         }
-        setTimeout(() => setBellRinging(false), 5000);
         return;
     }
 
+    // تحديث محتوى الإشعار
     document.getElementById('ringTitle').textContent = title;
     document.getElementById('ringSub').textContent = message;
 
+    // إظهار الإشعار
     el.classList.add('show');
 
-    clearTimeout(ringTimeout);
-    ringTimeout = setTimeout(() => {
+    // إخفاء الإشعار بعد 5 ثواني (مع إيقاف الجرس)
+    clearTimeout(el._hideTimeout);
+    el._hideTimeout = setTimeout(() => {
         el.classList.remove('show');
-        setBellRinging(false);
-        updateBellState();
+        // الجرس سيتوقف بواسطة الـ timeout أعلاه
     }, 5000);
 
+    // النقر على الإشعار لإخفائه فوراً وإيقاف الجرس
     el.onclick = function() {
         el.classList.remove('show');
+        clearTimeout(el._hideTimeout);
         clearTimeout(ringTimeout);
         setBellRinging(false);
-        updateBellState();
     };
 }
 
@@ -164,10 +166,12 @@ function checkCountdownAlerts() {
     }
 
     if (Object.keys(sessions).length === 0) {
+        // مسح حالة التنبيهات عند عدم وجود جلسات
         for (const key in countdownAlertState) {
             delete countdownAlertState[key];
         }
-        updateBellState();
+        // إذا لم توجد جلسات، نطفئ الجرس (احتياطي)
+        setBellRinging(false);
         return;
     }
 
@@ -228,9 +232,6 @@ function checkCountdownAlerts() {
             }
         }
     });
-
-    // تحديث حالة الجرس بناءً على التنبيهات النشطة
-    updateBellState();
 }
 
 // ========================
@@ -242,7 +243,7 @@ function startCountdownAlerts() {
         countdownAlertInterval = null;
     }
     countdownAlertInterval = setInterval(checkCountdownAlerts, 1000);
-    console.log('🔔 Countdown alerts started (Ring system)');
+    console.log('🔔 Countdown alerts started');
 }
 
 function stopCountdownAlerts() {
@@ -251,7 +252,9 @@ function stopCountdownAlerts() {
         countdownAlertInterval = null;
         console.log('🔕 Countdown alerts stopped');
     }
+    // إطفاء الجرس عند إيقاف المراقبة
     setBellRinging(false);
+    clearTimeout(ringTimeout);
 }
 
 // ========================
