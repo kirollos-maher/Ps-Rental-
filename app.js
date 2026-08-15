@@ -2121,7 +2121,6 @@ async function startSessionWithMode(stationId) {
 // END SESSION WITH PAYMENT
 // ============================================================
 function showEndSessionPayment(stationId) {
-    // ✅ منع أي إعادة تحميل
     event?.preventDefault?.();
     
     endSessionStationId = stationId;
@@ -2133,22 +2132,18 @@ function showEndSessionPayment(stationId) {
     }
 
     console.log('🟢 showEndSessionPayment called for station:', stationId);
+    console.log('🟢 Session type:', session.timer_type);
     console.log('🟢 Session data:', session);
 
-    // ✅ منع الضغط المزدوج
     const confirmBtn = document.getElementById('confirmEndBtn');
-    if (confirmBtn) {
-        confirmBtn.disabled = true;
-        console.log('🟢 Confirm button disabled');
-    }
+    if (confirmBtn) confirmBtn.disabled = true;
 
     (async () => {
         try {
-            console.log('🟢 Calculating totals...');
-            
             const activeSeg = await getActiveSegment(session.id);
             console.log('🟢 Active segment:', activeSeg);
             
+            // ✅ معالجة الجلسات التنازلية بشكل خاص
             if (activeSeg && !activeSeg.ended_at) {
                 console.log('🟢 Closing active segment...');
                 const now = new Date().toISOString();
@@ -2156,12 +2151,17 @@ function showEndSessionPayment(stationId) {
                 let hours = Math.max(0, (new Date(now) - start) / 3600000);
                 let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
                 
+                // ✅ إذا كانت تنازلية، احسب الوقت المتبقي
                 if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
                     const elapsedSeconds = (new Date(now) - start) / 1000;
                     const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
                     hours = usedSeconds / 3600;
                     amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-                    session._pausedRemaining = Math.max(0, activeSeg.duration_seconds - usedSeconds);
+                    
+                    // ✅ خزن الوقت المتبقي في الجلسة عشان نستخدمه بعدين
+                    const remainingSeconds = Math.max(0, activeSeg.duration_seconds - usedSeconds);
+                    session._pausedRemaining = remainingSeconds;
+                    console.log('🟢 Countdown remaining seconds:', remainingSeconds);
                 }
                 
                 await closeSegment(activeSeg.id, now, amount);
@@ -2176,8 +2176,6 @@ function showEndSessionPayment(stationId) {
                 .select('*')
                 .eq('session_id', session.id)
                 .order('created_at');
-            
-            console.log('🟢 Orders:', ordersDetails);
             
             const body = document.getElementById('stationSheetBody');
             if (!body) {
@@ -2250,14 +2248,11 @@ function showEndSessionPayment(stationId) {
             
             paymentHtml += `<div class="error-text" id="endSessionError"></div>`;
             
-            // ✅ تحديث المحتوى
             console.log('🟢 Updating payment UI...');
             body.innerHTML = paymentHtml;
             
-            // ✅ إعادة تمكين الزر
             if (confirmBtn) confirmBtn.disabled = false;
             
-            // ✅ ربط أحداث الدفع
             document.querySelectorAll('.payment-option').forEach(el => {
                 el.addEventListener('click', function() {
                     const pmId = this.dataset.id;
@@ -2311,11 +2306,17 @@ function cancelEndSession() {
     const stationId = endSessionStationId || activeStationId;
     console.log('🟢 Station ID:', stationId);
     
+    // ✅ تنظيف أي بيانات متبقية من الجلسة التنازلية
+    if (stationId && sessions[stationId]) {
+        const session = sessions[stationId];
+        if (session._pausedRemaining) {
+            delete session._pausedRemaining;
+            console.log('🟢 Cleared paused remaining for countdown session');
+        }
+    }
+    
     if (stationId) {
-        // ✅ إغلاق الـ Overlay أولاً
         closeSheet('stationOverlay');
-        
-        // ✅ بعد 200ms، افتح الـ Station Sheet تاني
         setTimeout(() => {
             console.log('🟢 Reopening station sheet for:', stationId);
             openStationSheet(stationId);
@@ -2325,7 +2326,6 @@ function cancelEndSession() {
         navigateTo('view-stations');
     }
     
-    // ✅ تنظيف المتغيرات
     selectedPaymentMethod = null;
     endSessionStationId = null;
 }
@@ -2480,7 +2480,6 @@ function printReceipt() {
 // CONFIRM END SESSION WITH PAYMENT - الإصدار المُصلح
 // ============================================================
 async function confirmEndSessionWithPayment() {
-    // ✅ منع أي إعادة تحميل
     event?.preventDefault?.();
     
     console.log('🟢 confirmEndSessionWithPayment called');
@@ -2506,8 +2505,8 @@ async function confirmEndSessionWithPayment() {
     }
 
     console.log('🟢 Closing session:', session.id);
+    console.log('🟢 Session type:', session.timer_type);
     
-    // ✅ تعطيل الزر لمنع الضغط المزدوج
     const confirmBtn = document.getElementById('confirmEndBtn');
     if (confirmBtn) confirmBtn.disabled = true;
 
@@ -2521,15 +2520,21 @@ async function confirmEndSessionWithPayment() {
             let hours = Math.max(0, (new Date(now) - start) / 3600000);
             let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
             
+            // ✅ معالجة التنازلي
             if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
                 const elapsedSeconds = (new Date(now) - start) / 1000;
                 const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
                 hours = usedSeconds / 3600;
                 amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
+                
+                // ✅ خزن الوقت المتبقي
+                const remainingSeconds = Math.max(0, activeSeg.duration_seconds - usedSeconds);
+                session._pausedRemaining = remainingSeconds;
+                console.log('🟢 Countdown remaining seconds:', remainingSeconds);
             }
             
             await closeSegment(activeSeg.id, now, amount);
-            console.log('🟢 Segment closed');
+            console.log('🟢 Segment closed, amount:', amount);
         }
 
         // ✅ 2. حساب الإجمالي النهائي
@@ -2557,7 +2562,12 @@ async function confirmEndSessionWithPayment() {
         // ✅ 4. إزالة الجلسة من الـ State المحلي
         delete sessions[stationId];
         
-        // ✅ 5. تحديث الواجهات
+        // ✅ 5. تنظيف أي بيانات متبقية من الجلسة التنازلية
+        if (session._pausedRemaining) {
+            delete session._pausedRemaining;
+        }
+        
+        // ✅ 6. تحديث الواجهات
         console.log('🟢 Updating UI...');
         renderStationsGrid();
         renderDashboard();
@@ -2565,23 +2575,23 @@ async function confirmEndSessionWithPayment() {
             await renderShiftView();
         }
         
-        // ✅ 6. إغلاق الـ Overlay
+        // ✅ 7. إغلاق الـ Overlay
         console.log('🟢 Closing overlay...');
         closeSheet('stationOverlay');
         
-        // ✅ 7. عرض رسالة نجاح
+        // ✅ 8. عرض رسالة نجاح
         const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
         const msg = `${t('✅ تم إقفال الجلسة —', '✅ Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`;
         showToast(msg, 'success');
         console.log('🟢 Toast shown:', msg);
         
-        // ✅ 8. طباعة الإيصال بعد 500ms
+        // ✅ 9. طباعة الإيصال بعد 500ms
         setTimeout(() => {
             console.log('🟢 Printing receipt...');
             printReceipt();
         }, 500);
         
-        // ✅ 9. تنظيف المتغيرات
+        // ✅ 10. تنظيف المتغيرات
         selectedPaymentMethod = null;
         endSessionStationId = null;
         activeStationId = null;
