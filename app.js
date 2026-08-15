@@ -2118,72 +2118,52 @@ async function startSessionWithMode(stationId) {
 }
 
 // ============================================================
-// END SESSION WITH PAYMENT - الإصدار المُصلح
+// END SESSION WITH PAYMENT - الإصدار المُصلح (من الملف القديم)
 // ============================================================
 function showEndSessionPayment(stationId) {
-    // ✅ منع أي إعادة تحميل
-    if (event) event.preventDefault?.();
-    
     endSessionStationId = stationId;
     activeStationId = stationId;
     const session = sessions[stationId];
-    if (!session) {
-        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
-        return;
-    }
+    if (!session) return;
 
-    console.log('🟢 showEndSessionPayment called for station:', stationId);
-    console.log('🟢 Session type:', session.timer_type);
-
-    // ✅ تعطيل الزر مؤقتاً لمنع الضغط المزدوج
+    // ✅ تعطيل الزر مؤقتاً
     const confirmBtn = document.getElementById('confirmEndBtn');
     if (confirmBtn) confirmBtn.disabled = true;
 
     (async () => {
         try {
-            // ✅ 1. إغلاق الـ Segment الحالي
             const activeSeg = await getActiveSegment(session.id);
-            console.log('🟢 Active segment:', activeSeg);
             
+            // ✅ إغلاق الـ Segment الحالي (حتى لو تنازلي)
             if (activeSeg && !activeSeg.ended_at) {
-                console.log('🟢 Closing active segment...');
                 const now = new Date().toISOString();
                 const start = new Date(activeSeg.started_at);
                 let hours = Math.max(0, (new Date(now) - start) / 3600000);
                 let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
                 
-                let remainingSeconds = 0;
+                // ✅ معالجة الجلسات التنازلية
                 if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
                     const elapsedSeconds = (new Date(now) - start) / 1000;
                     const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
                     hours = usedSeconds / 3600;
                     amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-                    remainingSeconds = Math.max(0, activeSeg.duration_seconds - usedSeconds);
-                    session._pausedRemaining = remainingSeconds;
-                    console.log('🟢 Countdown remaining seconds:', remainingSeconds);
+                    
+                    // ✅ ✅ ✅ المفتاح: لا تخزن _pausedRemaining هنا
+                    // لأننا هنقفل الجلسة نهائياً
                 }
                 
                 await closeSegment(activeSeg.id, now, amount);
-                console.log('🟢 Segment closed, amount:', amount);
             }
             
-            // ✅ 2. حساب الإجمالي
             const totals = await calculateTotalAmounts(session.id);
-            console.log('🟢 Totals calculated:', totals);
             
-            // ✅ 3. جلب الطلبات
             const { data: ordersDetails } = await supabaseClient
                 .from('session_orders')
                 .select('*')
                 .eq('session_id', session.id)
                 .order('created_at');
             
-            // ✅ 4. بناء واجهة الدفع
             const body = document.getElementById('stationSheetBody');
-            if (!body) {
-                console.error('🔴 stationSheetBody not found!');
-                return;
-            }
             
             let ordersHtml = '';
             if (ordersDetails && ordersDetails.length > 0) {
@@ -2248,15 +2228,11 @@ function showEndSessionPayment(stationId) {
             }
             
             paymentHtml += `<div class="error-text" id="endSessionError"></div>`;
-            
-            // ✅ 5. تحديث المحتوى
-            console.log('🟢 Updating payment UI...');
             body.innerHTML = paymentHtml;
             
-            // ✅ 6. إعادة تمكين الزر
+            // ✅ إعادة تمكين الزر
             if (confirmBtn) confirmBtn.disabled = false;
             
-            // ✅ 7. ربط أحداث الدفع
             document.querySelectorAll('.payment-option').forEach(el => {
                 el.addEventListener('click', function() {
                     const pmId = this.dataset.id;
@@ -2267,10 +2243,9 @@ function showEndSessionPayment(stationId) {
             });
             
             selectedPaymentMethod = null;
-            console.log('🟢 Payment UI updated successfully ✅');
             
         } catch (e) {
-            console.error('🔴 Error in showEndSessionPayment:', e);
+            console.error('Error in showEndSessionPayment:', e);
             showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
             if (confirmBtn) confirmBtn.disabled = false;
         }
@@ -2310,24 +2285,20 @@ function selectPaymentMethod(pmId) {
 // CANCEL END SESSION (Back button) - الإصدار المُصلح
 // ============================================================
 function cancelEndSession() {
-    console.log('🟢 cancelEndSession called');
-    
     const stationId = endSessionStationId || activeStationId;
-    console.log('🟢 Station ID:', stationId);
     
-    // ✅ تنظيف أي بيانات متبقية من الجلسة التنازلية
+    // ✅ تنظيف أي بيانات متبقية
     if (stationId && sessions[stationId]) {
         const session = sessions[stationId];
+        // ✅ حذف _pausedRemaining إذا كان موجوداً
         if (session._pausedRemaining) {
             delete session._pausedRemaining;
-            console.log('🟢 Cleared paused remaining for countdown session');
         }
     }
     
     if (stationId) {
         closeSheet('stationOverlay');
         setTimeout(() => {
-            console.log('🟢 Reopening station sheet for:', stationId);
             openStationSheet(stationId);
         }, 200);
     } else {
@@ -2338,6 +2309,105 @@ function cancelEndSession() {
     // ✅ تنظيف المتغيرات
     selectedPaymentMethod = null;
     endSessionStationId = null;
+}
+
+// ============================================================
+// CONFIRM END SESSION WITH PAYMENT - الإصدار المُصلح
+// ============================================================
+async function confirmEndSessionWithPayment() {
+    if (!selectedPaymentMethod) {
+        document.getElementById('endSessionError').textContent = t('اختر طريقة دفع أولاً.', 'Select a payment method first.');
+        return;
+    }
+    
+    const stationId = endSessionStationId || activeStationId;
+    if (!stationId) {
+        showToast(t('خطأ: لم يتم تحديد الجهاز', 'Error: No station selected'), 'error');
+        return;
+    }
+    
+    const session = sessions[stationId];
+    if (!session) {
+        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
+        return;
+    }
+
+    // ✅ تعطيل الزر لمنع الضغط المزدوج
+    const confirmBtn = document.getElementById('confirmEndBtn');
+    if (confirmBtn) confirmBtn.disabled = true;
+
+    try {
+        // ✅ 1. التأكد من إغلاق الـ Segment الحالي
+        const activeSeg = await getActiveSegment(session.id);
+        if (activeSeg && !activeSeg.ended_at) {
+            const now = new Date().toISOString();
+            const start = new Date(activeSeg.started_at);
+            let hours = Math.max(0, (new Date(now) - start) / 3600000);
+            let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
+            
+            // ✅ معالجة الجلسات التنازلية - لا نخزن _pausedRemaining
+            if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
+                const elapsedSeconds = (new Date(now) - start) / 1000;
+                const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
+                hours = usedSeconds / 3600;
+                amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
+            }
+            
+            await closeSegment(activeSeg.id, now, amount);
+        }
+
+        // ✅ 2. حساب الإجمالي النهائي
+        const totals = await calculateTotalAmounts(session.id);
+        
+        // ✅ 3. تحديث الجلسة في قاعدة البيانات (إغلاقها)
+        const { error } = await supabaseClient.from('sessions').update({
+            status: 'completed',
+            ended_at: new Date().toISOString(),
+            amount: totals.grandTotal,
+            payment_method: selectedPaymentMethod
+        }).eq('id', session.id);
+        
+        if (error) {
+            console.error('Error ending session:', error);
+            showToast(t('فشل إنهاء الجلسة: ' + error.message, 'Failed to end session: ' + error.message), 'error');
+            if (confirmBtn) confirmBtn.disabled = false;
+            return;
+        }
+        
+        // ✅ 4. إزالة الجلسة من الـ State المحلي
+        delete sessions[stationId];
+        
+        // ✅ 5. تحديث الواجهات
+        renderStationsGrid();
+        renderDashboard();
+        if (document.getElementById('view-shift').classList.contains('active')) {
+            await renderShiftView();
+        }
+        
+        // ✅ 6. إغلاق الـ Overlay
+        closeSheet('stationOverlay');
+        
+        // ✅ 7. عرض رسالة نجاح
+        const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
+        const msg = `${t('✅ تم إقفال الجلسة —', '✅ Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`;
+        showToast(msg, 'success');
+        
+        // ✅ 8. طباعة الإيصال بعد 500ms
+        setTimeout(() => {
+            printReceipt();
+        }, 500);
+        
+        // ✅ 9. تنظيف المتغيرات
+        selectedPaymentMethod = null;
+        endSessionStationId = null;
+        activeStationId = null;
+        if (confirmBtn) confirmBtn.disabled = false;
+        
+    } catch (e) {
+        console.error('Error in confirmEndSessionWithPayment:', e);
+        showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
+        if (confirmBtn) confirmBtn.disabled = false;
+    }
 }
 
 // ============================================================
@@ -2484,134 +2554,6 @@ function printReceipt() {
         `);
         printWindow.document.close();
     });
-}
-
-// ============================================================
-// CONFIRM END SESSION WITH PAYMENT - الإصدار المُصلح
-// ============================================================
-async function confirmEndSessionWithPayment() {
-    // ✅ منع أي إعادة تحميل
-    if (event) event.preventDefault?.();
-    
-    console.log('🟢 confirmEndSessionWithPayment called');
-    
-    if (!selectedPaymentMethod) {
-        document.getElementById('endSessionError').textContent = t('اختر طريقة دفع أولاً.', 'Select a payment method first.');
-        console.warn('🟡 No payment method selected');
-        return;
-    }
-    
-    const stationId = endSessionStationId || activeStationId;
-    if (!stationId) {
-        showToast(t('خطأ: لم يتم تحديد الجهاز', 'Error: No station selected'), 'error');
-        console.error('🔴 No station ID');
-        return;
-    }
-    
-    const session = sessions[stationId];
-    if (!session) {
-        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
-        console.error('🔴 Session not found for station:', stationId);
-        return;
-    }
-
-    console.log('🟢 Closing session:', session.id);
-    console.log('🟢 Session type:', session.timer_type);
-    
-    // ✅ تعطيل الزر لمنع الضغط المزدوج
-    const confirmBtn = document.getElementById('confirmEndBtn');
-    if (confirmBtn) confirmBtn.disabled = true;
-
-    try {
-        // ✅ 1. التأكد من إغلاق الـ Segment الحالي
-        const activeSeg = await getActiveSegment(session.id);
-        if (activeSeg && !activeSeg.ended_at) {
-            console.log('🟢 Closing active segment...');
-            const now = new Date().toISOString();
-            const start = new Date(activeSeg.started_at);
-            let hours = Math.max(0, (new Date(now) - start) / 3600000);
-            let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-            
-            if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
-                const elapsedSeconds = (new Date(now) - start) / 1000;
-                const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
-                hours = usedSeconds / 3600;
-                amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-                session._pausedRemaining = Math.max(0, activeSeg.duration_seconds - usedSeconds);
-                console.log('🟢 Countdown remaining seconds:', session._pausedRemaining);
-            }
-            
-            await closeSegment(activeSeg.id, now, amount);
-            console.log('🟢 Segment closed, amount:', amount);
-        }
-
-        // ✅ 2. حساب الإجمالي النهائي
-        const totals = await calculateTotalAmounts(session.id);
-        console.log('🟢 Totals:', totals);
-        
-        // ✅ 3. تحديث الجلسة في قاعدة البيانات (إغلاقها)
-        console.log('🟢 Updating session in database...');
-        const { error } = await supabaseClient.from('sessions').update({
-            status: 'completed',
-            ended_at: new Date().toISOString(),
-            amount: totals.grandTotal,
-            payment_method: selectedPaymentMethod
-        }).eq('id', session.id);
-        
-        if (error) {
-            console.error('🔴 Error ending session:', error);
-            showToast(t('فشل إنهاء الجلسة: ' + error.message, 'Failed to end session: ' + error.message), 'error');
-            if (confirmBtn) confirmBtn.disabled = false;
-            return;
-        }
-        
-        console.log('🟢 Session closed successfully ✅');
-        
-        // ✅ 4. إزالة الجلسة من الـ State المحلي
-        delete sessions[stationId];
-        
-        // ✅ 5. تنظيف أي بيانات متبقية من الجلسة التنازلية
-        if (session._pausedRemaining) {
-            delete session._pausedRemaining;
-        }
-        
-        // ✅ 6. تحديث الواجهات
-        console.log('🟢 Updating UI...');
-        renderStationsGrid();
-        renderDashboard();
-        if (document.getElementById('view-shift').classList.contains('active')) {
-            await renderShiftView();
-        }
-        
-        // ✅ 7. إغلاق الـ Overlay
-        console.log('🟢 Closing overlay...');
-        closeSheet('stationOverlay');
-        
-        // ✅ 8. عرض رسالة نجاح
-        const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
-        const msg = `${t('✅ تم إقفال الجلسة —', '✅ Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`;
-        showToast(msg, 'success');
-        console.log('🟢 Toast shown:', msg);
-        
-        // ✅ 9. طباعة الإيصال بعد 500ms
-        setTimeout(() => {
-            console.log('🟢 Printing receipt...');
-            printReceipt();
-        }, 500);
-        
-        // ✅ 10. تنظيف المتغيرات
-        selectedPaymentMethod = null;
-        endSessionStationId = null;
-        activeStationId = null;
-        if (confirmBtn) confirmBtn.disabled = false;
-        
-        console.log('🟢 All done! ✅');
-        
-    } catch (e) {
-        console.error('🔴 Error in confirmEndSessionWithPayment:', e);
-        showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
-        if (confirmBtn) confirmBtn.disabled = false;
-    }
 }
 
 // ============================================================
