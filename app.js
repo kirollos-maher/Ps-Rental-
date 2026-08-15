@@ -122,6 +122,7 @@ let activeSessionOrders = [];
 let currentOrderSessionId = null;
 let selectedPaymentMethod = null;
 let endSessionStationId = null;
+let endingSessionInProgress = false;
 let sessionSegmentsCache = {};
 let activeSegmentCache = {};
 let pendingSwitch = false;
@@ -189,6 +190,7 @@ function closeSheet(id) {
     if (id === 'stationOverlay') {
         activeStationId = null;
         sessionSegmentsCache = {};
+        endingSessionInProgress = false;
     }
     if (id === 'transferOverlay') {
         transferSourceStationId = null;
@@ -814,7 +816,7 @@ function handleSessionChange(payload) {
     renderStationsGrid();
     if (document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
     if (document.getElementById('view-shift').classList.contains('active')) renderShiftView();
-    if (activeStationId === row.station_id && !pendingSwitch) openStationSheet(activeStationId);
+    if (activeStationId === row.station_id && !pendingSwitch && !endingSessionInProgress) openStationSheet(activeStationId);
 }
 
 function handleOrderChange(payload) {
@@ -834,7 +836,7 @@ function handleSegmentChange(payload) {
         const row = payload.new;
         sessionSegmentsCache[row.session_id] = null;
         activeSegmentCache[row.session_id] = row.ended_at ? null : row;
-        if (activeStationId && !pendingSwitch) {
+        if (activeStationId && !pendingSwitch && !endingSessionInProgress) {
             const session = sessions[activeStationId];
             if (session && session.id === row.session_id) {
                 openStationSheet(activeStationId);
@@ -2123,8 +2125,9 @@ async function startSessionWithMode(stationId) {
 function showEndSessionPayment(stationId) {
     endSessionStationId = stationId;
     activeStationId = stationId;
+    endingSessionInProgress = true;
     const session = sessions[stationId];
-    if (!session) return;
+    if (!session) { endingSessionInProgress = false; return; }
 
     (async () => {
         const activeSeg = await getActiveSegment(session.id);
@@ -2265,6 +2268,7 @@ function selectPaymentMethod(pmId) {
 // ============================================================
 function cancelEndSession() {
     const stationId = endSessionStationId || activeStationId;
+    endingSessionInProgress = false;
     if (stationId) {
         closeSheet('stationOverlay');
         setTimeout(() => {
@@ -2317,6 +2321,7 @@ async function confirmEndSessionWithPayment() {
         
         if (error) {
             console.error('Error ending session:', error);
+            endingSessionInProgress = false;
             showToast(t('فشل إنهاء الجلسة: ' + error.message, 'Failed to end session: ' + error.message), 'error');
             return;
         }
@@ -2339,6 +2344,7 @@ async function confirmEndSessionWithPayment() {
         }, 500);
     } catch (e) {
         console.error('Error in confirmEndSessionWithPayment:', e);
+        endingSessionInProgress = false;
         showToast(t('حصل خطأ، حاول تاني.', 'Error, try again.'), 'error');
     }
 }
