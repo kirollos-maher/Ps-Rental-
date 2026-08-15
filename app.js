@@ -2425,18 +2425,28 @@ function printReceipt() {
 }
 
 // ============================================================
-// CONFIRM END SESSION WITH PAYMENT
+// CONFIRM END SESSION WITH PAYMENT - الإصدار المُصلح
 // ============================================================
 async function confirmEndSessionWithPayment() {
     if (!selectedPaymentMethod) {
         document.getElementById('endSessionError').textContent = t('اختر طريقة دفع أولاً.', 'Select a payment method first.');
         return;
     }
-    const stationId = endSessionStationId;
+    
+    const stationId = endSessionStationId || activeStationId;
+    if (!stationId) {
+        showToast(t('خطأ: لم يتم تحديد الجهاز', 'Error: No station selected'), 'error');
+        return;
+    }
+    
     const session = sessions[stationId];
-    if (!session) return;
+    if (!session) {
+        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
+        return;
+    }
 
     try {
+        // ✅ 1. التأكد من إغلاق الـ Segment الحالي
         const activeSeg = await getActiveSegment(session.id);
         if (activeSeg && !activeSeg.ended_at) {
             const now = new Date().toISOString();
@@ -2454,8 +2464,10 @@ async function confirmEndSessionWithPayment() {
             await closeSegment(activeSeg.id, now, amount);
         }
 
+        // ✅ 2. حساب الإجمالي النهائي
         const totals = await calculateTotalAmounts(session.id);
         
+        // ✅ 3. تحديث الجلسة في قاعدة البيانات (إغلاقها)
         const { error } = await supabaseClient.from('sessions').update({
             status: 'completed',
             ended_at: new Date().toISOString(),
@@ -2469,25 +2481,36 @@ async function confirmEndSessionWithPayment() {
             return;
         }
         
-        const savedStationId = stationId;
-        
+        // ✅ 4. إزالة الجلسة من الـ State المحلي
         delete sessions[stationId];
-        renderStationsGrid();
-        closeSheet('stationOverlay');
-        const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
-        showToast(`${t('اتقفلت الجلسة —', 'Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`, 'success');
         
-        await renderDashboard();
+        // ✅ 5. تحديث الواجهات
+        renderStationsGrid();
+        renderDashboard();
         if (document.getElementById('view-shift').classList.contains('active')) {
             await renderShiftView();
         }
         
+        // ✅ 6. إغلاق الـ Overlay
+        closeSheet('stationOverlay');
+        
+        // ✅ 7. عرض رسالة نجاح
+        const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
+        showToast(`${t('✅ تم إقفال الجلسة —', '✅ Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`, 'success');
+        
+        // ✅ 8. طباعة الإيصال بعد 500ms
         setTimeout(() => {
             printReceipt();
         }, 500);
+        
+        // ✅ 9. تنظيف المتغيرات
+        selectedPaymentMethod = null;
+        endSessionStationId = null;
+        activeStationId = null;
+        
     } catch (e) {
         console.error('Error in confirmEndSessionWithPayment:', e);
-        showToast(t('حصل خطأ، حاول تاني.', 'Error, try again.'), 'error');
+        showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
     }
 }
 
