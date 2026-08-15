@@ -1669,6 +1669,8 @@ async function executeCancelSession(stationId) {
         return;
     }
     
+    endingSessionInProgress = true;
+    
     try {
         const activeSeg = await getActiveSegment(session.id);
         if (activeSeg && !activeSeg.ended_at) {
@@ -1698,6 +1700,7 @@ async function executeCancelSession(stationId) {
         showToast(t('تم إلغاء الجلسة', 'Session cancelled'), 'warning');
     } catch (e) {
         console.error('Error cancelling session:', e);
+        endingSessionInProgress = false;
         showToast(t('فشل إلغاء الجلسة: ' + e.message, 'Failed to cancel session: ' + e.message), 'error');
     }
 }
