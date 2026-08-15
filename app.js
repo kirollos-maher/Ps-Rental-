@@ -2126,112 +2126,126 @@ function showEndSessionPayment(stationId) {
     const session = sessions[stationId];
     if (!session) return;
 
+    // ✅ منع الضغط المزدوج
+    const confirmBtn = document.getElementById('confirmEndBtn');
+    if (confirmBtn) confirmBtn.disabled = true;
+
     (async () => {
-        const activeSeg = await getActiveSegment(session.id);
-        if (activeSeg && !activeSeg.ended_at) {
-            const now = new Date().toISOString();
-            const start = new Date(activeSeg.started_at);
-            let hours = Math.max(0, (new Date(now) - start) / 3600000);
-            let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-            
-            let remainingSeconds = 0;
-            if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
-                const elapsedSeconds = (new Date(now) - start) / 1000;
-                const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
-                hours = usedSeconds / 3600;
-                amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-                remainingSeconds = Math.max(0, activeSeg.duration_seconds - usedSeconds);
-                session._pausedRemaining = remainingSeconds;
+        try {
+            const activeSeg = await getActiveSegment(session.id);
+            if (activeSeg && !activeSeg.ended_at) {
+                const now = new Date().toISOString();
+                const start = new Date(activeSeg.started_at);
+                let hours = Math.max(0, (new Date(now) - start) / 3600000);
+                let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
+                
+                let remainingSeconds = 0;
+                if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
+                    const elapsedSeconds = (new Date(now) - start) / 1000;
+                    const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
+                    hours = usedSeconds / 3600;
+                    amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
+                    remainingSeconds = Math.max(0, activeSeg.duration_seconds - usedSeconds);
+                    session._pausedRemaining = remainingSeconds;
+                }
+                
+                await closeSegment(activeSeg.id, now, amount);
             }
             
-            await closeSegment(activeSeg.id, now, amount);
-        }
-        
-        const totals = await calculateTotalAmounts(session.id);
-        
-        const { data: ordersDetails } = await supabaseClient
-            .from('session_orders')
-            .select('*')
-            .eq('session_id', session.id)
-            .order('created_at');
-        
-        const body = document.getElementById('stationSheetBody');
-        
-        let ordersHtml = '';
-        if (ordersDetails && ordersDetails.length > 0) {
-            ordersHtml = `
-                <div class="section-title" style="margin-top:8px;font-size:12px;">${t('تفاصيل الطلبات', 'Order Details')}</div>
-                <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px;margin-bottom:8px;">
-                    ${ordersDetails.map(o => `
-                        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);">
-                            <span>${escapeHtml(o.item_name)} <span style="color:var(--text-dim);font-size:11px;">× ${o.quantity}</span></span>
-                            <span style="font-weight:600;">${moneyDec(o.quantity * o.unit_price)} ${t('ج', 'EGP')}</span>
+            const totals = await calculateTotalAmounts(session.id);
+            
+            const { data: ordersDetails } = await supabaseClient
+                .from('session_orders')
+                .select('*')
+                .eq('session_id', session.id)
+                .order('created_at');
+            
+            const body = document.getElementById('stationSheetBody');
+            
+            let ordersHtml = '';
+            if (ordersDetails && ordersDetails.length > 0) {
+                ordersHtml = `
+                    <div class="section-title" style="margin-top:8px;font-size:12px;">${t('تفاصيل الطلبات', 'Order Details')}</div>
+                    <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px;margin-bottom:8px;">
+                        ${ordersDetails.map(o => `
+                            <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);">
+                                <span>${escapeHtml(o.item_name)} <span style="color:var(--text-dim);font-size:11px;">× ${o.quantity}</span></span>
+                                <span style="font-weight:600;">${moneyDec(o.quantity * o.unit_price)} ${t('ج', 'EGP')}</span>
+                            </div>
+                        `).join('')}
+                        <div style="display:flex;justify-content:space-between;padding:6px 0 2px 0;font-weight:700;border-top:1px solid var(--border);margin-top:4px;padding-top:6px;">
+                            <span>${t('إجمالي الطلبات', 'Orders Total')}</span>
+                            <span>${moneyDec(totals.ordersTotal)} ${t('ج', 'EGP')}</span>
                         </div>
-                    `).join('')}
-                    <div style="display:flex;justify-content:space-between;padding:6px 0 2px 0;font-weight:700;border-top:1px solid var(--border);margin-top:4px;padding-top:6px;">
-                        <span>${t('إجمالي الطلبات', 'Orders Total')}</span>
-                        <span>${moneyDec(totals.ordersTotal)} ${t('ج', 'EGP')}</span>
                     </div>
+                `;
+            }
+            
+            const activeMethods = paymentMethods.filter(pm => pm.active !== false);
+            
+            let paymentHtml = `
+                <div style="text-align:center;margin:12px 0;">
+                    <div style="font-size:28px;font-weight:700;color:var(--amber);">${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</div>
+                    <div style="font-size:12px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
                 </div>
-            `;
-        }
-        
-        const activeMethods = paymentMethods.filter(pm => pm.active !== false);
-        
-        let paymentHtml = `
-            <div style="text-align:center;margin:12px 0;">
-                <div style="font-size:28px;font-weight:700;color:var(--amber);">${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</div>
-                <div style="font-size:12px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
-            </div>
-            <div class="segment-breakdown" style="margin-bottom:8px;">
-                <div class="segment-row"><span class="seg-label">${t('إجمالي Single', 'Single Total')}</span><span class="seg-value seg-mode-single">${moneyDec(totals.singleTotal)}</span></div>
-                <div class="segment-row"><span class="seg-label">${t('إجمالي Multi', 'Multi Total')}</span><span class="seg-value seg-mode-multi">${moneyDec(totals.multiTotal)}</span></div>
-                <div class="segment-row"><span class="seg-label">${t('الطلبات', 'Orders')}</span><span class="seg-value">${moneyDec(totals.ordersTotal)}</span></div>
-            </div>
-            ${ordersHtml}
-            <div class="section-title">${t('اختر طريقة الدفع', 'Select Payment Method')}</div>`;
-        
-        if (activeMethods.length === 0) {
-            paymentHtml += `
-                <div class="empty" style="padding:20px;">
-                    <i class="fa-solid fa-credit-card"></i>
-                    ${t('مفيش طرق دفع مفعلة — روح الإعدادات وضيف طريقة', 'No active payment methods — go to settings and add one')}
+                <div class="segment-breakdown" style="margin-bottom:8px;">
+                    <div class="segment-row"><span class="seg-label">${t('إجمالي Single', 'Single Total')}</span><span class="seg-value seg-mode-single">${moneyDec(totals.singleTotal)}</span></div>
+                    <div class="segment-row"><span class="seg-label">${t('إجمالي Multi', 'Multi Total')}</span><span class="seg-value seg-mode-multi">${moneyDec(totals.multiTotal)}</span></div>
+                    <div class="segment-row"><span class="seg-label">${t('الطلبات', 'Orders')}</span><span class="seg-value">${moneyDec(totals.ordersTotal)}</span></div>
                 </div>
-                <button class="btn btn-ghost btn-block" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>`;
-        } else {
-            paymentHtml += `
-                <div class="payment-options" id="paymentOptions">
-                    ${activeMethods.map(pm => `
-                        <div class="payment-option" data-id="${pm.id}" style="cursor:pointer;">
-                            <i class="fa-solid ${pm.icon}"></i>
-                            ${escapeHtml(pm.name)}
-                        </div>
-                    `).join('')}
-                </div>
-                <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-                    <button class="btn btn-ghost" style="flex:1;" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>
-                    <button class="btn btn-amber" style="flex:1;" id="confirmEndBtn" onclick="confirmEndSessionWithPayment()" disabled>
-                        <i class="fa-solid fa-check"></i> ${t('تأكيد الدفع', 'Confirm Payment')}
-                    </button>
-                    <button class="btn btn-teal" style="flex:1;" id="printReceiptBtn" onclick="printReceipt()" disabled>
-                        <i class="fa-solid fa-print"></i> ${t('طباعة', 'Print')}
-                    </button>
-                </div>`;
-        }
-        
-        paymentHtml += `<div class="error-text" id="endSessionError"></div>`;
-        body.innerHTML = paymentHtml;
-        
-        document.querySelectorAll('.payment-option').forEach(el => {
-            el.addEventListener('click', function() {
-                const pmId = this.dataset.id;
-                if (pmId) {
-                    selectPaymentMethod(pmId);
-                }
+                ${ordersHtml}
+                <div class="section-title">${t('اختر طريقة الدفع', 'Select Payment Method')}</div>`;
+            
+            if (activeMethods.length === 0) {
+                paymentHtml += `
+                    <div class="empty" style="padding:20px;">
+                        <i class="fa-solid fa-credit-card"></i>
+                        ${t('مفيش طرق دفع مفعلة — روح الإعدادات وضيف طريقة', 'No active payment methods — go to settings and add one')}
+                    </div>
+                    <button class="btn btn-ghost btn-block" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>`;
+            } else {
+                paymentHtml += `
+                    <div class="payment-options" id="paymentOptions">
+                        ${activeMethods.map(pm => `
+                            <div class="payment-option" data-id="${pm.id}" style="cursor:pointer;">
+                                <i class="fa-solid ${pm.icon}"></i>
+                                ${escapeHtml(pm.name)}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+                        <button class="btn btn-ghost" style="flex:1;" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>
+                        <button class="btn btn-amber" style="flex:1;" id="confirmEndBtn" onclick="confirmEndSessionWithPayment()">
+                            <i class="fa-solid fa-check"></i> ${t('تأكيد الدفع', 'Confirm Payment')}
+                        </button>
+                        <button class="btn btn-teal" style="flex:1;" id="printReceiptBtn" onclick="printReceipt()" disabled>
+                            <i class="fa-solid fa-print"></i> ${t('طباعة', 'Print')}
+                        </button>
+                    </div>`;
+            }
+            
+            paymentHtml += `<div class="error-text" id="endSessionError"></div>`;
+            body.innerHTML = paymentHtml;
+            
+            // ✅ إعادة تمكين الزر
+            if (confirmBtn) confirmBtn.disabled = false;
+            
+            document.querySelectorAll('.payment-option').forEach(el => {
+                el.addEventListener('click', function() {
+                    const pmId = this.dataset.id;
+                    if (pmId) {
+                        selectPaymentMethod(pmId);
+                    }
+                });
             });
-        });
-        
-        selectedPaymentMethod = null;
+            
+            selectedPaymentMethod = null;
+            
+        } catch (e) {
+            console.error('Error in showEndSessionPayment:', e);
+            showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
+            if (confirmBtn) confirmBtn.disabled = false;
+        }
     })();
 }
 
