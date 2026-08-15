@@ -2121,38 +2121,55 @@ async function startSessionWithMode(stationId) {
 // END SESSION WITH PAYMENT
 // ============================================================
 function showEndSessionPayment(stationId) {
+    // ✅ منع أي إعادة تحميل
+    event?.preventDefault?.();
+    
     endSessionStationId = stationId;
     activeStationId = stationId;
     const session = sessions[stationId];
-    if (!session) return;
+    if (!session) {
+        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
+        return;
+    }
+
+    console.log('🟢 showEndSessionPayment called for station:', stationId);
+    console.log('🟢 Session data:', session);
 
     // ✅ منع الضغط المزدوج
     const confirmBtn = document.getElementById('confirmEndBtn');
-    if (confirmBtn) confirmBtn.disabled = true;
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        console.log('🟢 Confirm button disabled');
+    }
 
     (async () => {
         try {
+            console.log('🟢 Calculating totals...');
+            
             const activeSeg = await getActiveSegment(session.id);
+            console.log('🟢 Active segment:', activeSeg);
+            
             if (activeSeg && !activeSeg.ended_at) {
+                console.log('🟢 Closing active segment...');
                 const now = new Date().toISOString();
                 const start = new Date(activeSeg.started_at);
                 let hours = Math.max(0, (new Date(now) - start) / 3600000);
                 let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
                 
-                let remainingSeconds = 0;
                 if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
                     const elapsedSeconds = (new Date(now) - start) / 1000;
                     const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
                     hours = usedSeconds / 3600;
                     amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-                    remainingSeconds = Math.max(0, activeSeg.duration_seconds - usedSeconds);
-                    session._pausedRemaining = remainingSeconds;
+                    session._pausedRemaining = Math.max(0, activeSeg.duration_seconds - usedSeconds);
                 }
                 
                 await closeSegment(activeSeg.id, now, amount);
+                console.log('🟢 Segment closed, amount:', amount);
             }
             
             const totals = await calculateTotalAmounts(session.id);
+            console.log('🟢 Totals calculated:', totals);
             
             const { data: ordersDetails } = await supabaseClient
                 .from('session_orders')
@@ -2160,8 +2177,15 @@ function showEndSessionPayment(stationId) {
                 .eq('session_id', session.id)
                 .order('created_at');
             
-            const body = document.getElementById('stationSheetBody');
+            console.log('🟢 Orders:', ordersDetails);
             
+            const body = document.getElementById('stationSheetBody');
+            if (!body) {
+                console.error('🔴 stationSheetBody not found!');
+                return;
+            }
+            
+            // ✅ بناء HTML صفحة الدفع
             let ordersHtml = '';
             if (ordersDetails && ordersDetails.length > 0) {
                 ordersHtml = `
@@ -2225,11 +2249,15 @@ function showEndSessionPayment(stationId) {
             }
             
             paymentHtml += `<div class="error-text" id="endSessionError"></div>`;
+            
+            // ✅ تحديث المحتوى
+            console.log('🟢 Updating payment UI...');
             body.innerHTML = paymentHtml;
             
             // ✅ إعادة تمكين الزر
             if (confirmBtn) confirmBtn.disabled = false;
             
+            // ✅ ربط أحداث الدفع
             document.querySelectorAll('.payment-option').forEach(el => {
                 el.addEventListener('click', function() {
                     const pmId = this.dataset.id;
@@ -2240,9 +2268,10 @@ function showEndSessionPayment(stationId) {
             });
             
             selectedPaymentMethod = null;
+            console.log('🟢 Payment UI updated successfully ✅');
             
         } catch (e) {
-            console.error('Error in showEndSessionPayment:', e);
+            console.error('🔴 Error in showEndSessionPayment:', e);
             showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
             if (confirmBtn) confirmBtn.disabled = false;
         }
@@ -2276,20 +2305,29 @@ function selectPaymentMethod(pmId) {
     }
 }
 
-// ============================================================
-// CANCEL END SESSION (Back button)
-// ============================================================
 function cancelEndSession() {
+    console.log('🟢 cancelEndSession called');
+    
     const stationId = endSessionStationId || activeStationId;
+    console.log('🟢 Station ID:', stationId);
+    
     if (stationId) {
+        // ✅ إغلاق الـ Overlay أولاً
         closeSheet('stationOverlay');
+        
+        // ✅ بعد 200ms، افتح الـ Station Sheet تاني
         setTimeout(() => {
+            console.log('🟢 Reopening station sheet for:', stationId);
             openStationSheet(stationId);
         }, 200);
     } else {
         closeSheet('stationOverlay');
         navigateTo('view-stations');
     }
+    
+    // ✅ تنظيف المتغيرات
+    selectedPaymentMethod = null;
+    endSessionStationId = null;
 }
 
 // ============================================================
@@ -2442,27 +2480,42 @@ function printReceipt() {
 // CONFIRM END SESSION WITH PAYMENT - الإصدار المُصلح
 // ============================================================
 async function confirmEndSessionWithPayment() {
+    // ✅ منع أي إعادة تحميل
+    event?.preventDefault?.();
+    
+    console.log('🟢 confirmEndSessionWithPayment called');
+    
     if (!selectedPaymentMethod) {
         document.getElementById('endSessionError').textContent = t('اختر طريقة دفع أولاً.', 'Select a payment method first.');
+        console.warn('🟡 No payment method selected');
         return;
     }
     
     const stationId = endSessionStationId || activeStationId;
     if (!stationId) {
         showToast(t('خطأ: لم يتم تحديد الجهاز', 'Error: No station selected'), 'error');
+        console.error('🔴 No station ID');
         return;
     }
     
     const session = sessions[stationId];
     if (!session) {
         showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
+        console.error('🔴 Session not found for station:', stationId);
         return;
     }
+
+    console.log('🟢 Closing session:', session.id);
+    
+    // ✅ تعطيل الزر لمنع الضغط المزدوج
+    const confirmBtn = document.getElementById('confirmEndBtn');
+    if (confirmBtn) confirmBtn.disabled = true;
 
     try {
         // ✅ 1. التأكد من إغلاق الـ Segment الحالي
         const activeSeg = await getActiveSegment(session.id);
         if (activeSeg && !activeSeg.ended_at) {
+            console.log('🟢 Closing active segment...');
             const now = new Date().toISOString();
             const start = new Date(activeSeg.started_at);
             let hours = Math.max(0, (new Date(now) - start) / 3600000);
@@ -2476,12 +2529,15 @@ async function confirmEndSessionWithPayment() {
             }
             
             await closeSegment(activeSeg.id, now, amount);
+            console.log('🟢 Segment closed');
         }
 
         // ✅ 2. حساب الإجمالي النهائي
         const totals = await calculateTotalAmounts(session.id);
+        console.log('🟢 Totals:', totals);
         
         // ✅ 3. تحديث الجلسة في قاعدة البيانات (إغلاقها)
+        console.log('🟢 Updating session in database...');
         const { error } = await supabaseClient.from('sessions').update({
             status: 'completed',
             ended_at: new Date().toISOString(),
@@ -2490,15 +2546,19 @@ async function confirmEndSessionWithPayment() {
         }).eq('id', session.id);
         
         if (error) {
-            console.error('Error ending session:', error);
+            console.error('🔴 Error ending session:', error);
             showToast(t('فشل إنهاء الجلسة: ' + error.message, 'Failed to end session: ' + error.message), 'error');
+            if (confirmBtn) confirmBtn.disabled = false;
             return;
         }
+        
+        console.log('🟢 Session closed successfully ✅');
         
         // ✅ 4. إزالة الجلسة من الـ State المحلي
         delete sessions[stationId];
         
         // ✅ 5. تحديث الواجهات
+        console.log('🟢 Updating UI...');
         renderStationsGrid();
         renderDashboard();
         if (document.getElementById('view-shift').classList.contains('active')) {
@@ -2506,14 +2566,18 @@ async function confirmEndSessionWithPayment() {
         }
         
         // ✅ 6. إغلاق الـ Overlay
+        console.log('🟢 Closing overlay...');
         closeSheet('stationOverlay');
         
         // ✅ 7. عرض رسالة نجاح
         const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
-        showToast(`${t('✅ تم إقفال الجلسة —', '✅ Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`, 'success');
+        const msg = `${t('✅ تم إقفال الجلسة —', '✅ Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`;
+        showToast(msg, 'success');
+        console.log('🟢 Toast shown:', msg);
         
         // ✅ 8. طباعة الإيصال بعد 500ms
         setTimeout(() => {
+            console.log('🟢 Printing receipt...');
             printReceipt();
         }, 500);
         
@@ -2521,10 +2585,14 @@ async function confirmEndSessionWithPayment() {
         selectedPaymentMethod = null;
         endSessionStationId = null;
         activeStationId = null;
+        if (confirmBtn) confirmBtn.disabled = false;
+        
+        console.log('🟢 All done! ✅');
         
     } catch (e) {
-        console.error('Error in confirmEndSessionWithPayment:', e);
+        console.error('🔴 Error in confirmEndSessionWithPayment:', e);
         showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
+        if (confirmBtn) confirmBtn.disabled = false;
     }
 }
 
