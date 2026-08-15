@@ -2881,7 +2881,7 @@ async function changeOwnerPin() {
     errEl.textContent = '';
 
     if (!business) { 
-        errEl.textContent = t('النشاط غير موجود.', 'Business not found.'); 
+        errEl.textContent = t('❌ النشاط غير موجود.', '❌ Business not found.'); 
         return; 
     }
     
