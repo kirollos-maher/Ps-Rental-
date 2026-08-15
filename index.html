@@ -13,7 +13,7 @@
 <script src="alerts.js" defer></script>
 
 <style>
-    /* ✅ DORAK Brand في الرأس */
+    /* ✅ إضافة لـ DORAK Brand في الرأس */
     .dorak-brand {
         font-family: 'JetBrains Mono', monospace;
         font-weight: 800;
@@ -91,6 +91,39 @@
             </button>
             <div class="error-text" id="setupError"></div>
         </div>
+    </div>
+</div>
+
+<!-- ============== CREATE BUSINESS SHEET (من صفحة الدخول) ============== -->
+<div class="overlay" id="createBusinessSheetFromSetup">
+    <div class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">
+            <span data-ar="إنشاء نشاط تجاري جديد" data-en="Create New Business">إنشاء نشاط تجاري جديد</span>
+            <button class="close-x" onclick="closeSheet('createBusinessSheetFromSetup')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="field">
+            <label data-ar="كود النشاط (بالإنجليزي، بدون مسافات)" data-en="Business Code (English, no spaces)">كود النشاط</label>
+            <input type="text" id="newBizCodeSetup" class="mono" style="text-transform:uppercase" placeholder="CAFE01">
+        </div>
+        <div class="field">
+            <label data-ar="اسم النشاط" data-en="Business Name">اسم النشاط</label>
+            <input type="text" id="newBizNameSetup" placeholder="اسم المحل">
+        </div>
+        <div class="field">
+            <label data-ar="رقم تليفون (اختياري)" data-en="Phone (optional)">رقم تليفون</label>
+            <input type="text" id="newBizPhoneSetup" class="mono">
+        </div>
+        <div class="field">
+            <label data-ar="عدد الأجهزة" data-en="Number of Devices">عدد الأجهزة</label>
+            <input type="number" id="newBizStationsSetup" class="mono" value="4">
+        </div>
+        <!-- ✅ PIN المالك ثابت = 0000 -->
+        <input type="hidden" id="newBizPinSetup" value="0000">
+        <button class="btn btn-amber btn-block" onclick="submitCreateBusinessFromSetup()">
+            <i class="fa-solid fa-check"></i> <span data-ar="إنشاء" data-en="Create">إنشاء</span>
+        </button>
+        <div class="error-text" id="createBizErrorSetup"></div>
     </div>
 </div>
 
@@ -250,7 +283,7 @@
     <!-- ---------- SETTINGS ---------- -->
     <div class="view" id="view-settings">
         <!-- ✅ تغيير PIN المالك -->
-        <div class="section-title" data-ar="تغيير PIN المالك" data-en="Change Owner PIN">تغيير PIN المالك</div>
+        <div class="section-title" data-ar="تغيير PIN المالك" data-en="Change Owner PIN">🔐 تغيير PIN المالك</div>
         <div class="panel" id="settingsChangePin">
             <div class="field">
                 <label data-ar="PIN الحالي" data-en="Current PIN">PIN الحالي</label>
@@ -498,39 +531,6 @@
         <button class="nav-btn" data-view="view-stations" onclick="navigateTo('view-stations')"><i class="fa-solid fa-gamepad"></i><span data-ar="الأجهزة" data-en="Devices">الأجهزة</span></button>
         <button class="nav-btn" data-view="view-shift" onclick="navigateTo('view-shift')"><i class="fa-solid fa-clock"></i><span data-ar="الشيفت" data-en="Shift">الشيفت</span></button>
         <button class="nav-btn" data-view="view-settings" onclick="navigateTo('view-settings')"><i class="fa-solid fa-gear"></i><span data-ar="الإعدادات" data-en="Settings">الإعدادات</span></button>
-    </div>
-</div>
-
-<!-- ============== CREATE BUSINESS SHEET (من صفحة الدخول) ============== -->
-<div class="overlay" id="createBusinessSheetFromSetup">
-    <div class="sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title">
-            <span data-ar="إنشاء نشاط تجاري جديد" data-en="Create New Business">إنشاء نشاط تجاري جديد</span>
-            <button class="close-x" onclick="closeSheet('createBusinessSheetFromSetup')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="field">
-            <label data-ar="كود النشاط (بالإنجليزي، بدون مسافات)" data-en="Business Code (English, no spaces)">كود النشاط</label>
-            <input type="text" id="newBizCodeSetup" class="mono" style="text-transform:uppercase" placeholder="CAFE01">
-        </div>
-        <div class="field">
-            <label data-ar="اسم النشاط" data-en="Business Name">اسم النشاط</label>
-            <input type="text" id="newBizNameSetup" placeholder="اسم المحل">
-        </div>
-        <div class="field">
-            <label data-ar="رقم تليفون (اختياري)" data-en="Phone (optional)">رقم تليفون</label>
-            <input type="text" id="newBizPhoneSetup" class="mono">
-        </div>
-        <div class="field">
-            <label data-ar="عدد الأجهزة" data-en="Number of Devices">عدد الأجهزة</label>
-            <input type="number" id="newBizStationsSetup" class="mono" value="4">
-        </div>
-        <!-- ✅ PIN المالك ثابت = 0000 -->
-        <input type="hidden" id="newBizPinSetup" value="0000">
-        <button class="btn btn-amber btn-block" onclick="submitCreateBusinessFromSetup()">
-            <i class="fa-solid fa-check"></i> <span data-ar="إنشاء" data-en="Create">إنشاء</span>
-        </button>
-        <div class="error-text" id="createBizErrorSetup"></div>
     </div>
 </div>
 
