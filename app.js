@@ -2118,7 +2118,7 @@ async function startSessionWithMode(stationId) {
 }
 
 // ============================================================
-// END SESSION WITH PAYMENT - الإصدار المُصلح (من الملف القديم)
+// END SESSION WITH PAYMENT - من الملف الشغال
 // ============================================================
 function showEndSessionPayment(stationId) {
     endSessionStationId = stationId;
@@ -2126,135 +2126,115 @@ function showEndSessionPayment(stationId) {
     const session = sessions[stationId];
     if (!session) return;
 
-    // ✅ تعطيل الزر مؤقتاً
-    const confirmBtn = document.getElementById('confirmEndBtn');
-    if (confirmBtn) confirmBtn.disabled = true;
-
     (async () => {
-        try {
-            const activeSeg = await getActiveSegment(session.id);
+        const activeSeg = await getActiveSegment(session.id);
+        if (activeSeg && !activeSeg.ended_at) {
+            const now = new Date().toISOString();
+            const start = new Date(activeSeg.started_at);
+            let hours = Math.max(0, (new Date(now) - start) / 3600000);
+            let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
             
-            // ✅ إغلاق الـ Segment الحالي (حتى لو تنازلي)
-            if (activeSeg && !activeSeg.ended_at) {
-                const now = new Date().toISOString();
-                const start = new Date(activeSeg.started_at);
-                let hours = Math.max(0, (new Date(now) - start) / 3600000);
-                let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-                
-                // ✅ معالجة الجلسات التنازلية
-                if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
-                    const elapsedSeconds = (new Date(now) - start) / 1000;
-                    const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
-                    hours = usedSeconds / 3600;
-                    amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
-                    
-                    // ✅ ✅ ✅ المفتاح: لا تخزن _pausedRemaining هنا
-                    // لأننا هنقفل الجلسة نهائياً
-                }
-                
-                await closeSegment(activeSeg.id, now, amount);
+            if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
+                const elapsedSeconds = (new Date(now) - start) / 1000;
+                const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
+                hours = usedSeconds / 3600;
+                amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
             }
             
-            const totals = await calculateTotalAmounts(session.id);
-            
-            const { data: ordersDetails } = await supabaseClient
-                .from('session_orders')
-                .select('*')
-                .eq('session_id', session.id)
-                .order('created_at');
-            
-            const body = document.getElementById('stationSheetBody');
-            
-            let ordersHtml = '';
-            if (ordersDetails && ordersDetails.length > 0) {
-                ordersHtml = `
-                    <div class="section-title" style="margin-top:8px;font-size:12px;">${t('تفاصيل الطلبات', 'Order Details')}</div>
-                    <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px;margin-bottom:8px;">
-                        ${ordersDetails.map(o => `
-                            <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);">
-                                <span>${escapeHtml(o.item_name)} <span style="color:var(--text-dim);font-size:11px;">× ${o.quantity}</span></span>
-                                <span style="font-weight:600;">${moneyDec(o.quantity * o.unit_price)} ${t('ج', 'EGP')}</span>
-                            </div>
-                        `).join('')}
-                        <div style="display:flex;justify-content:space-between;padding:6px 0 2px 0;font-weight:700;border-top:1px solid var(--border);margin-top:4px;padding-top:6px;">
-                            <span>${t('إجمالي الطلبات', 'Orders Total')}</span>
-                            <span>${moneyDec(totals.ordersTotal)} ${t('ج', 'EGP')}</span>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            const activeMethods = paymentMethods.filter(pm => pm.active !== false);
-            
-            let paymentHtml = `
-                <div style="text-align:center;margin:12px 0;">
-                    <div style="font-size:28px;font-weight:700;color:var(--amber);">${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</div>
-                    <div style="font-size:12px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
-                </div>
-                <div class="segment-breakdown" style="margin-bottom:8px;">
-                    <div class="segment-row"><span class="seg-label">${t('إجمالي Single', 'Single Total')}</span><span class="seg-value seg-mode-single">${moneyDec(totals.singleTotal)}</span></div>
-                    <div class="segment-row"><span class="seg-label">${t('إجمالي Multi', 'Multi Total')}</span><span class="seg-value seg-mode-multi">${moneyDec(totals.multiTotal)}</span></div>
-                    <div class="segment-row"><span class="seg-label">${t('الطلبات', 'Orders')}</span><span class="seg-value">${moneyDec(totals.ordersTotal)}</span></div>
-                </div>
-                ${ordersHtml}
-                <div class="section-title">${t('اختر طريقة الدفع', 'Select Payment Method')}</div>`;
-            
-            if (activeMethods.length === 0) {
-                paymentHtml += `
-                    <div class="empty" style="padding:20px;">
-                        <i class="fa-solid fa-credit-card"></i>
-                        ${t('مفيش طرق دفع مفعلة — روح الإعدادات وضيف طريقة', 'No active payment methods — go to settings and add one')}
-                    </div>
-                    <button class="btn btn-ghost btn-block" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>`;
-            } else {
-                paymentHtml += `
-                    <div class="payment-options" id="paymentOptions">
-                        ${activeMethods.map(pm => `
-                            <div class="payment-option" data-id="${pm.id}" style="cursor:pointer;">
-                                <i class="fa-solid ${pm.icon}"></i>
-                                ${escapeHtml(pm.name)}
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-                        <button class="btn btn-ghost" style="flex:1;" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>
-                        <button class="btn btn-amber" style="flex:1;" id="confirmEndBtn" onclick="confirmEndSessionWithPayment()">
-                            <i class="fa-solid fa-check"></i> ${t('تأكيد الدفع', 'Confirm Payment')}
-                        </button>
-                        <button class="btn btn-teal" style="flex:1;" id="printReceiptBtn" onclick="printReceipt()" disabled>
-                            <i class="fa-solid fa-print"></i> ${t('طباعة', 'Print')}
-                        </button>
-                    </div>`;
-            }
-            
-            paymentHtml += `<div class="error-text" id="endSessionError"></div>`;
-            body.innerHTML = paymentHtml;
-            
-            // ✅ إعادة تمكين الزر
-            if (confirmBtn) confirmBtn.disabled = false;
-            
-            document.querySelectorAll('.payment-option').forEach(el => {
-                el.addEventListener('click', function() {
-                    const pmId = this.dataset.id;
-                    if (pmId) {
-                        selectPaymentMethod(pmId);
-                    }
-                });
-            });
-            
-            selectedPaymentMethod = null;
-            
-        } catch (e) {
-            console.error('Error in showEndSessionPayment:', e);
-            showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
-            if (confirmBtn) confirmBtn.disabled = false;
+            await closeSegment(activeSeg.id, now, amount);
         }
+        
+        const totals = await calculateTotalAmounts(session.id);
+        
+        const { data: ordersDetails } = await supabaseClient
+            .from('session_orders')
+            .select('*')
+            .eq('session_id', session.id)
+            .order('created_at');
+        
+        const body = document.getElementById('stationSheetBody');
+        
+        let ordersHtml = '';
+        if (ordersDetails && ordersDetails.length > 0) {
+            ordersHtml = `
+                <div class="section-title" style="margin-top:8px;font-size:12px;">${t('تفاصيل الطلبات', 'Order Details')}</div>
+                <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px;margin-bottom:8px;">
+                    ${ordersDetails.map(o => `
+                        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);">
+                            <span>${escapeHtml(o.item_name)} <span style="color:var(--text-dim);font-size:11px;">× ${o.quantity}</span></span>
+                            <span style="font-weight:600;">${moneyDec(o.quantity * o.unit_price)} ${t('ج', 'EGP')}</span>
+                        </div>
+                    `).join('')}
+                    <div style="display:flex;justify-content:space-between;padding:6px 0 2px 0;font-weight:700;border-top:1px solid var(--border);margin-top:4px;padding-top:6px;">
+                        <span>${t('إجمالي الطلبات', 'Orders Total')}</span>
+                        <span>${moneyDec(totals.ordersTotal)} ${t('ج', 'EGP')}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        const activeMethods = paymentMethods.filter(pm => pm.active !== false);
+        
+        let paymentHtml = `
+            <div style="text-align:center;margin:12px 0;">
+                <div style="font-size:28px;font-weight:700;color:var(--amber);">${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</div>
+                <div style="font-size:12px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
+            </div>
+            <div class="segment-breakdown" style="margin-bottom:8px;">
+                <div class="segment-row"><span class="seg-label">${t('إجمالي Single', 'Single Total')}</span><span class="seg-value seg-mode-single">${moneyDec(totals.singleTotal)}</span></div>
+                <div class="segment-row"><span class="seg-label">${t('إجمالي Multi', 'Multi Total')}</span><span class="seg-value seg-mode-multi">${moneyDec(totals.multiTotal)}</span></div>
+                <div class="segment-row"><span class="seg-label">${t('الطلبات', 'Orders')}</span><span class="seg-value">${moneyDec(totals.ordersTotal)}</span></div>
+            </div>
+            ${ordersHtml}
+            <div class="section-title">${t('اختر طريقة الدفع', 'Select Payment Method')}</div>`;
+        
+        if (activeMethods.length === 0) {
+            paymentHtml += `
+                <div class="empty" style="padding:20px;">
+                    <i class="fa-solid fa-credit-card"></i>
+                    ${t('مفيش طرق دفع مفعلة — روح الإعدادات وضيف طريقة', 'No active payment methods — go to settings and add one')}
+                </div>
+                <button class="btn btn-ghost btn-block" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>`;
+        } else {
+            paymentHtml += `
+                <div class="payment-options" id="paymentOptions">
+                    ${activeMethods.map(pm => `
+                        <div class="payment-option" data-id="${pm.id}" style="cursor:pointer;">
+                            <i class="fa-solid ${pm.icon}"></i>
+                            ${escapeHtml(pm.name)}
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+                    <button class="btn btn-ghost" style="flex:1;" onclick="cancelEndSession()">${t('رجوع', 'Back')}</button>
+                    <button class="btn btn-amber" style="flex:1;" id="confirmEndBtn" onclick="confirmEndSessionWithPayment()" disabled>
+                        <i class="fa-solid fa-check"></i> ${t('تأكيد الدفع', 'Confirm Payment')}
+                    </button>
+                    <button class="btn btn-teal" style="flex:1;" id="printReceiptBtn" onclick="printReceipt()" disabled>
+                        <i class="fa-solid fa-print"></i> ${t('طباعة', 'Print')}
+                    </button>
+                </div>`;
+        }
+        
+        paymentHtml += `<div class="error-text" id="endSessionError"></div>`;
+        body.innerHTML = paymentHtml;
+        
+        document.querySelectorAll('.payment-option').forEach(el => {
+            el.addEventListener('click', function() {
+                const pmId = this.dataset.id;
+                if (pmId) {
+                    selectPaymentMethod(pmId);
+                }
+            });
+        });
+        
+        selectedPaymentMethod = null;
     })();
 }
 
 
 // ============================================================
-// SELECT PAYMENT METHOD - الإصدار المُصلح
+// SELECT PAYMENT METHOD - من الملف الشغال
 // ============================================================
 function selectPaymentMethod(pmId) {
     selectedPaymentMethod = pmId;
@@ -2269,7 +2249,6 @@ function selectPaymentMethod(pmId) {
         }
     });
     
-    // ✅ تمكين أزرار التأكيد والطباعة
     const confirmBtn = document.getElementById('confirmEndBtn');
     if (confirmBtn) {
         confirmBtn.disabled = false;
@@ -2282,20 +2261,10 @@ function selectPaymentMethod(pmId) {
 }
 
 // ============================================================
-// CANCEL END SESSION (Back button) - الإصدار المُصلح
+// CANCEL END SESSION (Back button) - من الملف الشغال
 // ============================================================
 function cancelEndSession() {
     const stationId = endSessionStationId || activeStationId;
-    
-    // ✅ تنظيف أي بيانات متبقية
-    if (stationId && sessions[stationId]) {
-        const session = sessions[stationId];
-        // ✅ حذف _pausedRemaining إذا كان موجوداً
-        if (session._pausedRemaining) {
-            delete session._pausedRemaining;
-        }
-    }
-    
     if (stationId) {
         closeSheet('stationOverlay');
         setTimeout(() => {
@@ -2305,39 +2274,21 @@ function cancelEndSession() {
         closeSheet('stationOverlay');
         navigateTo('view-stations');
     }
-    
-    // ✅ تنظيف المتغيرات
-    selectedPaymentMethod = null;
-    endSessionStationId = null;
 }
 
 // ============================================================
-// CONFIRM END SESSION WITH PAYMENT - الإصدار المُصلح
+// CONFIRM END SESSION WITH PAYMENT - من الملف الشغال
 // ============================================================
 async function confirmEndSessionWithPayment() {
     if (!selectedPaymentMethod) {
         document.getElementById('endSessionError').textContent = t('اختر طريقة دفع أولاً.', 'Select a payment method first.');
         return;
     }
-    
-    const stationId = endSessionStationId || activeStationId;
-    if (!stationId) {
-        showToast(t('خطأ: لم يتم تحديد الجهاز', 'Error: No station selected'), 'error');
-        return;
-    }
-    
+    const stationId = endSessionStationId;
     const session = sessions[stationId];
-    if (!session) {
-        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
-        return;
-    }
-
-    // ✅ تعطيل الزر لمنع الضغط المزدوج
-    const confirmBtn = document.getElementById('confirmEndBtn');
-    if (confirmBtn) confirmBtn.disabled = true;
+    if (!session) return;
 
     try {
-        // ✅ 1. التأكد من إغلاق الـ Segment الحالي
         const activeSeg = await getActiveSegment(session.id);
         if (activeSeg && !activeSeg.ended_at) {
             const now = new Date().toISOString();
@@ -2345,7 +2296,6 @@ async function confirmEndSessionWithPayment() {
             let hours = Math.max(0, (new Date(now) - start) / 3600000);
             let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
             
-            // ✅ معالجة الجلسات التنازلية - لا نخزن _pausedRemaining
             if (activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
                 const elapsedSeconds = (new Date(now) - start) / 1000;
                 const usedSeconds = Math.min(elapsedSeconds, activeSeg.duration_seconds);
@@ -2356,10 +2306,8 @@ async function confirmEndSessionWithPayment() {
             await closeSegment(activeSeg.id, now, amount);
         }
 
-        // ✅ 2. حساب الإجمالي النهائي
         const totals = await calculateTotalAmounts(session.id);
         
-        // ✅ 3. تحديث الجلسة في قاعدة البيانات (إغلاقها)
         const { error } = await supabaseClient.from('sessions').update({
             status: 'completed',
             ended_at: new Date().toISOString(),
@@ -2370,43 +2318,28 @@ async function confirmEndSessionWithPayment() {
         if (error) {
             console.error('Error ending session:', error);
             showToast(t('فشل إنهاء الجلسة: ' + error.message, 'Failed to end session: ' + error.message), 'error');
-            if (confirmBtn) confirmBtn.disabled = false;
             return;
         }
         
-        // ✅ 4. إزالة الجلسة من الـ State المحلي
-        delete sessions[stationId];
+        const savedStationId = stationId;
         
-        // ✅ 5. تحديث الواجهات
+        delete sessions[stationId];
         renderStationsGrid();
-        renderDashboard();
+        closeSheet('stationOverlay');
+        const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
+        showToast(`${t('اتقفلت الجلسة —', 'Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`, 'success');
+        
+        await renderDashboard();
         if (document.getElementById('view-shift').classList.contains('active')) {
             await renderShiftView();
         }
         
-        // ✅ 6. إغلاق الـ Overlay
-        closeSheet('stationOverlay');
-        
-        // ✅ 7. عرض رسالة نجاح
-        const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
-        const msg = `${t('✅ تم إقفال الجلسة —', '✅ Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`;
-        showToast(msg, 'success');
-        
-        // ✅ 8. طباعة الإيصال بعد 500ms
         setTimeout(() => {
             printReceipt();
         }, 500);
-        
-        // ✅ 9. تنظيف المتغيرات
-        selectedPaymentMethod = null;
-        endSessionStationId = null;
-        activeStationId = null;
-        if (confirmBtn) confirmBtn.disabled = false;
-        
     } catch (e) {
         console.error('Error in confirmEndSessionWithPayment:', e);
-        showToast(t('❌ حصل خطأ: ' + e.message, '❌ Error: ' + e.message), 'error');
-        if (confirmBtn) confirmBtn.disabled = false;
+        showToast(t('حصل خطأ، حاول تاني.', 'Error, try again.'), 'error');
     }
 }
 
