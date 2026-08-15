@@ -440,6 +440,101 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     display: flex;
 }
 
+/* ---------- Toggle Sections (PIN) ---------- */
+.section-title.toggle {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+.section-title.toggle:hover {
+    color: var(--text);
+}
+.section-title.toggle .fa-chevron-down {
+    transition: transform 0.3s ease;
+    color: var(--text-dim);
+}
+.section-title.toggle .fa-chevron-down.open {
+    transform: rotate(180deg);
+}
+
+/* ✅ أيقونة PIN بجانب العنوان */
+.section-title .pin-icon {
+    color: var(--amber);
+    margin-left: 8px;
+}
+
+/* ✅ الجرس الموحد */
+#headerBell {
+    font-size: 20px;
+    color: var(--text-dim);
+    transition: all 0.3s ease;
+    cursor: default;
+    margin-left: 8px;
+}
+#headerBell.bell-ringing {
+    color: var(--amber);
+    animation: bellBlink 0.6s infinite alternate, bellShake 0.3s infinite;
+}
+@keyframes bellBlink {
+    0% { opacity: 0.4; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1.1); }
+}
+@keyframes bellShake {
+    0% { transform: rotate(-15deg); }
+    100% { transform: rotate(15deg); }
+}
+
+/* ============================================================
+   RING NOTIFICATION - نظام التنبيهات الصوتية والمرئية
+   ============================================================ */
+.ring-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: var(--surface);
+    border: 3px solid var(--amber);
+    border-radius: var(--radius-md);
+    padding: 16px 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    max-width: 400px;
+    width: 90%;
+    animation: ringSlideDown 0.5s var(--ease);
+    display: none;
+    cursor: pointer;
+}
+
+.ring-notification.show {
+    display: block;
+}
+
+.ring-notification .ring-icon {
+    font-size: 32px;
+    animation: ringBell 0.3s infinite alternate;
+}
+
+@keyframes ringBell {
+    0% { transform: rotate(-20deg); }
+    100% { transform: rotate(20deg); }
+}
+
+@keyframes ringSlideDown {
+    from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+.ring-notification .ring-title {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+}
+
+.ring-notification .ring-sub {
+    font-size: 14px;
+    color: var(--text-dim);
+}
+
 /* ============================================================
    RESPONSIVE DESIGN - جميع الشاشات
    ============================================================ */
