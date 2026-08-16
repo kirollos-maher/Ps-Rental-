@@ -252,10 +252,11 @@ async function handleActivateDevice() {
         if (error || !actCode) { errEl.textContent = t('الكود غير صحيح أو مستخدم قبل كده.', 'Invalid or already used code.'); return; }
 
         const deviceId = getDeviceId();
-        const expiry = new Date(); expiry.setDate(expiry.getDate() + 30);
+        const isTrial = actCode.is_trial === true;
+        const expiry = new Date(); expiry.setDate(expiry.getDate() + (isTrial ? 7 : 30));
         const { data: newDev, error: devErr } = await supabaseClient.from('devices').insert({
             business_id: business.id, device_id: deviceId,
-            device_label: t('جهاز بدون اسم', 'Unnamed device'),
+            device_label: isTrial ? t('جهاز — تجربة مجانية', 'Device — Free trial') : t('جهاز بدون اسم', 'Unnamed device'),
             is_active: true, revoked: false, expiry_date: expiry.toISOString()
         }).select().single();
         if (devErr) { errEl.textContent = t('فشل التفعيل، حاول تاني.', 'Activation failed, try again.'); return; }
@@ -370,7 +371,42 @@ async function tryAutoResume() {
         proceedToLock();
     } catch (e) { console.warn('auto-resume failed', e); }
 }
-window.addEventListener('DOMContentLoaded', () => { tryAutoResume(); });
+
+// ============================================================
+// AUTO-ACTIVATE FROM URL (?biz=CODE&code=ACTIVATION)
+// Used by the "start free trial" button on the marketing/dashboard
+// site, which creates a business + trial activation code and sends
+// the device straight here. Only runs for a device with no existing
+// saved session, so it never hijacks an already-installed device.
+// ============================================================
+async function tryAutoActivateFromURL() {
+    if (localStorage.getItem('psr_business_code')) return; // existing device — don't interfere
+    const params = new URLSearchParams(window.location.search);
+    const bizCode = params.get('biz');
+    const actCodeParam = params.get('code');
+    if (!bizCode) return;
+
+    // Clean the URL so a refresh/share doesn't re-trigger this.
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    const setupInput = document.getElementById('setupBusinessCode');
+    if (setupInput) setupInput.value = bizCode;
+    await handleSetupContinue();
+
+    // If handleSetupContinue routed us to the activation screen (new device)
+    // and we have an activation code, fill it in and submit automatically.
+    const activationScreen = document.getElementById('activationScreen');
+    if (actCodeParam && activationScreen && activationScreen.classList.contains('active')) {
+        const actInput = document.getElementById('activationCodeInput');
+        if (actInput) actInput.value = actCodeParam;
+        await handleActivateDevice();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+    await tryAutoActivateFromURL();
+    tryAutoResume();
+});
 
 // ============================================================
 // MAIN APP ENTRY
@@ -759,6 +795,17 @@ function getCurrentSegmentEstimateFast(sessionId) {
     return { amount, hours, segment: activeSeg };
 }
 
+// قيمة الجزء الحالي المكتسبة فعليًا (على أساس الوقت المنقضي دايمًا، سواء تصاعدي أو تنازلي)
+// نفس المعادلة المستخدمة عند إغلاق الجزء فعليًا في calculateSegmentAmountFromTimes
+function getCurrentSegmentEarnedAmount(sessionId) {
+    const activeSeg = getActiveSegmentFast(sessionId);
+    if (!activeSeg) return 0;
+    const start = new Date(activeSeg.started_at);
+    const now = new Date();
+    const hours = Math.max(0, (now - start) / 3600000);
+    return Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
+}
+
 function getRemainingSeconds(segment) {
     if (!segment || segment.timer_type !== 'countdown' || !segment.duration_seconds) return 0;
     const start = new Date(segment.started_at);
@@ -912,6 +959,16 @@ function startTicker() {
             if (session) {
                 const { amount } = getCurrentSegmentEstimateFast(session.id);
                 amountEl.textContent = moneyDec(amount);
+            }
+        }
+
+        const overallTotalEl = document.getElementById('overallTotalAmount');
+        if (overallTotalEl && activeStationId) {
+            const session = sessions[activeStationId];
+            if (session) {
+                const baseTotal = Number(overallTotalEl.dataset.baseTotal || 0);
+                const earnedNow = getCurrentSegmentEarnedAmount(session.id);
+                overallTotalEl.textContent = moneyDec(Math.round((baseTotal + earnedNow) * 100) / 100);
             }
         }
     }, 1000);
@@ -1868,6 +1925,8 @@ async function openStationSheet(stationId) {
     activeSessionOrders = orders || [];
 
     const activeSegStart = activeSeg ? activeSeg.started_at : session.started_at;
+    const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (Date.now() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
+    const liveGrandTotal = Math.round((totals.grandTotal + liveEarnedNow) * 100) / 100;
 
     body.innerHTML = `
         <div style="text-align:center;margin-bottom:12px;">
@@ -1894,7 +1953,7 @@ async function openStationSheet(stationId) {
             </div>
             <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px;text-align:center;">
                 <div style="font-size:10px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
-                <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount">${moneyDec(totals.grandTotal)}</div>
+                <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
         
@@ -2853,6 +2912,36 @@ function renderSettings() {
         <div class="list-row"><div class="row-title">${t('حالة الجهاز', 'Device Status')}</div><div class="badge ${deviceRecord.revoked ? 'badge-red' : 'badge-teal'}">${deviceRecord.revoked ? t('موقوف', 'Suspended') : t('نشط', 'Active')}</div></div>
         <div class="list-row"><div class="row-title">${t('تاريخ الانتهاء', 'Expiry Date')}</div><div class="row-value mono">${expiry ? expiry.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US') : '—'}</div></div>`;
 
+    // ============================================================
+    // ✅ TOGGLE PIN SECTION — مبني بالكامل من الـ JS عشان يشتغل من غير
+    // ما نحتاج نضيف عناصر ثابتة في الـ HTML يدويًا.
+    // بنستخدم wrapper بـ id ثابت عشان لو renderSettings() اتنادت تاني
+    // (بعد إضافة موظف/صنف مثلاً) منكررش القسم من جديد كل مرة.
+    // ============================================================
+    const pinToggleHtml = `
+        <div class="list-row" style="cursor:pointer;" onclick="toggleSettingsPin()">
+            <div class="row-title">${t('تغيير PIN المالك', 'Change Owner PIN')}</div>
+            <i id="settingsPinChevron" class="fa-solid fa-chevron-down" style="transition:transform .2s;color:var(--text-dim);"></i>
+        </div>
+        <div id="settingsChangePin" style="display:${settingsPinExpanded ? 'block' : 'none'};padding:10px 4px 4px;">
+            <div style="margin-bottom:10px;">
+                <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('الـ PIN الحالي', 'Current PIN')}</label>
+                <input type="password" id="currentPinInput" class="mono" inputmode="numeric" maxlength="6" placeholder="••••" style="width:100%;">
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('الـ PIN الجديد (4-6 أرقام)', 'New PIN (4-6 digits)')}</label>
+                <input type="password" id="newPinInput" class="mono" inputmode="numeric" maxlength="6" placeholder="••••" style="width:100%;">
+            </div>
+            <div id="changePinError" style="color:#ff6b6b;font-size:12px;margin-bottom:10px;"></div>
+            <button class="btn btn-teal btn-block" onclick="changeOwnerPin()">${t('حفظ الـ PIN الجديد', 'Save New PIN')}</button>
+        </div>`;
+    let pinToggleWrap = document.getElementById('settingsPinToggleWrap');
+    if (!pinToggleWrap) {
+        document.getElementById('settingsSubscription').insertAdjacentHTML('afterend', `<div id="settingsPinToggleWrap"></div>`);
+        pinToggleWrap = document.getElementById('settingsPinToggleWrap');
+    }
+    pinToggleWrap.innerHTML = pinToggleHtml;
+
     const groupedMenu = {};
     menuItems.forEach(item => {
         const category = normalizeMenuCategory(item.category);
@@ -3226,6 +3315,8 @@ async function refreshStationSheetContent(stationId) {
     activeSessionOrders = orders || [];
 
     const activeSegStart = activeSeg ? activeSeg.started_at : session.started_at;
+    const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (Date.now() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
+    const liveGrandTotal = Math.round((totals.grandTotal + liveEarnedNow) * 100) / 100;
     
     body.innerHTML = `
         <div style="text-align:center;margin-bottom:12px;">
@@ -3252,7 +3343,7 @@ async function refreshStationSheetContent(stationId) {
             </div>
             <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px;text-align:center;">
                 <div style="font-size:10px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
-                <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount">${moneyDec(totals.grandTotal)}</div>
+                <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
         
