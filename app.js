@@ -123,6 +123,10 @@ let currentOrderSessionId = null;
 let selectedPaymentMethod = null;
 let endSessionStationId = null;
 let endingSessionInProgress = false;
+// ✅ حالة الخصم/المبلغ المدفوع لشاشة إنهاء الجلسة
+let currentEndSessionTotals = null;
+let endSessionDiscount = 0;
+let endSessionAmountPaid = null;
 let sessionSegmentsCache = {};
 let activeSegmentCache = {};
 let pendingSwitch = false;
@@ -421,11 +425,16 @@ async function enterMainApp() {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'view-dashboard'));
     
     populateYearSelect();
+    // مبنعملهاش await عشان ملف الشبكة بتاعها (حتى لو بطيء) ميأخرش فتح
+    // التطبيق؛ بمجرد ما تخلص في الخلفية، بتحدّث الأرقام المعروضة تلقائيًا
+    syncServerClock().then(() => { renderStationsGrid(); });
     await loadAllData();
     subscribeRealtime();
     startTicker();
     updateTexts();
     await recoverActiveSession();
+    // إعادة مزامنة الساعة كل 5 دقايق عشان نلحق أي انزياح لساعة الجهاز أثناء الاستخدام
+    setInterval(syncServerClock, 5 * 60 * 1000);
 }
 
 async function loadAllData() {
@@ -700,6 +709,60 @@ function getActiveSegmentFast(sessionId) {
     return activeSegmentCache[sessionId] || null;
 }
 
+// ============================================================
+// ✅ CLOCK SYNC — تصحيح فرق ساعة الجهاز عن وقت السيرفر
+// المشكلة: كل جهاز (لابتوب/موبايل) بيحسب "الوقت المنقضي" بالمقارنة
+// بساعته المحلية هو. لو ساعة الموبايل متأخرة عن اللحظة اللي اتسجل
+// فيها started_at (اللي جت من جهاز تاني)، الفرق بيبقى سالب فيتقفل
+// على 00:00 ويفضل واقف. الحل: نجيب وقت حقيقي مرجعي مرة عند الدخول
+// ونحسب فرق ثابت (offset) ونستخدمه بدل ما نعتمد على ساعة الجهاز لوحدها.
+//
+// ملحوظة: بنجيب الوقت من محتوى الرد (JSON body) مش من الـ response
+// header، لإن المتصفح بيمنع قراءة هيدر Date في الطلبات cross-origin
+// إلا لو السيرفر يسمح بيه صراحة (Supabase مش بيسمح) — فالاعتماد على
+// الـ header كان بيرجع فاضي دايمًا والتصحيح مكانش بيشتغل فعليًا.
+// ============================================================
+let serverClockOffsetMs = 0;
+
+async function fetchWithTimeout(url, ms) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), ms);
+    try {
+        return await fetch(url, { signal: controller.signal });
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
+async function syncServerClock() {
+    // المصدر الأول
+    try {
+        const res = await fetchWithTimeout('https://worldtimeapi.org/api/timezone/Etc/UTC', 4000);
+        const data = await res.json();
+        if (data && data.unixtime) {
+            serverClockOffsetMs = (data.unixtime * 1000) - Date.now();
+            return;
+        }
+    } catch (e) {
+        console.warn('worldtimeapi failed, trying fallback:', e);
+    }
+    // مصدر احتياطي لو الأول فشل أو بطيء
+    try {
+        const res = await fetchWithTimeout('https://timeapi.io/api/Time/current/zone?timeZone=UTC', 4000);
+        const data = await res.json();
+        if (data && data.dateTime) {
+            const serverTime = new Date(data.dateTime + 'Z').getTime();
+            if (!isNaN(serverTime)) serverClockOffsetMs = serverTime - Date.now();
+        }
+    } catch (e) {
+        console.warn('Error syncing server clock (both sources failed):', e);
+    }
+}
+
+function nowCorrected() {
+    return Date.now() + serverClockOffsetMs;
+}
+
 async function preloadActiveSegments(sessionIds) {
     if (!sessionIds || sessionIds.length === 0) return;
     try {
@@ -762,7 +825,7 @@ async function getCurrentSegmentEstimate(sessionId) {
     if (!activeSeg) return { amount: 0, hours: 0, segment: null };
     
     const start = new Date(activeSeg.started_at);
-    const now = new Date();
+    const now = new Date(nowCorrected());
     let hours = Math.max(0, (now - start) / 3600000);
     let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
     
@@ -781,7 +844,7 @@ function getCurrentSegmentEstimateFast(sessionId) {
     if (!activeSeg) return { amount: 0, hours: 0, segment: null };
 
     const start = new Date(activeSeg.started_at);
-    const now = new Date();
+    const now = new Date(nowCorrected());
     let hours = Math.max(0, (now - start) / 3600000);
     let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
 
@@ -801,7 +864,7 @@ function getCurrentSegmentEarnedAmount(sessionId) {
     const activeSeg = getActiveSegmentFast(sessionId);
     if (!activeSeg) return 0;
     const start = new Date(activeSeg.started_at);
-    const now = new Date();
+    const now = new Date(nowCorrected());
     const hours = Math.max(0, (now - start) / 3600000);
     return Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
 }
@@ -809,7 +872,7 @@ function getCurrentSegmentEarnedAmount(sessionId) {
 function getRemainingSeconds(segment) {
     if (!segment || segment.timer_type !== 'countdown' || !segment.duration_seconds) return 0;
     const start = new Date(segment.started_at);
-    const now = new Date();
+    const now = new Date(nowCorrected());
     const elapsed = (now - start) / 1000;
     return Math.max(0, segment.duration_seconds - elapsed);
 }
@@ -975,7 +1038,7 @@ function startTicker() {
 }
 
 function formatElapsed(start) {
-    const secs = Math.max(0, Math.floor((Date.now() - start.getTime()) / 1000));
+    const secs = Math.max(0, Math.floor((nowCorrected() - start.getTime()) / 1000));
     const h = Math.floor(secs / 3600), m = Math.floor((secs % 3600) / 60), s = secs % 60;
     return (h > 0 ? String(h).padStart(2, '0') + ':' : '') + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
 }
@@ -1925,7 +1988,7 @@ async function openStationSheet(stationId) {
     activeSessionOrders = orders || [];
 
     const activeSegStart = activeSeg ? activeSeg.started_at : session.started_at;
-    const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (Date.now() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
+    const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (nowCorrected() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
     const liveGrandTotal = Math.round((totals.grandTotal + liveEarnedNow) * 100) / 100;
 
     body.innerHTML = `
@@ -2151,7 +2214,7 @@ async function startSessionWithMode(stationId) {
         return;
     }
     
-    const now = new Date().toISOString();
+    const now = new Date(nowCorrected()).toISOString();
     
     try {
         const { data: session, error } = await supabaseClient.from('sessions').insert({
@@ -2194,7 +2257,7 @@ function showEndSessionPayment(stationId) {
     (async () => {
         const activeSeg = await getActiveSegment(session.id);
         if (activeSeg && !activeSeg.ended_at) {
-            const now = new Date().toISOString();
+            const now = new Date(nowCorrected()).toISOString();
             const start = new Date(activeSeg.started_at);
             let hours = Math.max(0, (new Date(now) - start) / 3600000);
             let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
@@ -2239,6 +2302,9 @@ function showEndSessionPayment(stationId) {
         }
         
         const activeMethods = paymentMethods.filter(pm => pm.active !== false);
+        currentEndSessionTotals = totals;
+        endSessionDiscount = 0;
+        endSessionAmountPaid = null;
         
         let paymentHtml = `
             <div style="text-align:center;margin:12px 0;">
@@ -2251,6 +2317,25 @@ function showEndSessionPayment(stationId) {
                 <div class="segment-row"><span class="seg-label">${t('الطلبات', 'Orders')}</span><span class="seg-value">${moneyDec(totals.ordersTotal)}</span></div>
             </div>
             ${ordersHtml}
+            <div class="section-title">${t('الخصم والدفع', 'Discount & Payment')}</div>
+            <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:10px;margin-bottom:10px;">
+                <div style="margin-bottom:10px;">
+                    <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('خصم (جنيه)', 'Discount (EGP)')}</label>
+                    <input type="number" id="discountInput" class="mono" min="0" step="0.5" value="0" placeholder="0" oninput="updatePaymentCalculation()" style="width:100%;">
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-weight:700;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;">
+                    <span>${t('الإجمالي بعد الخصم', 'Total After Discount')}</span>
+                    <span class="mono" id="finalTotalDisplay" style="color:var(--amber);font-size:16px;">${moneyDec(totals.grandTotal)}</span>
+                </div>
+                <div style="margin-bottom:8px;">
+                    <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('العميل دفع كام', 'Amount Paid by Customer')}</label>
+                    <input type="number" id="amountPaidInput" class="mono" min="0" step="0.5" placeholder="${moneyDec(totals.grandTotal)}" oninput="updatePaymentCalculation()" style="width:100%;">
+                </div>
+                <div id="changeDueRow" style="display:none;justify-content:space-between;align-items:center;padding:8px 0 2px;font-weight:700;">
+                    <span id="changeDueLabel"></span>
+                    <span class="mono" id="changeDueAmount" style="font-size:16px;"></span>
+                </div>
+            </div>
             <div class="section-title">${t('اختر طريقة الدفع', 'Select Payment Method')}</div>`;
         
         if (activeMethods.length === 0) {
@@ -2326,6 +2411,49 @@ function selectPaymentMethod(pmId) {
 }
 
 // ============================================================
+// ✅ حساب الخصم والباقي أثناء الدفع
+// ============================================================
+function updatePaymentCalculation() {
+    if (!currentEndSessionTotals) return;
+    const grandTotal = currentEndSessionTotals.grandTotal;
+
+    const discountInput = document.getElementById('discountInput');
+    let discount = Math.max(0, parseFloat(discountInput.value) || 0);
+    if (discount > grandTotal) {
+        discount = grandTotal;
+        discountInput.value = discount;
+    }
+    const finalTotal = Math.round((grandTotal - discount) * 100) / 100;
+    const finalTotalEl = document.getElementById('finalTotalDisplay');
+    if (finalTotalEl) finalTotalEl.textContent = moneyDec(finalTotal);
+
+    const paidInput = document.getElementById('amountPaidInput');
+    const paidVal = paidInput ? paidInput.value.trim() : '';
+    const changeRow = document.getElementById('changeDueRow');
+    const changeLabel = document.getElementById('changeDueLabel');
+    const changeAmount = document.getElementById('changeDueAmount');
+
+    if (paidVal === '') {
+        if (changeRow) changeRow.style.display = 'none';
+        endSessionAmountPaid = null;
+    } else {
+        const paid = Math.max(0, parseFloat(paidVal) || 0);
+        const diff = Math.round((paid - finalTotal) * 100) / 100;
+        if (changeRow) changeRow.style.display = 'flex';
+        if (diff >= 0) {
+            if (changeLabel) changeLabel.textContent = t('الباقي للعميل', 'Change Due to Customer');
+            if (changeAmount) { changeAmount.textContent = moneyDec(diff); changeAmount.style.color = 'var(--teal)'; }
+        } else {
+            if (changeLabel) changeLabel.textContent = t('باقي على العميل', 'Remaining Owed by Customer');
+            if (changeAmount) { changeAmount.textContent = moneyDec(Math.abs(diff)); changeAmount.style.color = '#ff6b6b'; }
+        }
+        endSessionAmountPaid = paid;
+    }
+
+    endSessionDiscount = discount;
+}
+
+// ============================================================
 // CANCEL END SESSION (Back button) - من الملف الشغال
 // ============================================================
 function cancelEndSession() {
@@ -2357,7 +2485,7 @@ async function confirmEndSessionWithPayment() {
     try {
         const activeSeg = await getActiveSegment(session.id);
         if (activeSeg && !activeSeg.ended_at) {
-            const now = new Date().toISOString();
+            const now = new Date(nowCorrected()).toISOString();
             const start = new Date(activeSeg.started_at);
             let hours = Math.max(0, (new Date(now) - start) / 3600000);
             let amount = Math.round((hours * Number(activeSeg.rate)) * 100) / 100;
@@ -2373,13 +2501,29 @@ async function confirmEndSessionWithPayment() {
         }
 
         const totals = await calculateTotalAmounts(session.id);
-        
-        const { error } = await supabaseClient.from('sessions').update({
+        const discountAmount = Math.min(Math.max(0, endSessionDiscount || 0), totals.grandTotal);
+        const finalTotal = Math.round((totals.grandTotal - discountAmount) * 100) / 100;
+
+        const basePayload = {
             status: 'completed',
-            ended_at: new Date().toISOString(),
-            amount: totals.grandTotal,
+            ended_at: new Date(nowCorrected()).toISOString(),
+            amount: finalTotal,
             payment_method: selectedPaymentMethod
+        };
+
+        // بنحاول نحفظ الخصم والمبلغ المدفوع كمان؛ لو الأعمدة دي لسه مش
+        // مضافة في قاعدة البيانات (discount / amount_paid)، بنرجع نحفظ
+        // بدونها عشان قفل الجلسة ميفشلش خالص.
+        let { error } = await supabaseClient.from('sessions').update({
+            ...basePayload,
+            discount: discountAmount,
+            amount_paid: endSessionAmountPaid
         }).eq('id', session.id);
+
+        if (error && /column .* does not exist/i.test(error.message || '')) {
+            console.warn('discount/amount_paid columns missing — saving without them:', error.message);
+            ({ error } = await supabaseClient.from('sessions').update(basePayload).eq('id', session.id));
+        }
         
         if (error) {
             console.error('Error ending session:', error);
@@ -2390,11 +2534,14 @@ async function confirmEndSessionWithPayment() {
         
         const savedStationId = stationId;
         
+        // نثبّت قيمة الخصم النهائية (بعد أي clamp) عشان الإيصال يعرضها صح
+        endSessionDiscount = discountAmount;
+        
         delete sessions[stationId];
         renderStationsGrid();
         closeSheet('stationOverlay');
         const pm = paymentMethods.find(p => p.id === selectedPaymentMethod);
-        showToast(`${t('اتقفلت الجلسة —', 'Session closed —')} ${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`, 'success');
+        showToast(`${t('اتقفلت الجلسة —', 'Session closed —')} ${moneyDec(finalTotal)} ${t('ج', 'EGP')} (${pm ? pm.name : ''})`, 'success');
         
         await renderDashboard();
         if (document.getElementById('view-shift').classList.contains('active')) {
@@ -2494,12 +2641,36 @@ function printReceipt() {
                 </div>
                 ${ordersReceiptHtml}
                 <hr style="border: none; border-top: 1px dashed #ccc; margin: 10px 0;">
+                ${endSessionDiscount > 0 ? `
+                <div style="font-size: 13px; margin-bottom: 4px;">
+                    <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                        <span>${t('الإجمالي قبل الخصم', 'Total Before Discount')}</span>
+                        <span>${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:2px 0;color:#c0392b;">
+                        <span>${t('الخصم', 'Discount')}</span>
+                        <span>- ${moneyDec(endSessionDiscount)} ${t('ج', 'EGP')}</span>
+                    </div>
+                </div>
+                ` : ''}
                 <div style="font-size: 18px; font-weight: 700; color: #000; margin: 8px 0;">
                     <div style="display:flex;justify-content:space-between;">
                         <span>${t('الإجمالي', 'Total')}</span>
-                        <span>${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</span>
+                        <span>${moneyDec(Math.max(0, Math.round((totals.grandTotal - endSessionDiscount) * 100) / 100))} ${t('ج', 'EGP')}</span>
                     </div>
                 </div>
+                ${endSessionAmountPaid !== null && endSessionAmountPaid !== undefined ? `
+                <div style="font-size: 13px; margin-bottom: 8px;">
+                    <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                        <span>${t('دفع العميل', 'Amount Paid')}</span>
+                        <span>${moneyDec(endSessionAmountPaid)} ${t('ج', 'EGP')}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:2px 0;font-weight:700;">
+                        <span>${endSessionAmountPaid >= (totals.grandTotal - endSessionDiscount) ? t('الباقي للعميل', 'Change Due') : t('باقي على العميل', 'Remaining Owed')}</span>
+                        <span>${moneyDec(Math.abs(Math.round((endSessionAmountPaid - (totals.grandTotal - endSessionDiscount)) * 100) / 100))} ${t('ج', 'EGP')}</span>
+                    </div>
+                </div>
+                ` : ''}
                 <div style="font-size: 13px; margin: 8px 0;">
                     <div style="display:flex;justify-content:space-between;padding:2px 0;">
                         <span>${t('طريقة الدفع', 'Payment Method')}</span>
@@ -3315,7 +3486,7 @@ async function refreshStationSheetContent(stationId) {
     activeSessionOrders = orders || [];
 
     const activeSegStart = activeSeg ? activeSeg.started_at : session.started_at;
-    const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (Date.now() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
+    const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (nowCorrected() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
     const liveGrandTotal = Math.round((totals.grandTotal + liveEarnedNow) * 100) / 100;
     
     body.innerHTML = `
