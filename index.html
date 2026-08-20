@@ -328,6 +328,26 @@
         <div class="panel" id="settingsEmployees"></div>
         <button class="btn btn-ghost btn-block" style="margin-top:8px;" onclick="openEmployeeSheet()"><i class="fa-solid fa-plus"></i> <span data-ar="إضافة موظف" data-en="Add Employee">إضافة موظف</span></button>
 
+        <!-- ✅ تغيير PIN المالك (Toggle - قابل للطي) -->
+        <div class="section-title" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-top:20px;" onclick="toggleSettingsPin()">
+            <span><i class="fa-solid fa-key" style="color:var(--amber);margin-left:8px;"></i> <span data-ar="تغيير PIN المالك" data-en="Change Owner PIN">تغيير PIN المالك</span></span>
+            <i class="fa-solid fa-chevron-down" id="settingsPinChevron" style="transition:transform .2s;"></i>
+        </div>
+        <div class="panel" id="settingsChangePin" style="display:none;margin-bottom:8px;">
+            <div class="field">
+                <label data-ar="PIN الحالي" data-en="Current PIN">PIN الحالي</label>
+                <input type="password" id="currentPinInput" class="mono" maxlength="6" placeholder="••••">
+            </div>
+            <div class="field">
+                <label data-ar="PIN الجديد (4-6 أرقام)" data-en="New PIN (4-6 digits)">PIN الجديد</label>
+                <input type="password" id="newPinInput" class="mono" maxlength="6" placeholder="••••••">
+            </div>
+            <button class="btn btn-amber btn-block" onclick="changeOwnerPin()">
+                <i class="fa-solid fa-key"></i> <span data-ar="تغيير PIN" data-en="Change PIN">تغيير PIN</span>
+            </button>
+            <div class="error-text" id="changePinError"></div>
+        </div>
+
         <!-- ✅ النشاط (تبديل النشاط) -->
         <div class="section-title" data-ar="النشاط" data-en="Business">النشاط</div>
         <button class="btn btn-ghost btn-block" onclick="switchBusiness()"><i class="fa-solid fa-right-left"></i> <span data-ar="تبديل النشاط" data-en="Switch Business">تبديل النشاط</span></button>
@@ -351,6 +371,15 @@
             <div class="sheet-handle"></div>
             <div class="sheet-title"><span data-ar="نقل الجلسة إلى جهاز آخر" data-en="Transfer Session to Another Device">نقل الجلسة إلى جهاز آخر</span><button class="close-x" onclick="closeSheet('transferOverlay')"><i class="fa-solid fa-xmark"></i></button></div>
             <div id="transferSheetBody"></div>
+        </div>
+    </div>
+
+    <!-- ============== PREPAYMENT SHEET ============== -->
+    <div class="overlay" id="prepaymentOverlay">
+        <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title"><span data-ar="إضافة دفعة مقدمة" data-en="Add Prepayment">إضافة دفعة مقدمة</span><button class="close-x" onclick="closeSheet('prepaymentOverlay')"><i class="fa-solid fa-xmark"></i></button></div>
+            <div id="prepaymentSheetBody"></div>
         </div>
     </div>
 
