@@ -2332,11 +2332,19 @@ function showEndSessionPayment(stationId) {
                 <span class="mono" style="font-weight:700;">- ${moneyDec(endSessionPrepaidAmount)} ${t('ج', 'EGP')}</span>
             </div>` : '';
         
-        let paymentHtml = `
-            <div style="text-align:center;margin:12px 0;">
-                <div style="font-size:28px;font-weight:700;color:var(--amber);">${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</div>
-                <div style="font-size:12px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
-            </div>
+                    // ✅ حساب الإجمالي المستحق بعد خصم المقدم
+            const dueAfterPrepaid = Math.max(0, Math.round((totals.grandTotal - endSessionPrepaidAmount) * 100) / 100);
+            const hasPrepaid = endSessionPrepaidAmount > 0;
+            const showCredit = (totals.grandTotal - endSessionPrepaidAmount) < 0;
+
+            let paymentHtml = `
+                <div style="text-align:center;margin:12px 0;">
+                    <div style="font-size:28px;font-weight:700;color:${showCredit ? 'var(--teal)' : 'var(--amber)'};">${showCredit ? '0' : moneyDec(dueAfterPrepaid)} ${t('ج', 'EGP')}</div>
+                    <div style="font-size:12px;color:var(--text-dim);">
+                        ${showCredit ? t('تم دفع كل الإجمالي مقدمًا ✅', 'All paid in advance ✅') : (hasPrepaid ? t('الإجمالي المستحق بعد المقدم', 'Total Due After Advance') : t('الإجمالي الكلي', 'Grand Total'))}
+                    </div>
+                    ${hasPrepaid ? `<div style="font-size:11px;color:var(--teal);margin-top:4px;">${t('(تم خصم', '(Deducted')} ${moneyDec(endSessionPrepaidAmount)} ${t('ج مدفوع مقدمًا)', 'EGP paid in advance)')}</div>` : ''}
+                </div>
             <div class="segment-breakdown" style="margin-bottom:8px;">
                 <div class="segment-row"><span class="seg-label">${t('إجمالي Single', 'Single Total')}</span><span class="seg-value seg-mode-single">${moneyDec(totals.singleTotal)}</span></div>
                 <div class="segment-row"><span class="seg-label">${t('إجمالي Multi', 'Multi Total')}</span><span class="seg-value seg-mode-multi">${moneyDec(totals.multiTotal)}</span></div>
