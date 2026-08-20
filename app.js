@@ -47,6 +47,7 @@ function updateTexts() {
         el.textContent = currentLang === 'ar' ? el.dataset.ar : el.dataset.en;
     });
     
+    // تحديث أسماء الأشهر
     updateMonthNames();
     
     renderStationsGrid();
@@ -122,21 +123,24 @@ let currentOrderSessionId = null;
 let selectedPaymentMethod = null;
 let endSessionStationId = null;
 let endingSessionInProgress = false;
+// ✅ حالة الخصم/المبلغ المدفوع لشاشة إنهاء الجلسة
 let currentEndSessionTotals = null;
 let endSessionDiscount = 0;
 let endSessionAmountPaid = null;
-// ✅ مبلغ الدفع المقدم (يتم خصمه من الإجمالي عند إنهاء الجلسة)
-let endSessionPrepaidAmount = 0;
+let endSessionPrepaidTotal = 0;
 let sessionSegmentsCache = {};
 let activeSegmentCache = {};
+// ✅ كاش الدفعات المقدمة (قبل الجلسة/أثناءها)
+let sessionPrepaymentsCache = {};
 let pendingSwitch = false;
 let transferSourceStationId = null;
 let countdownTimers = {};
 let countdownAlerts = {};
+// تخزين حالة التوجل لكل تصنيف
 let categoryToggleState = {};
 
 // ============================================================
-// TOGGLE PIN SECTION
+// ✅ TOGGLE PIN SECTION (قابل للطي)
 // ============================================================
 let settingsPinExpanded = false;
 
@@ -375,16 +379,29 @@ async function tryAutoResume() {
     } catch (e) { console.warn('auto-resume failed', e); }
 }
 
+// ============================================================
+// AUTO-ACTIVATE FROM URL (?biz=CODE&code=ACTIVATION)
+// Used by the "start free trial" button on the marketing/dashboard
+// site, which creates a business + trial activation code and sends
+// the device straight here. Only runs for a device with no existing
+// saved session, so it never hijacks an already-installed device.
+// ============================================================
 async function tryAutoActivateFromURL() {
-    if (localStorage.getItem('psr_business_code')) return;
+    if (localStorage.getItem('psr_business_code')) return; // existing device — don't interfere
     const params = new URLSearchParams(window.location.search);
     const bizCode = params.get('biz');
     const actCodeParam = params.get('code');
     if (!bizCode) return;
+
+    // Clean the URL so a refresh/share doesn't re-trigger this.
     window.history.replaceState({}, document.title, window.location.pathname);
+
     const setupInput = document.getElementById('setupBusinessCode');
     if (setupInput) setupInput.value = bizCode;
     await handleSetupContinue();
+
+    // If handleSetupContinue routed us to the activation screen (new device)
+    // and we have an activation code, fill it in and submit automatically.
     const activationScreen = document.getElementById('activationScreen');
     if (actCodeParam && activationScreen && activationScreen.classList.contains('active')) {
         const actInput = document.getElementById('activationCodeInput');
@@ -411,16 +428,22 @@ async function enterMainApp() {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'view-dashboard'));
     
     populateYearSelect();
+    // مبنعملهاش await عشان ملف الشبكة بتاعها (حتى لو بطيء) ميأخرش فتح
+    // التطبيق؛ بمجرد ما تخلص في الخلفية، بتحدّث الأرقام المعروضة تلقائيًا
     syncServerClock().then(() => { renderStationsGrid(); });
     await loadAllData();
     subscribeRealtime();
     startTicker();
     updateTexts();
     await recoverActiveSession();
+    // إعادة مزامنة الساعة كل 5 دقايق عشان نلحق أي انزياح لساعة الجهاز أثناء الاستخدام
     setInterval(syncServerClock, 5 * 60 * 1000);
 }
 
 async function loadAllData() {
+    // Load each area independently. A problem in one table (for example,
+    // duplicate open shifts in an older database) must not prevent the
+    // stations and the rest of the app from rendering.
     const results = await Promise.allSettled([
         loadStations(),
         loadMenuItems(),
@@ -467,7 +490,7 @@ async function loadStations() {
 }
 
 // ============================================================
-// MENU ITEMS
+// MENU ITEMS - with localStorage fallback
 // ============================================================
 async function loadMenuItems() {
     try {
@@ -569,6 +592,9 @@ async function loadPaymentMethods() {
 async function loadOrOpenShift() {
     assertBusinessContext();
 
+    // Do not use maybeSingle() here. The current database contains multiple
+    // open shifts for this business (the console reports 19 rows), so
+    // maybeSingle() throws PGRST116 and used to stop the whole app from rendering.
     const { data: openShifts, error } = await supabaseClient
         .from('shifts')
         .select('*')
@@ -579,7 +605,10 @@ async function loadOrOpenShift() {
     if (error) throw error;
 
     if (openShifts && openShifts.length > 0) {
+        // Use the newest open shift for now. Do NOT automatically delete or
+        // close the other financial records; they need manual review.
         currentShift = openShifts[0];
+
         if (openShifts.length > 1) {
             console.warn(
                 `PS Rental: ${openShifts.length} open shifts found for business ${business.id}. ` +
@@ -683,6 +712,122 @@ function getActiveSegmentFast(sessionId) {
     return activeSegmentCache[sessionId] || null;
 }
 
+// ============================================================
+// ✅ الدفعة المقدمة (Prepayment) — العميل يدفع قبل ما يقعد على
+// الجهاز، أو يزوّد الدفعة أثناء الجلسة. كل دفعة بتتسجل كصف مستقل
+// في session_prepayments (نفس فكرة session_segments/session_orders)
+// وبيتم جمعها وخصمها من الإجمالي في صفحة دفع نهاية الجلسة فقط.
+// ============================================================
+async function addPrepayment(sessionId, amount, note) {
+    assertBusinessContext();
+    const value = assertPositiveNumber(amount, 'Prepayment amount');
+    if (value <= 0) throw new Error('Prepayment amount must be greater than zero');
+
+    const { data, error } = await supabaseClient.from('session_prepayments').insert({
+        session_id: sessionId,
+        business_id: business.id,
+        amount: value,
+        note: note || null,
+        created_by_device: getDeviceId()
+    }).select().single();
+    if (error) throw error;
+
+    sessionPrepaymentsCache[sessionId] = null; // إبطال الكاش عشان يتجاب تاني
+    return data;
+}
+
+async function getSessionPrepayments(sessionId) {
+    if (sessionPrepaymentsCache[sessionId]) return sessionPrepaymentsCache[sessionId];
+    try {
+        const { data, error } = await supabaseClient
+            .from('session_prepayments')
+            .select('*')
+            .eq('session_id', sessionId)
+            .order('created_at', { ascending: true });
+        if (error) {
+            // لو الجدول لسه مش متعمل في قاعدة البيانات، منسيبش الشاشة تقفل
+            console.warn('session_prepayments unavailable:', error.message);
+            sessionPrepaymentsCache[sessionId] = [];
+            return [];
+        }
+        sessionPrepaymentsCache[sessionId] = data || [];
+        return sessionPrepaymentsCache[sessionId];
+    } catch (e) {
+        console.warn('Error loading prepayments:', e);
+        return [];
+    }
+}
+
+async function getPrepaidTotal(sessionId) {
+    const list = await getSessionPrepayments(sessionId);
+    const total = list.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+    return Math.round(total * 100) / 100;
+}
+
+// شاشة إضافة دفعة مقدمة أثناء الجلسة (زر "إضافة دفعة مقدمة")
+function openPrepaymentSheet(stationId) {
+    const session = sessions[stationId];
+    if (!session) {
+        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
+        return;
+    }
+    const body = document.getElementById('prepaymentSheetBody');
+    if (!body) return;
+
+    body.innerHTML = `
+        <div style="text-align:center;margin-bottom:12px;">
+            <div style="font-size:13px;color:var(--text-dim);">${t('إضافة دفعة مقدمة على الجلسة', 'Add a prepayment to this session')}</div>
+        </div>
+        <div class="field">
+            <label>${t('المبلغ (جنيه)', 'Amount (EGP)')}</label>
+            <input type="number" id="prepaymentAmountInput" class="mono" min="0.5" step="0.5" placeholder="0" autofocus>
+        </div>
+        <button class="btn btn-prepay btn-block" onclick="confirmAddPrepayment('${session.id}','${stationId}')">
+            <i class="fa-solid fa-check"></i> ${t('تأكيد الدفعة', 'Confirm Prepayment')}
+        </button>
+        <button class="btn btn-ghost btn-block" style="margin-top:8px;" onclick="closeSheet('prepaymentOverlay')">${t('إلغاء', 'Cancel')}</button>
+        <div class="error-text" id="prepaymentError"></div>
+    `;
+    openSheet('prepaymentOverlay');
+}
+
+async function confirmAddPrepayment(sessionId, stationId) {
+    const input = document.getElementById('prepaymentAmountInput');
+    const errEl = document.getElementById('prepaymentError');
+    if (errEl) errEl.textContent = '';
+    const amount = parseFloat(input ? input.value : '');
+
+    if (!amount || amount <= 0) {
+        if (errEl) errEl.textContent = t('أدخل مبلغ صحيح أكبر من صفر', 'Enter a valid amount greater than zero');
+        return;
+    }
+
+    try {
+        await addPrepayment(sessionId, amount, t('أثناء الجلسة', 'During session'));
+        showToast(t('تم تسجيل الدفعة المقدمة', 'Prepayment recorded'), 'success');
+        closeSheet('prepaymentOverlay');
+        if (stationId) {
+            await refreshStationSheetContent(stationId);
+        }
+    } catch (e) {
+        console.error('Error adding prepayment:', e);
+        if (errEl) errEl.textContent = t('فشل تسجيل الدفعة، حاول تاني', 'Failed to save the prepayment, try again');
+    }
+}
+
+// ============================================================
+// ✅ CLOCK SYNC — تصحيح فرق ساعة الجهاز عن وقت السيرفر
+// المشكلة: كل جهاز (لابتوب/موبايل) بيحسب "الوقت المنقضي" بالمقارنة
+// بساعته المحلية هو. لو ساعة الموبايل متأخرة عن اللحظة اللي اتسجل
+// فيها started_at (اللي جت من جهاز تاني)، الفرق بيبقى سالب فيتقفل
+// على 00:00 ويفضل واقف. الحل: نجيب وقت حقيقي مرجعي مرة عند الدخول
+// ونحسب فرق ثابت (offset) ونستخدمه بدل ما نعتمد على ساعة الجهاز لوحدها.
+//
+// ملحوظة: بنجيب الوقت من محتوى الرد (JSON body) مش من الـ response
+// header، لإن المتصفح بيمنع قراءة هيدر Date في الطلبات cross-origin
+// إلا لو السيرفر يسمح بيه صراحة (Supabase مش بيسمح) — فالاعتماد على
+// الـ header كان بيرجع فاضي دايمًا والتصحيح مكانش بيشتغل فعليًا.
+// ============================================================
 let serverClockOffsetMs = 0;
 
 async function fetchWithTimeout(url, ms) {
@@ -696,6 +841,7 @@ async function fetchWithTimeout(url, ms) {
 }
 
 async function syncServerClock() {
+    // المصدر الأول
     try {
         const res = await fetchWithTimeout('https://worldtimeapi.org/api/timezone/Etc/UTC', 4000);
         const data = await res.json();
@@ -706,6 +852,7 @@ async function syncServerClock() {
     } catch (e) {
         console.warn('worldtimeapi failed, trying fallback:', e);
     }
+    // مصدر احتياطي لو الأول فشل أو بطيء
     try {
         const res = await fetchWithTimeout('https://timeapi.io/api/Time/current/zone?timeZone=UTC', 4000);
         const data = await res.json();
@@ -768,6 +915,8 @@ async function calculateTotalAmounts(sessionId) {
         .select('quantity, unit_price')
         .eq('session_id', sessionId);
     const ordersTotal = (orders || []).reduce((sum, o) => sum + (Number(o.quantity) * Number(o.unit_price)), 0);
+    const prepaidTotal = await getPrepaidTotal(sessionId);
+    const grandTotal = Math.round((singleTotal + multiTotal + ordersTotal) * 100) / 100;
     
     return {
         singleTotal: Math.round(singleTotal * 100) / 100,
@@ -775,7 +924,10 @@ async function calculateTotalAmounts(sessionId) {
         singleDuration: singleDuration,
         multiDuration: multiDuration,
         ordersTotal: ordersTotal,
-        grandTotal: Math.round((singleTotal + multiTotal + ordersTotal) * 100) / 100
+        prepaidTotal: prepaidTotal,
+        // الباقي على العميل بعد خصم أي دفعة مقدمة (قبل خصم أي discount هيتحسب في صفحة الدفع)
+        dueAfterPrepayment: Math.max(0, Math.round((grandTotal - prepaidTotal) * 100) / 100),
+        grandTotal: grandTotal
     };
 }
 
@@ -817,6 +969,8 @@ function getCurrentSegmentEstimateFast(sessionId) {
     return { amount, hours, segment: activeSeg };
 }
 
+// قيمة الجزء الحالي المكتسبة فعليًا (على أساس الوقت المنقضي دايمًا، سواء تصاعدي أو تنازلي)
+// نفس المعادلة المستخدمة عند إغلاق الجزء فعليًا في calculateSegmentAmountFromTimes
 function getCurrentSegmentEarnedAmount(sessionId) {
     const activeSeg = getActiveSegmentFast(sessionId);
     if (!activeSeg) return 0;
@@ -1466,6 +1620,14 @@ async function addOrderItem(sessionId, menuItemId) {
 
             if (error) throw error;
         } else {
+            // IMPORTANT:
+            // Do NOT use .select().single() here.
+            // If INSERT is allowed by RLS but SELECT is not,
+            // .insert().select().single() reports a false failure.
+            //
+            // We also send business_id when the column exists in the
+            // current V2 schema. If an older database does not have it,
+            // retry once without business_id.
             let insertPayload = {
                 business_id: business.id,
                 session_id: sessionId,
@@ -1485,6 +1647,7 @@ async function addOrderItem(sessionId, menuItemId) {
                 /column/i.test(error.message || '')
             )) {
                 delete insertPayload.business_id;
+
                 ({ error } = await supabaseClient
                     .from('session_orders')
                     .insert(insertPayload));
@@ -1493,6 +1656,7 @@ async function addOrderItem(sessionId, menuItemId) {
             if (error) throw error;
         }
 
+        // Reload from DB so the UI has the real row/id.
         const { data: refreshedOrders, error: reloadError } = await supabaseClient
             .from('session_orders')
             .select('*')
@@ -1500,6 +1664,8 @@ async function addOrderItem(sessionId, menuItemId) {
             .order('created_at');
 
         if (reloadError) {
+            // The insert succeeded, but the current RLS SELECT policy
+            // may prevent reading the row back. Do not claim INSERT failed.
             console.error('Order was inserted, but reload failed:', reloadError);
             showToast(
                 t('تم حفظ الطلب، لكن صلاحية قراءة الطلبات تحتاج مراجعة في Supabase.', 'Order was saved, but the SELECT permission for orders needs review in Supabase.'),
@@ -1523,8 +1689,12 @@ async function addOrderItem(sessionId, menuItemId) {
 
     } catch (e) {
         console.error('Error adding order:', e);
+
         const code = e?.code || '';
+        const message = e?.message || String(e);
+
         let userMessage = t('فشل إضافة الطلب', 'Failed to add order');
+
         if (code === '23503') {
             userMessage = t(
                 'فشل الطلب: الصنف أو الجلسة غير موجودة في قاعدة البيانات.',
@@ -1546,7 +1716,14 @@ async function addOrderItem(sessionId, menuItemId) {
                 'Order failed: a CHECK constraint in session_orders rejected the value.'
             );
         }
-        console.error('Supabase order error details:', { code, message: e?.message, details: e?.details, hint: e?.hint });
+
+        console.error('Supabase order error details:', {
+            code,
+            message,
+            details: e?.details,
+            hint: e?.hint
+        });
+
         showToast(userMessage, 'error');
     }
 }
@@ -1806,7 +1983,7 @@ function updateDurationDisplay() {
 }
 
 // ============================================================
-// STATION SHEET (Session Management) مع دفع مقدماً
+// STATION SHEET (Session Management)
 // ============================================================
 async function openStationSheet(stationId) {
     activeStationId = stationId;
@@ -1868,14 +2045,13 @@ async function openStationSheet(stationId) {
                 </div>
             </div>
             <input type="hidden" id="selectedDuration" value="3600">
-
-            <!-- ✅ دفع مقدماً عند بدء الجلسة -->
-            <div class="section-title">${t('دفع مقدماً (اختياري)', 'Advance Payment (optional)')}</div>
+            
+            <div class="section-title">${t('دفعة مقدمة (اختياري)', 'Prepayment (optional)')}</div>
             <div class="field">
-                <label data-ar="لو العميل دفع مبلغ مقدماً، اكتبه هنا وهيتخصم من حسابه عند إنهاء الجلسة" data-en="If the customer paid in advance, enter it here — it will be deducted from their bill when the session ends">${t('المبلغ المدفوع مقدماً (جنيه)', 'Amount Paid in Advance (EGP)')}</label>
-                <input type="number" id="prepaidAmountInput" class="mono" min="0" step="0.5" value="0" placeholder="0">
+                <label data-ar="لو العميل دفع فلوس قبل ما يقعد على الجهاز" data-en="If the customer paid before sitting at the device">${t('المبلغ المدفوع مقدماً (جنيه)', 'Amount Prepaid (EGP)')}</label>
+                <input type="number" id="prepaymentInput" class="mono" min="0" step="0.5" value="0" placeholder="0">
             </div>
-
+            
             <button class="btn btn-amber btn-block" onclick="startSessionWithMode('${stationId}')">
                 <i class="fa-solid fa-play"></i> ${t('بدء الجلسة', 'Start Session')}
             </button>
@@ -1932,9 +2108,6 @@ async function openStationSheet(stationId) {
     const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (nowCorrected() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
     const liveGrandTotal = Math.round((totals.grandTotal + liveEarnedNow) * 100) / 100;
 
-    // ✅ جلب المبلغ المقدم من الجلسة
-    const prepaidAmount = Number(session.prepaid_amount) || 0;
-
     body.innerHTML = `
         <div style="text-align:center;margin-bottom:12px;">
             <div style="display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -1963,21 +2136,12 @@ async function openStationSheet(stationId) {
                 <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
-
-        <!-- ✅ دفع مقدماً أثناء الجلسة -->
-        <div class="section-title">${t('دفع مقدماً', 'Advance Payment')}</div>
-        <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:12px;color:var(--text-dim);">${t('المدفوع مقدماً حالياً', 'Currently Paid in Advance')}</span>
-                <span class="mono" id="currentPrepaidDisplay" style="font-weight:700;color:var(--teal);">${moneyDec(prepaidAmount)} ${t('ج', 'EGP')}</span>
-            </div>
-            <div style="display:flex;gap:8px;">
-                <input type="number" id="addPrepaidInput" class="mono" min="0" step="0.5" placeholder="${t('أضف مبلغ', 'Add amount')}" style="flex:1;">
-                <button class="btn btn-teal" style="flex-shrink:0;" onclick="addPrepaidAmount('${stationId}')">
-                    <i class="fa-solid fa-plus"></i> ${t('إضافة', 'Add')}
-                </button>
-            </div>
+        ${totals.prepaidTotal > 0 ? `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;border:1px dashed var(--teal-dim);">
+            <span style="font-size:12px;color:var(--text-dim);"><i class="fa-solid fa-money-bill-wave"></i> ${t('مدفوع مقدماً', 'Prepaid')}</span>
+            <span class="mono" style="font-size:15px;font-weight:700;color:var(--teal);">${moneyDec(totals.prepaidTotal)} ${t('ج', 'EGP')}</span>
         </div>
+        ` : ''}
         
         ${segments.filter(s => s.ended_at).length > 0 ? `
         <div class="segment-breakdown">
@@ -2012,6 +2176,9 @@ async function openStationSheet(stationId) {
                 <i class="fa-solid fa-arrows-rotate"></i> ${switchLabel} (${money(switchRate)} ${t('ج/ساعة', 'EGP/hr')})
             </button>
             
+            <button class="btn btn-prepay btn-block" onclick="openPrepaymentSheet('${stationId}')">
+                <i class="fa-solid fa-money-bill-wave"></i> ${t('إضافة دفعة مقدمة', 'Add Prepayment')}
+            </button>
             <div style="display:flex;gap:8px;">
                 <button class="btn btn-transfer" style="flex:1;" onclick="openTransferSheet('${stationId}')">
                     <i class="fa-solid fa-exchange"></i> ${t('نقل الجلسة', 'Transfer Session')}
@@ -2029,44 +2196,6 @@ async function openStationSheet(stationId) {
     renderMenuQuickAdd();
     renderStationOrdersSection();
     openSheet('stationOverlay');
-}
-
-// ============================================================
-// ADD PREPAID AMOUNT - إضافة دفعة مقدمة أثناء الجلسة
-// ============================================================
-async function addPrepaidAmount(stationId) {
-    const session = sessions[stationId];
-    if (!session) return;
-
-    const input = document.getElementById('addPrepaidInput');
-    const addAmount = Math.max(0, parseFloat(input && input.value) || 0);
-    if (addAmount <= 0) {
-        showToast(t('اكتب مبلغ أكبر من صفر', 'Enter an amount greater than zero'), 'warning');
-        return;
-    }
-
-    const currentPrepaid = Number(session.prepaid_amount) || 0;
-    const newPrepaid = Math.round((currentPrepaid + addAmount) * 100) / 100;
-
-    try {
-        const { error } = await supabaseClient.from('sessions').update({ prepaid_amount: newPrepaid }).eq('id', session.id);
-
-        if (error && /column .* does not exist/i.test(error.message || '')) {
-            console.warn('prepaid_amount column missing — cannot save advance payment:', error.message);
-            showToast(t('عمود المبلغ المقدم غير موجود في قاعدة البيانات، ضيفه الأول', 'Advance payment column missing in database — add it first'), 'error');
-            return;
-        }
-        if (error) { throw error; }
-
-        session.prepaid_amount = newPrepaid;
-        if (input) input.value = '';
-        showToast(t(`تمت إضافة ${moneyDec(addAmount)} ج مقدماً`, `Added ${moneyDec(addAmount)} EGP in advance`), 'success');
-
-        await refreshStationSheetContent(stationId);
-    } catch (e) {
-        console.error('Error adding prepaid amount:', e);
-        showToast(t('فشلت إضافة المبلغ المقدم', 'Failed to add advance payment'), 'error');
-    }
 }
 
 function normalizeMenuCategory(category) {
@@ -2193,9 +2322,6 @@ function selectStartMode(mode) {
     document.getElementById('selectedStartMode').value = mode;
 }
 
-// ============================================================
-// START SESSION WITH MODE - مع دفع مقدماً
-// ============================================================
 async function startSessionWithMode(stationId) {
     const mode = document.getElementById('selectedStartMode').value;
     const timerType = document.getElementById('selectedTimerType').value;
@@ -2215,13 +2341,9 @@ async function startSessionWithMode(stationId) {
     }
     
     const now = new Date(nowCorrected()).toISOString();
-
-    // ✅ جلب المبلغ المقدم من الحقل
-    const prepaidInput = document.getElementById('prepaidAmountInput');
-    const prepaidAmount = prepaidInput ? Math.max(0, parseFloat(prepaidInput.value) || 0) : 0;
-
+    
     try {
-        const sessionPayload = {
+        const { data: session, error } = await supabaseClient.from('sessions').insert({
             business_id: business.id, 
             station_id: stationId, 
             rate: rate,
@@ -2229,23 +2351,22 @@ async function startSessionWithMode(stationId) {
             started_by_device: getDeviceId(),
             current_mode: mode,
             timer_type: timerType
-        };
-
-        let { data: session, error } = await supabaseClient.from('sessions').insert({
-            ...sessionPayload,
-            prepaid_amount: prepaidAmount
         }).select().single();
-
-        if (error && /column .* does not exist/i.test(error.message || '')) {
-            console.warn('prepaid_amount column missing — starting session without it:', error.message);
-            ({ data: session, error } = await supabaseClient.from('sessions').insert(sessionPayload).select().single());
-            if (!error && prepaidAmount > 0) {
-                session.prepaid_amount = prepaidAmount;
-            }
-        }
         if (error) { throw error; }
         
         await createSegment(session.id, mode, now, rate, timerType, durationSeconds);
+        
+        // ✅ لو العميل دفع مقدماً قبل ما يقعد، نسجل الدفعة دي على الجلسة الجديدة
+        const prepayInput = document.getElementById('prepaymentInput');
+        const prepayAmount = prepayInput ? (parseFloat(prepayInput.value) || 0) : 0;
+        if (prepayAmount > 0) {
+            try {
+                await addPrepayment(session.id, prepayAmount, t('قبل الجلسة', 'Before session'));
+            } catch (e) {
+                console.warn('Error saving prepayment on start:', e);
+                showToast(t('اتبدأت الجلسة لكن فشل تسجيل الدفعة المقدمة', 'Session started but saving the prepayment failed'), 'error');
+            }
+        }
         
         sessions[stationId] = session;
         renderStationsGrid();
@@ -2262,7 +2383,7 @@ async function startSessionWithMode(stationId) {
 }
 
 // ============================================================
-// END SESSION WITH PAYMENT - مع دفع مقدماً
+// END SESSION WITH PAYMENT - من الملف الشغال
 // ============================================================
 function showEndSessionPayment(stationId) {
     endSessionStationId = stationId;
@@ -2322,33 +2443,18 @@ function showEndSessionPayment(stationId) {
         currentEndSessionTotals = totals;
         endSessionDiscount = 0;
         endSessionAmountPaid = null;
-        // ✅ جلب المبلغ المقدم
-        endSessionPrepaidAmount = Math.max(0, Number(session.prepaid_amount) || 0);
-
-        // ✅ عرض المبلغ المقدم في شاشة الدفع
-        const prepaidHtml = endSessionPrepaidAmount > 0 ? `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;color:var(--teal);">
-                <span>${t('مدفوع مقدماً', 'Paid in Advance')}</span>
-                <span class="mono" style="font-weight:700;">- ${moneyDec(endSessionPrepaidAmount)} ${t('ج', 'EGP')}</span>
-            </div>` : '';
+        endSessionPrepaidTotal = totals.prepaidTotal || 0;
         
-                    // ✅ حساب الإجمالي المستحق بعد خصم المقدم
-            const dueAfterPrepaid = Math.max(0, Math.round((totals.grandTotal - endSessionPrepaidAmount) * 100) / 100);
-            const hasPrepaid = endSessionPrepaidAmount > 0;
-            const showCredit = (totals.grandTotal - endSessionPrepaidAmount) < 0;
-
-            let paymentHtml = `
-                <div style="text-align:center;margin:12px 0;">
-                    <div style="font-size:28px;font-weight:700;color:${showCredit ? 'var(--teal)' : 'var(--amber)'};">${showCredit ? '0' : moneyDec(dueAfterPrepaid)} ${t('ج', 'EGP')}</div>
-                    <div style="font-size:12px;color:var(--text-dim);">
-                        ${showCredit ? t('تم دفع كل الإجمالي مقدمًا ✅', 'All paid in advance ✅') : (hasPrepaid ? t('الإجمالي المستحق بعد المقدم', 'Total Due After Advance') : t('الإجمالي الكلي', 'Grand Total'))}
-                    </div>
-                    ${hasPrepaid ? `<div style="font-size:11px;color:var(--teal);margin-top:4px;">${t('(تم خصم', '(Deducted')} ${moneyDec(endSessionPrepaidAmount)} ${t('ج مدفوع مقدمًا)', 'EGP paid in advance)')}</div>` : ''}
-                </div>
+        let paymentHtml = `
+            <div style="text-align:center;margin:12px 0;">
+                <div style="font-size:28px;font-weight:700;color:var(--amber);">${moneyDec(totals.grandTotal)} ${t('ج', 'EGP')}</div>
+                <div style="font-size:12px;color:var(--text-dim);">${t('الإجمالي الكلي', 'Grand Total')}</div>
+            </div>
             <div class="segment-breakdown" style="margin-bottom:8px;">
                 <div class="segment-row"><span class="seg-label">${t('إجمالي Single', 'Single Total')}</span><span class="seg-value seg-mode-single">${moneyDec(totals.singleTotal)}</span></div>
                 <div class="segment-row"><span class="seg-label">${t('إجمالي Multi', 'Multi Total')}</span><span class="seg-value seg-mode-multi">${moneyDec(totals.multiTotal)}</span></div>
                 <div class="segment-row"><span class="seg-label">${t('الطلبات', 'Orders')}</span><span class="seg-value">${moneyDec(totals.ordersTotal)}</span></div>
+                ${endSessionPrepaidTotal > 0 ? `<div class="segment-row"><span class="seg-label" style="color:var(--teal);"><i class="fa-solid fa-money-bill-wave"></i> ${t('مدفوع مقدماً', 'Prepaid')}</span><span class="seg-value" style="color:var(--teal);">- ${moneyDec(endSessionPrepaidTotal)}</span></div>` : ''}
             </div>
             ${ordersHtml}
             <div class="section-title">${t('الخصم والدفع', 'Discount & Payment')}</div>
@@ -2357,18 +2463,19 @@ function showEndSessionPayment(stationId) {
                     <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('خصم (جنيه)', 'Discount (EGP)')}</label>
                     <input type="number" id="discountInput" class="mono" min="0" step="0.5" value="0" placeholder="0" oninput="updatePaymentCalculation()" style="width:100%;">
                 </div>
-                ${prepaidHtml}
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-weight:700;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;">
-                    <span>${endSessionPrepaidAmount > 0 ? t('المتبقي المطلوب دفعه', 'Remaining Due Now') : t('الإجمالي بعد الخصم', 'Total After Discount')}</span>
-                    <span class="mono" id="finalTotalDisplay" style="color:var(--amber);font-size:16px;">${moneyDec(Math.max(0, totals.grandTotal - endSessionPrepaidAmount))}</span>
+                    <span>${t('الإجمالي بعد الخصم', 'Total After Discount')}</span>
+                    <span class="mono" id="finalTotalDisplay" style="color:var(--amber);font-size:16px;">${moneyDec(totals.grandTotal)}</span>
                 </div>
-                <div id="prepaidCreditRow" style="display:none;justify-content:space-between;align-items:center;padding:0 0 10px;font-weight:700;color:var(--teal);">
-                    <span>${t('باقي للعميل من المقدم', 'Remaining Credit for Customer')}</span>
-                    <span class="mono" id="prepaidCreditAmount" style="font-size:16px;"></span>
+                ${endSessionPrepaidTotal > 0 ? `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:0 0 10px;font-weight:700;">
+                    <span style="color:var(--teal);">${t('المتبقي بعد خصم الدفعة المقدمة', 'Remaining After Prepayment')}</span>
+                    <span class="mono" id="remainingDueDisplay" style="color:var(--teal);font-size:16px;">${moneyDec(Math.max(0, totals.grandTotal - endSessionPrepaidTotal))}</span>
                 </div>
+                ` : ''}
                 <div style="margin-bottom:8px;">
-                    <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('العميل دفع كام دلوقتي', 'Amount Paid by Customer Now')}</label>
-                    <input type="number" id="amountPaidInput" class="mono" min="0" step="0.5" placeholder="${moneyDec(Math.max(0, totals.grandTotal - endSessionPrepaidAmount))}" oninput="updatePaymentCalculation()" style="width:100%;">
+                    <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('العميل دفع كام دلوقتي', 'Amount Customer Is Paying Now')}</label>
+                    <input type="number" id="amountPaidInput" class="mono" min="0" step="0.5" placeholder="${moneyDec(Math.max(0, totals.grandTotal - endSessionPrepaidTotal))}" oninput="updatePaymentCalculation()" style="width:100%;">
                 </div>
                 <div id="changeDueRow" style="display:none;justify-content:space-between;align-items:center;padding:8px 0 2px;font-weight:700;">
                     <span id="changeDueLabel"></span>
@@ -2421,8 +2528,9 @@ function showEndSessionPayment(stationId) {
     })();
 }
 
+
 // ============================================================
-// SELECT PAYMENT METHOD
+// SELECT PAYMENT METHOD - من الملف الشغال
 // ============================================================
 function selectPaymentMethod(pmId) {
     selectedPaymentMethod = pmId;
@@ -2449,7 +2557,7 @@ function selectPaymentMethod(pmId) {
 }
 
 // ============================================================
-// UPDATE PAYMENT CALCULATION - مع دفع مقدماً
+// ✅ حساب الخصم والباقي أثناء الدفع
 // ============================================================
 function updatePaymentCalculation() {
     if (!currentEndSessionTotals) return;
@@ -2461,25 +2569,15 @@ function updatePaymentCalculation() {
         discount = grandTotal;
         discountInput.value = discount;
     }
-
-    // ✅ حساب الخصم والمبلغ المقدم
-    const prepaid = endSessionPrepaidAmount || 0;
-    const totalAfterDiscount = Math.round((grandTotal - discount) * 100) / 100;
-    const dueNow = Math.round((totalAfterDiscount - prepaid) * 100) / 100;
-    const finalTotal = Math.max(0, dueNow);
-
+    const finalTotal = Math.round((grandTotal - discount) * 100) / 100;
     const finalTotalEl = document.getElementById('finalTotalDisplay');
     if (finalTotalEl) finalTotalEl.textContent = moneyDec(finalTotal);
 
-    // ✅ عرض باقي المقدم للعميل لو المقدم أكتر من الإجمالي
-    const prepaidCreditRow = document.getElementById('prepaidCreditRow');
-    const prepaidCreditAmount = document.getElementById('prepaidCreditAmount');
-    if (dueNow < 0) {
-        if (prepaidCreditRow) prepaidCreditRow.style.display = 'flex';
-        if (prepaidCreditAmount) prepaidCreditAmount.textContent = moneyDec(Math.abs(dueNow)) + ' ' + t('ج', 'EGP');
-    } else {
-        if (prepaidCreditRow) prepaidCreditRow.style.display = 'none';
-    }
+    // ✅ المتبقي على العميل فعلياً دلوقتي = الإجمالي بعد الخصم ناقص أي دفعة مقدمة
+    const prepaid = Math.min(endSessionPrepaidTotal || 0, finalTotal);
+    const remainingDue = Math.max(0, Math.round((finalTotal - prepaid) * 100) / 100);
+    const remainingDueEl = document.getElementById('remainingDueDisplay');
+    if (remainingDueEl) remainingDueEl.textContent = moneyDec(remainingDue);
 
     const paidInput = document.getElementById('amountPaidInput');
     const paidVal = paidInput ? paidInput.value.trim() : '';
@@ -2492,7 +2590,7 @@ function updatePaymentCalculation() {
         endSessionAmountPaid = null;
     } else {
         const paid = Math.max(0, parseFloat(paidVal) || 0);
-        const diff = Math.round((paid - finalTotal) * 100) / 100;
+        const diff = Math.round((paid - remainingDue) * 100) / 100;
         if (changeRow) changeRow.style.display = 'flex';
         if (diff >= 0) {
             if (changeLabel) changeLabel.textContent = t('الباقي للعميل', 'Change Due to Customer');
@@ -2508,7 +2606,7 @@ function updatePaymentCalculation() {
 }
 
 // ============================================================
-// CANCEL END SESSION
+// CANCEL END SESSION (Back button) - من الملف الشغال
 // ============================================================
 function cancelEndSession() {
     const stationId = endSessionStationId || activeStationId;
@@ -2525,7 +2623,7 @@ function cancelEndSession() {
 }
 
 // ============================================================
-// CONFIRM END SESSION WITH PAYMENT - مع دفع مقدماً
+// CONFIRM END SESSION WITH PAYMENT - من الملف الشغال
 // ============================================================
 async function confirmEndSessionWithPayment() {
     if (!selectedPaymentMethod) {
@@ -2556,9 +2654,7 @@ async function confirmEndSessionWithPayment() {
 
         const totals = await calculateTotalAmounts(session.id);
         const discountAmount = Math.min(Math.max(0, endSessionDiscount || 0), totals.grandTotal);
-        // ✅ حساب الإجمالي بعد الخصم والمبلغ المقدم
-        const prepaidAmount = Number(session.prepaid_amount) || 0;
-        const finalTotal = Math.max(0, Math.round((totals.grandTotal - discountAmount - prepaidAmount) * 100) / 100);
+        const finalTotal = Math.round((totals.grandTotal - discountAmount) * 100) / 100;
 
         const basePayload = {
             status: 'completed',
@@ -2567,15 +2663,17 @@ async function confirmEndSessionWithPayment() {
             payment_method: selectedPaymentMethod
         };
 
+        // بنحاول نحفظ الخصم والمبلغ المدفوع كمان؛ لو الأعمدة دي لسه مش
+        // مضافة في قاعدة البيانات (discount / amount_paid)، بنرجع نحفظ
+        // بدونها عشان قفل الجلسة ميفشلش خالص.
         let { error } = await supabaseClient.from('sessions').update({
             ...basePayload,
             discount: discountAmount,
-            amount_paid: endSessionAmountPaid,
-            prepaid_amount: prepaidAmount
+            amount_paid: endSessionAmountPaid
         }).eq('id', session.id);
 
         if (error && /column .* does not exist/i.test(error.message || '')) {
-            console.warn('discount/amount_paid/prepaid_amount columns missing — saving without them:', error.message);
+            console.warn('discount/amount_paid columns missing — saving without them:', error.message);
             ({ error } = await supabaseClient.from('sessions').update(basePayload).eq('id', session.id));
         }
         
@@ -2587,6 +2685,8 @@ async function confirmEndSessionWithPayment() {
         }
         
         const savedStationId = stationId;
+        
+        // نثبّت قيمة الخصم النهائية (بعد أي clamp) عشان الإيصال يعرضها صح
         endSessionDiscount = discountAmount;
         
         delete sessions[stationId];
@@ -2611,7 +2711,7 @@ async function confirmEndSessionWithPayment() {
 }
 
 // ============================================================
-// PRINT RECEIPT - مع دفع مقدماً
+// PRINT RECEIPT
 // ============================================================
 function printReceipt() {
     if (!selectedPaymentMethod) {
@@ -2656,12 +2756,6 @@ function printReceipt() {
                 </div>
             `;
         }
-        
-        // ✅ حساب المبلغ المتبقي بعد الخصم والمقدم
-        const dueNow = Math.max(0, Math.round((totals.grandTotal - endSessionDiscount - endSessionPrepaidAmount) * 100) / 100);
-        const creditFromPrepaid = Math.round((totals.grandTotal - endSessionDiscount - endSessionPrepaidAmount) * 100) / 100 < 0
-            ? Math.abs(Math.round((totals.grandTotal - endSessionDiscount - endSessionPrepaidAmount) * 100) / 100)
-            : 0;
         
         const receiptContent = `
             <div style="font-family: 'Cairo', Arial, sans-serif; padding: 20px; max-width: 300px; margin: 0 auto; direction: rtl; text-align: center; background: #fff; color: #000;">
@@ -2711,34 +2805,21 @@ function printReceipt() {
                     </div>
                 </div>
                 ` : ''}
-                ${endSessionPrepaidAmount > 0 ? `
-                <div style="font-size: 13px; margin-bottom: 4px;">
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;">
-                        <span>${t('مدفوع مقدماً', 'Paid in Advance')}</span>
-                        <span>- ${moneyDec(endSessionPrepaidAmount)} ${t('ج', 'EGP')}</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;font-weight:700;border-top:1px dashed #ccc;margin-top:2px;padding-top:4px;">
-                        <span>${t('المتبقي المطلوب', 'Remaining Due')}</span>
-                        <span>${moneyDec(dueNow)} ${t('ج', 'EGP')}</span>
+                <div style="font-size: 18px; font-weight: 700; color: #000; margin: 8px 0;">
+                    <div style="display:flex;justify-content:space-between;">
+                        <span>${t('الإجمالي', 'Total')}</span>
+                        <span>${moneyDec(Math.max(0, Math.round((totals.grandTotal - endSessionDiscount) * 100) / 100))} ${t('ج', 'EGP')}</span>
                     </div>
                 </div>
-                ` : ''}
-                ${creditFromPrepaid > 0 ? `
-                <div style="font-size: 13px; margin-bottom: 8px;">
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;font-weight:700;color:#1a8a6b;">
-                        <span>${t('باقي للعميل من المقدم', 'Remaining Credit for Customer')}</span>
-                        <span>${moneyDec(creditFromPrepaid)} ${t('ج', 'EGP')}</span>
-                    </div>
-                </div>` : ''}
                 ${endSessionAmountPaid !== null && endSessionAmountPaid !== undefined ? `
                 <div style="font-size: 13px; margin-bottom: 8px;">
                     <div style="display:flex;justify-content:space-between;padding:2px 0;">
-                        <span>${t('دفع العميل دلوقتي', 'Amount Paid Now')}</span>
+                        <span>${t('دفع العميل', 'Amount Paid')}</span>
                         <span>${moneyDec(endSessionAmountPaid)} ${t('ج', 'EGP')}</span>
                     </div>
                     <div style="display:flex;justify-content:space-between;padding:2px 0;font-weight:700;">
-                        <span>${endSessionAmountPaid >= dueNow ? t('الباقي للعميل', 'Change Due') : t('باقي على العميل', 'Remaining Owed')}</span>
-                        <span>${moneyDec(Math.abs(Math.round((endSessionAmountPaid - dueNow) * 100) / 100))} ${t('ج', 'EGP')}</span>
+                        <span>${endSessionAmountPaid >= (totals.grandTotal - endSessionDiscount) ? t('الباقي للعميل', 'Change Due') : t('باقي على العميل', 'Remaining Owed')}</span>
+                        <span>${moneyDec(Math.abs(Math.round((endSessionAmountPaid - (totals.grandTotal - endSessionDiscount)) * 100) / 100))} ${t('ج', 'EGP')}</span>
                     </div>
                 </div>
                 ` : ''}
@@ -3154,6 +3235,12 @@ function renderSettings() {
         <div class="list-row"><div class="row-title">${t('حالة الجهاز', 'Device Status')}</div><div class="badge ${deviceRecord.revoked ? 'badge-red' : 'badge-teal'}">${deviceRecord.revoked ? t('موقوف', 'Suspended') : t('نشط', 'Active')}</div></div>
         <div class="list-row"><div class="row-title">${t('تاريخ الانتهاء', 'Expiry Date')}</div><div class="row-value mono">${expiry ? expiry.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US') : '—'}</div></div>`;
 
+    // ============================================================
+    // ✅ TOGGLE PIN SECTION — مبني بالكامل من الـ JS عشان يشتغل من غير
+    // ما نحتاج نضيف عناصر ثابتة في الـ HTML يدويًا.
+    // بنستخدم wrapper بـ id ثابت عشان لو renderSettings() اتنادت تاني
+    // (بعد إضافة موظف/صنف مثلاً) منكررش القسم من جديد كل مرة.
+    // ============================================================
     const pinToggleHtml = `
         <div class="list-row" style="cursor:pointer;" onclick="toggleSettingsPin()">
             <div class="row-title">${t('تغيير PIN المالك', 'Change Owner PIN')}</div>
@@ -3220,6 +3307,7 @@ function renderSettings() {
                 </div>
             </div>`).join('');
     
+    // ✅ تحديث حالة الـ Toggle (PIN)
     const pinSection = document.getElementById('settingsChangePin');
     const chevron = document.getElementById('settingsPinChevron');
     if (pinSection && chevron) {
@@ -3228,6 +3316,9 @@ function renderSettings() {
     }
 }
 
+// ============================================================
+// 🔐 تغيير PIN المالك (جديد)
+// ============================================================
 async function changeOwnerPin() {
     const currentPin = document.getElementById('currentPinInput').value.trim();
     const newPin = document.getElementById('newPinInput').value.trim();
@@ -3239,11 +3330,13 @@ async function changeOwnerPin() {
         return; 
     }
     
+    // 🔍 التحقق من PIN الحالي
     if (currentPin !== business.owner_pin) { 
         errEl.textContent = t('❌ PIN الحالي غير صحيح.', '❌ Current PIN is incorrect.'); 
         return; 
     }
     
+    // ✅ التحقق من PIN الجديد
     if (!/^\d{4,6}$/.test(newPin)) { 
         errEl.textContent = t('❌ PIN الجديد لازم يكون 4-6 أرقام.', '❌ New PIN must be 4-6 digits.'); 
         return; 
@@ -3257,7 +3350,10 @@ async function changeOwnerPin() {
         
         if (error) throw error;
 
+        // ✅ تحديث المتغير المحلي
         business.owner_pin = newPin;
+        
+        // 🧹 تنظيف الحقول
         document.getElementById('currentPinInput').value = '';
         document.getElementById('newPinInput').value = '';
         
@@ -3268,6 +3364,9 @@ async function changeOwnerPin() {
     }
 }
 
+// ============================================================
+// 🏢 إنشاء نشاط جديد من صفحة الدخول (جديد)
+// ============================================================
 function openCreateBusinessSheetFromSetup() {
     ['newBizCodeSetup', 'newBizNameSetup', 'newBizPhoneSetup'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('newBizStationsSetup').value = 4;
@@ -3280,7 +3379,7 @@ async function submitCreateBusinessFromSetup() {
     const name = document.getElementById('newBizNameSetup').value.trim();
     const phone = document.getElementById('newBizPhoneSetup').value.trim();
     const total_stations = parseInt(document.getElementById('newBizStationsSetup').value) || 4;
-    const owner_pin = '0000';
+    const owner_pin = '0000'; // ✅ PIN افتراضي
     const err = document.getElementById('createBizErrorSetup');
 
     if (!code || !name) { 
@@ -3309,6 +3408,8 @@ async function submitCreateBusinessFromSetup() {
         
         closeSheet('createBusinessSheetFromSetup');
         showToast(t('✅ تم إنشاء النشاط! استخدم الكود لتسجيل الدخول.', '✅ Business created! Use the code to login.'), 'success');
+        
+        // 🚀 محاولة الدخول التلقائي
         document.getElementById('setupBusinessCode').value = code;
         handleSetupContinue();
     } catch (e) {
@@ -3539,8 +3640,6 @@ async function refreshStationSheetContent(stationId) {
     const activeSegStart = activeSeg ? activeSeg.started_at : session.started_at;
     const liveEarnedNow = activeSeg ? Math.round((Math.max(0, (nowCorrected() - new Date(activeSeg.started_at)) / 3600000) * Number(activeSeg.rate)) * 100) / 100 : 0;
     const liveGrandTotal = Math.round((totals.grandTotal + liveEarnedNow) * 100) / 100;
-
-    const prepaidAmount = Number(session.prepaid_amount) || 0;
     
     body.innerHTML = `
         <div style="text-align:center;margin-bottom:12px;">
@@ -3570,21 +3669,12 @@ async function refreshStationSheetContent(stationId) {
                 <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
-
-        <!-- ✅ دفع مقدماً -->
-        <div class="section-title">${t('دفع مقدماً', 'Advance Payment')}</div>
-        <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:12px;color:var(--text-dim);">${t('المدفوع مقدماً حالياً', 'Currently Paid in Advance')}</span>
-                <span class="mono" id="currentPrepaidDisplay" style="font-weight:700;color:var(--teal);">${moneyDec(prepaidAmount)} ${t('ج', 'EGP')}</span>
-            </div>
-            <div style="display:flex;gap:8px;">
-                <input type="number" id="addPrepaidInput" class="mono" min="0" step="0.5" placeholder="${t('أضف مبلغ', 'Add amount')}" style="flex:1;">
-                <button class="btn btn-teal" style="flex-shrink:0;" onclick="addPrepaidAmount('${stationId}')">
-                    <i class="fa-solid fa-plus"></i> ${t('إضافة', 'Add')}
-                </button>
-            </div>
+        ${totals.prepaidTotal > 0 ? `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;border:1px dashed var(--teal-dim);">
+            <span style="font-size:12px;color:var(--text-dim);"><i class="fa-solid fa-money-bill-wave"></i> ${t('مدفوع مقدماً', 'Prepaid')}</span>
+            <span class="mono" style="font-size:15px;font-weight:700;color:var(--teal);">${moneyDec(totals.prepaidTotal)} ${t('ج', 'EGP')}</span>
         </div>
+        ` : ''}
         
         ${segments.filter(s => s.ended_at).length > 0 ? `
         <div class="segment-breakdown">
@@ -3619,6 +3709,9 @@ async function refreshStationSheetContent(stationId) {
                 <i class="fa-solid fa-arrows-rotate"></i> ${switchLabel} (${money(switchRate)} ${t('ج/ساعة', 'EGP/hr')})
             </button>
             
+            <button class="btn btn-prepay btn-block" onclick="openPrepaymentSheet('${stationId}')">
+                <i class="fa-solid fa-money-bill-wave"></i> ${t('إضافة دفعة مقدمة', 'Add Prepayment')}
+            </button>
             <div style="display:flex;gap:8px;">
                 <button class="btn btn-transfer" style="flex:1;" onclick="openTransferSheet('${stationId}')">
                     <i class="fa-solid fa-exchange"></i> ${t('نقل الجلسة', 'Transfer Session')}
@@ -3638,7 +3731,7 @@ async function refreshStationSheetContent(stationId) {
 }
 
 // ============================================================
-// SWITCH MODE
+// SWITCH MODE - UPDATED (يدعم التنازلي مع مراعاة الوقت)
 // ============================================================
 async function handleSwitchMode(sessionId, newMode, stationId) {
     if (pendingSwitch) return;
