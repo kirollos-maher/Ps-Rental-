@@ -101,6 +101,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .btn-cancel:hover { opacity: 0.85; }
 .btn-transfer { background: var(--blue); color: #fff; }
 .btn-transfer:hover { opacity: 0.85; }
+.btn-prepay { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal-dim); }
+.btn-prepay:hover { opacity: 0.85; }
 
 .error-text { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 16px; }
 
