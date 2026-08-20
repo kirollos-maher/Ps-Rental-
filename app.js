@@ -127,8 +127,6 @@ let endingSessionInProgress = false;
 let currentEndSessionTotals = null;
 let endSessionDiscount = 0;
 let endSessionAmountPaid = null;
-// ✅ مبلغ الدفع المقدم
-let endSessionPrepaidAmount = 0;
 let sessionSegmentsCache = {};
 let activeSegmentCache = {};
 let pendingSwitch = false;
@@ -1936,13 +1934,7 @@ async function openStationSheet(stationId) {
                 </div>
             </div>
             <input type="hidden" id="selectedDuration" value="3600">
-
-            <div class="section-title">${t('دفع مقدماً (اختياري)', 'Advance Payment (optional)')}</div>
-            <div class="field">
-                <label data-ar="لو العميل دفع مبلغ مقدماً، اكتبه هنا وهيتخصم من حسابه عند إنهاء الجلسة" data-en="If the customer paid in advance, enter it here — it will be deducted from their bill when the session ends">${t('المبلغ المدفوع مقدماً (جنيه)', 'Amount Paid in Advance (EGP)')}</label>
-                <input type="number" id="prepaidAmountInput" class="mono" min="0" step="0.5" value="0" placeholder="0">
-            </div>
-
+            
             <button class="btn btn-amber btn-block" onclick="startSessionWithMode('${stationId}')">
                 <i class="fa-solid fa-play"></i> ${t('بدء الجلسة', 'Start Session')}
             </button>
@@ -2027,20 +2019,6 @@ async function openStationSheet(stationId) {
                 <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
-
-        <div class="section-title">${t('دفع مقدماً', 'Advance Payment')}</div>
-        <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:12px;color:var(--text-dim);">${t('المدفوع مقدماً حالياً', 'Currently Paid in Advance')}</span>
-                <span class="mono" id="currentPrepaidDisplay" style="font-weight:700;color:var(--teal);">${moneyDec(Number(session.prepaid_amount) || 0)} ${t('ج', 'EGP')}</span>
-            </div>
-            <div style="display:flex;gap:8px;">
-                <input type="number" id="addPrepaidInput" class="mono" min="0" step="0.5" placeholder="${t('أضف مبلغ', 'Add amount')}" style="flex:1;">
-                <button class="btn btn-teal" style="flex-shrink:0;" onclick="addPrepaidAmount('${stationId}')">
-                    <i class="fa-solid fa-plus"></i> ${t('إضافة', 'Add')}
-                </button>
-            </div>
-        </div>
         
         ${segments.filter(s => s.ended_at).length > 0 ? `
         <div class="segment-breakdown">
@@ -2084,7 +2062,7 @@ async function openStationSheet(stationId) {
                 </button>
             </div>
             <button class="btn btn-ghost" onclick="closeSheet('stationOverlay')">${t('رجوع', 'Back')}</button>
-            <button class="btn btn-teal btn-block" onclick="showEndSessionPayment('${stationId}')"><i class="fa-solid fa-stop"></i> ${t('إنهاء الجلسة', 'End Session')}</button>
+            <button class="btn btn-teal btn-block" onclick="handleEndSessionClick('${stationId}')"><i class="fa-solid fa-stop"></i> ${t('إنهاء الجلسة', 'End Session')}</button>
         </div>
         <div class="error-text" id="stationSheetError"></div>
     `;
@@ -2237,12 +2215,9 @@ async function startSessionWithMode(stationId) {
     }
     
     const now = new Date(nowCorrected()).toISOString();
-
-    const prepaidInput = document.getElementById('prepaidAmountInput');
-    const prepaidAmount = Math.max(0, parseFloat(prepaidInput && prepaidInput.value) || 0);
-
+    
     try {
-        const sessionPayload = {
+        const { data: session, error } = await supabaseClient.from('sessions').insert({
             business_id: business.id, 
             station_id: stationId, 
             rate: rate,
@@ -2250,22 +2225,7 @@ async function startSessionWithMode(stationId) {
             started_by_device: getDeviceId(),
             current_mode: mode,
             timer_type: timerType
-        };
-
-        let { data: session, error } = await supabaseClient.from('sessions').insert({
-            ...sessionPayload,
-            prepaid_amount: prepaidAmount
         }).select().single();
-
-        // لو عمود prepaid_amount لسه مش مضاف في قاعدة البيانات، نحاول تاني من غيره
-        // عشان بدء الجلسة ميفشلش، وبنسجل تحذير في الكونسول.
-        if (error && /column .* does not exist/i.test(error.message || '')) {
-            console.warn('prepaid_amount column missing — starting session without it:', error.message);
-            ({ data: session, error } = await supabaseClient.from('sessions').insert(sessionPayload).select().single());
-            if (!error && prepaidAmount > 0) {
-                session.prepaid_amount = prepaidAmount; // نحتفظ بالقيمة محلياً على الأقل لهذه الجلسة
-            }
-        }
         if (error) { throw error; }
         
         await createSegment(session.id, mode, now, rate, timerType, durationSeconds);
@@ -2287,6 +2247,121 @@ async function startSessionWithMode(stationId) {
 // ============================================================
 // END SESSION WITH PAYMENT - من الملف الشغال
 // ============================================================
+// ============================================================
+// ⏰ خطوة "هل العميل هيزود وقت؟" قبل صفحة الدفع (تظهر فقط لما
+// الجلسة تنازلية والوقت خلص فعلاً)
+// ============================================================
+function handleEndSessionClick(stationId) {
+    const session = sessions[stationId];
+    if (!session) return;
+    const activeSeg = getActiveSegmentFast(session.id);
+
+    if (activeSeg && activeSeg.timer_type === 'countdown' && getRemainingSeconds(activeSeg) <= 0) {
+        showExtendTimePrompt(stationId);
+    } else {
+        showEndSessionPayment(stationId);
+    }
+}
+
+function showExtendTimePrompt(stationId) {
+    activeStationId = stationId;
+    const body = document.getElementById('stationSheetBody');
+    if (!body) return;
+    body.innerHTML = `
+        <div style="text-align:center;padding:20px 0;">
+            <div style="font-size:40px;margin-bottom:8px;">⏰</div>
+            <div style="font-size:16px;font-weight:700;margin-bottom:6px;">${t('الوقت خلص!', 'Time is up!')}</div>
+            <div style="font-size:14px;color:var(--text-dim);">${t('هل العميل عايز يزود وقت؟', 'Does the customer want to add more time?')}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-ghost" style="flex:1;" onclick="declineTimeExtension('${stationId}')">${t('لأ، هننهي الجلسة', 'No, end session')}</button>
+            <button class="btn btn-amber" style="flex:1;" onclick="showExtendTimeInput('${stationId}')">${t('أيوه، هيزود وقت', 'Yes, add time')}</button>
+        </div>
+        <div class="error-text" id="stationSheetError"></div>
+    `;
+}
+
+function showExtendTimeInput(stationId) {
+    const body = document.getElementById('stationSheetBody');
+    if (!body) return;
+    body.innerHTML = `
+        <div class="section-title">${t('كام ساعة العميل هيزود؟', 'How many hours will the customer add?')}</div>
+        <div class="field">
+            <label>${t('المدة الإضافية بالساعات', 'Additional duration in hours')}</label>
+            <input type="number" id="extendHoursInput" class="mono" step="0.25" min="0.25" value="1" placeholder="${t('مثال: 1', 'e.g. 1')}">
+        </div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">
+            ${t('هيتضاف فوق الوقت الأصلي (مثلاً لو الأصل كان ساعتين وزودت ساعة، هيبقى الإجمالي 3 ساعات من بداية الجلسة).', 'This is added on top of the original duration (e.g. if the original was 2 hours and you add 1, the total becomes 3 hours from session start).')}
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+            <button class="btn btn-ghost" style="flex:1;" onclick="showExtendTimePrompt('${stationId}')">${t('رجوع', 'Back')}</button>
+            <button class="btn btn-amber" style="flex:1;" onclick="confirmExtendTime('${stationId}')">${t('تأكيد', 'Confirm')}</button>
+        </div>
+        <div class="error-text" id="stationSheetError"></div>
+    `;
+    setTimeout(() => {
+        const inp = document.getElementById('extendHoursInput');
+        if (inp) inp.focus();
+    }, 100);
+}
+
+async function confirmExtendTime(stationId) {
+    const errEl = document.getElementById('stationSheetError');
+    if (errEl) errEl.textContent = '';
+    const input = document.getElementById('extendHoursInput');
+    const hours = parseFloat(input ? input.value : '');
+
+    if (!hours || isNaN(hours) || hours <= 0) {
+        if (errEl) errEl.textContent = t('اكتب عدد ساعات صحيح.', 'Enter a valid number of hours.');
+        return;
+    }
+
+    const session = sessions[stationId];
+    if (!session) return;
+
+    try {
+        const activeSeg = await getActiveSegment(session.id);
+        if (!activeSeg || activeSeg.timer_type !== 'countdown') {
+            showToast(t('الجلسة مش تنازلية دلوقتي.', 'Session is not a countdown anymore.'), 'error');
+            await refreshStationSheetContent(stationId);
+            return;
+        }
+
+        const addSeconds = Math.round(hours * 3600);
+        const newDuration = Math.max(0, Math.round(Number(activeSeg.duration_seconds) || 0)) + addSeconds;
+
+        const { error } = await supabaseClient.from('session_segments')
+            .update({ duration_seconds: newDuration })
+            .eq('id', activeSeg.id);
+        if (error) throw error;
+
+        // تحديث الكاش محلياً عشان الشاشة تتحدث فوراً من غير ما تستنى الـ realtime
+        activeSeg.duration_seconds = newDuration;
+        activeSegmentCache[session.id] = activeSeg;
+        sessionSegmentsCache[session.id] = null;
+
+        // إعادة ضبط حالة تنبيهات العد التنازلي عشان ما يفضلش يعتبر إن الوقت لسه خالص
+        if (typeof countdownAlertState !== 'undefined' && countdownAlertState[stationId]) {
+            delete countdownAlertState[stationId];
+        }
+
+        showToast(t(`تم إضافة ${hours} ساعة للجلسة`, `Added ${hours} hour(s) to the session`), 'success');
+
+        closeSheet('stationOverlay');
+        setTimeout(() => {
+            openStationSheet(stationId);
+        }, 200);
+    } catch (e) {
+        console.error('Error extending time:', e);
+        if (errEl) errEl.textContent = t('فشلت الإضافة، حاول تاني.', 'Failed to add time, try again.');
+        showToast(t('فشل: ' + e.message, 'Failed: ' + e.message), 'error');
+    }
+}
+
+function declineTimeExtension(stationId) {
+    showEndSessionPayment(stationId);
+}
+
 function showEndSessionPayment(stationId) {
     endSessionStationId = stationId;
     activeStationId = stationId;
@@ -2345,13 +2420,6 @@ function showEndSessionPayment(stationId) {
         currentEndSessionTotals = totals;
         endSessionDiscount = 0;
         endSessionAmountPaid = null;
-        endSessionPrepaidAmount = Math.max(0, Number(session.prepaid_amount) || 0);
-
-        const prepaidHtml = endSessionPrepaidAmount > 0 ? `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;color:var(--teal);">
-                <span>${t('مدفوع مقدماً', 'Paid in Advance')}</span>
-                <span class="mono" style="font-weight:700;">- ${moneyDec(endSessionPrepaidAmount)} ${t('ج', 'EGP')}</span>
-            </div>` : '';
         
         let paymentHtml = `
             <div style="text-align:center;margin:12px 0;">
@@ -2370,18 +2438,13 @@ function showEndSessionPayment(stationId) {
                     <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('خصم (جنيه)', 'Discount (EGP)')}</label>
                     <input type="number" id="discountInput" class="mono" min="0" step="0.5" value="0" placeholder="0" oninput="updatePaymentCalculation()" style="width:100%;">
                 </div>
-                ${prepaidHtml}
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-weight:700;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;">
-                    <span>${t('المتبقي المطلوب دفعه', 'Remaining Due Now')}</span>
-                    <span class="mono" id="finalTotalDisplay" style="color:var(--amber);font-size:16px;">${moneyDec(Math.max(0, totals.grandTotal - endSessionPrepaidAmount))}</span>
-                </div>
-                <div id="prepaidCreditRow" style="display:none;justify-content:space-between;align-items:center;padding:0 0 10px;font-weight:700;color:var(--teal);">
-                    <span>${t('باقي للعميل من المقدم', 'Remaining Credit for Customer')}</span>
-                    <span class="mono" id="prepaidCreditAmount" style="font-size:16px;"></span>
+                    <span>${t('الإجمالي بعد الخصم', 'Total After Discount')}</span>
+                    <span class="mono" id="finalTotalDisplay" style="color:var(--amber);font-size:16px;">${moneyDec(totals.grandTotal)}</span>
                 </div>
                 <div style="margin-bottom:8px;">
-                    <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('العميل دفع كام دلوقتي', 'Amount Paid by Customer Now')}</label>
-                    <input type="number" id="amountPaidInput" class="mono" min="0" step="0.5" placeholder="${moneyDec(Math.max(0, totals.grandTotal - endSessionPrepaidAmount))}" oninput="updatePaymentCalculation()" style="width:100%;">
+                    <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;">${t('العميل دفع كام', 'Amount Paid by Customer')}</label>
+                    <input type="number" id="amountPaidInput" class="mono" min="0" step="0.5" placeholder="${moneyDec(totals.grandTotal)}" oninput="updatePaymentCalculation()" style="width:100%;">
                 </div>
                 <div id="changeDueRow" style="display:none;justify-content:space-between;align-items:center;padding:8px 0 2px;font-weight:700;">
                     <span id="changeDueLabel"></span>
@@ -2475,25 +2538,9 @@ function updatePaymentCalculation() {
         discount = grandTotal;
         discountInput.value = discount;
     }
-    const totalAfterDiscount = Math.round((grandTotal - discount) * 100) / 100;
-
-    // ✅ نخصم المبلغ المدفوع مقدماً من الإجمالي المطلوب تحصيله الآن
-    const prepaid = endSessionPrepaidAmount || 0;
-    const dueNow = Math.round((totalAfterDiscount - prepaid) * 100) / 100;
-    const finalTotal = Math.max(0, dueNow);
-
+    const finalTotal = Math.round((grandTotal - discount) * 100) / 100;
     const finalTotalEl = document.getElementById('finalTotalDisplay');
     if (finalTotalEl) finalTotalEl.textContent = moneyDec(finalTotal);
-
-    // لو المقدم غطّى الحساب بالكامل أو زاد عنه، نعرض الباقي للعميل فوراً
-    const prepaidCreditRow = document.getElementById('prepaidCreditRow');
-    const prepaidCreditAmount = document.getElementById('prepaidCreditAmount');
-    if (dueNow < 0) {
-        if (prepaidCreditRow) prepaidCreditRow.style.display = 'flex';
-        if (prepaidCreditAmount) prepaidCreditAmount.textContent = moneyDec(Math.abs(dueNow)) + ' ' + t('ج', 'EGP');
-    } else {
-        if (prepaidCreditRow) prepaidCreditRow.style.display = 'none';
-    }
 
     const paidInput = document.getElementById('amountPaidInput');
     const paidVal = paidInput ? paidInput.value.trim() : '';
@@ -2585,12 +2632,11 @@ async function confirmEndSessionWithPayment() {
         let { error } = await supabaseClient.from('sessions').update({
             ...basePayload,
             discount: discountAmount,
-            amount_paid: endSessionAmountPaid,
-            prepaid_amount: session.prepaid_amount || 0
+            amount_paid: endSessionAmountPaid
         }).eq('id', session.id);
 
         if (error && /column .* does not exist/i.test(error.message || '')) {
-            console.warn('discount/amount_paid/prepaid_amount columns missing — saving without them:', error.message);
+            console.warn('discount/amount_paid columns missing — saving without them:', error.message);
             ({ error } = await supabaseClient.from('sessions').update(basePayload).eq('id', session.id));
         }
         
@@ -2728,48 +2774,18 @@ function printReceipt() {
                         <span>${moneyDec(Math.max(0, Math.round((totals.grandTotal - endSessionDiscount) * 100) / 100))} ${t('ج', 'EGP')}</span>
                     </div>
                 </div>
-                ${endSessionPrepaidAmount > 0 ? `
-                <div style="font-size: 13px; margin-bottom: 4px;">
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;">
-                        <span>${t('مدفوع مقدماً', 'Paid in Advance')}</span>
-                        <span>- ${moneyDec(endSessionPrepaidAmount)} ${t('ج', 'EGP')}</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;font-weight:700;border-top:1px dashed #ccc;margin-top:2px;padding-top:4px;">
-                        <span>${t('المتبقي المطلوب', 'Remaining Due')}</span>
-                        <span>${moneyDec(Math.max(0, Math.round((totals.grandTotal - endSessionDiscount - endSessionPrepaidAmount) * 100) / 100))} ${t('ج', 'EGP')}</span>
-                    </div>
-                </div>
-                ` : ''}
-                ${(() => {
-                    const dueNow = Math.max(0, Math.round((totals.grandTotal - endSessionDiscount - endSessionPrepaidAmount) * 100) / 100);
-                    const creditFromPrepaid = Math.round((totals.grandTotal - endSessionDiscount - endSessionPrepaidAmount) * 100) / 100 < 0
-                        ? Math.abs(Math.round((totals.grandTotal - endSessionDiscount - endSessionPrepaidAmount) * 100) / 100)
-                        : 0;
-                    if (creditFromPrepaid > 0) {
-                        return `
-                <div style="font-size: 13px; margin-bottom: 8px;">
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;font-weight:700;color:#1a8a6b;">
-                        <span>${t('باقي للعميل من المقدم', 'Remaining Credit for Customer')}</span>
-                        <span>${moneyDec(creditFromPrepaid)} ${t('ج', 'EGP')}</span>
-                    </div>
-                </div>`;
-                    }
-                    if (endSessionAmountPaid !== null && endSessionAmountPaid !== undefined) {
-                        const diff = Math.round((endSessionAmountPaid - dueNow) * 100) / 100;
-                        return `
+                ${endSessionAmountPaid !== null && endSessionAmountPaid !== undefined ? `
                 <div style="font-size: 13px; margin-bottom: 8px;">
                     <div style="display:flex;justify-content:space-between;padding:2px 0;">
-                        <span>${t('دفع العميل دلوقتي', 'Amount Paid Now')}</span>
+                        <span>${t('دفع العميل', 'Amount Paid')}</span>
                         <span>${moneyDec(endSessionAmountPaid)} ${t('ج', 'EGP')}</span>
                     </div>
                     <div style="display:flex;justify-content:space-between;padding:2px 0;font-weight:700;">
-                        <span>${diff >= 0 ? t('الباقي للعميل', 'Change Due') : t('باقي على العميل', 'Remaining Owed')}</span>
-                        <span>${moneyDec(Math.abs(diff))} ${t('ج', 'EGP')}</span>
+                        <span>${endSessionAmountPaid >= (totals.grandTotal - endSessionDiscount) ? t('الباقي للعميل', 'Change Due') : t('باقي على العميل', 'Remaining Owed')}</span>
+                        <span>${moneyDec(Math.abs(Math.round((endSessionAmountPaid - (totals.grandTotal - endSessionDiscount)) * 100) / 100))} ${t('ج', 'EGP')}</span>
                     </div>
-                </div>`;
-                    }
-                    return '';
-                })()}
+                </div>
+                ` : ''}
                 <div style="font-size: 13px; margin: 8px 0;">
                     <div style="display:flex;justify-content:space-between;padding:2px 0;">
                         <span>${t('طريقة الدفع', 'Payment Method')}</span>
@@ -2897,11 +2913,12 @@ async function getShiftTotals(shift) {
             sessions: sessRows || [],
             hoursRevenue,
             itemsRevenue,
-            itemBreakdown
+            itemBreakdown,
+            closedBy: shift.closed_by || '—'
         };
     } catch (e) {
         console.error('Error getting shift totals:', e);
-        return { revenue: 0, expenses: 0, profit: 0, expenseRows: [], sessions: [], hoursRevenue: 0, itemsRevenue: 0, itemBreakdown: {} };
+        return { revenue: 0, expenses: 0, profit: 0, expenseRows: [], sessions: [], hoursRevenue: 0, itemsRevenue: 0, itemBreakdown: {}, closedBy: '—' };
     }
 }
 
@@ -2993,19 +3010,28 @@ async function renderShiftView() {
         return;
     }
 
+    // ✅ تحسين الأداء: جلب تفاصيل كل الشيفتات بالتوازي
+    const shiftTotalsPromises = pastShifts.map(shift => getShiftTotals(shift));
+    const allShiftTotals = await Promise.all(shiftTotalsPromises);
+
     let historyHtml = '';
-    for (const shift of pastShifts) {
-        const shiftTotals = await getShiftTotals(shift);
+    for (let i = 0; i < pastShifts.length; i++) {
+        const shift = pastShifts[i];
+        const shiftTotals = allShiftTotals[i];
         const dateStr = new Date(shift.closed_at).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
         const timeStr = new Date(shift.closed_at).toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
         const revLabel = t('إيراد', 'Revenue');
         const expLabel = t('مصروفات', 'Expenses');
         const netLabel = t('صافي الدخل', 'Net Income');
+        const closedByName = shiftTotals.closedBy || '—';
         
         historyHtml += `
             <div class="list-row" style="flex-direction:column;align-items:stretch;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="viewShiftDetails('${shift.id}')">
                 <div style="display:flex;justify-content:space-between;width:100%;margin-bottom:6px;">
-                    <div class="row-title">${dateStr} - ${timeStr}</div>
+                    <div class="row-title">
+                        ${dateStr} - ${timeStr}
+                        ${closedByName !== '—' ? `<span style="display:inline-block;width:8px;height:8px;background:var(--amber);border-radius:50%;margin-left:6px;"></span> ${escapeHtml(closedByName)}` : ''}
+                    </div>
                     <div style="display:flex;gap:8px;align-items:center;">
                         <div style="display:flex;gap:12px;font-size:12px;color:var(--text-dim);">
                             <span>${revLabel} <span class="mono" style="color:var(--text);">${money(shiftTotals.revenue)}</span></span>
@@ -3082,7 +3108,7 @@ async function deleteShift(shiftId) {
     }
 }
 
-function buildShiftBreakdownHtml(totals, extraRowsHtml) {
+function buildShiftBreakdownHtml(totals, extraRowsHtml, closedBy) {
     const itemEntries = Object.entries(totals.itemBreakdown);
     const itemsHtml = itemEntries.length
         ? itemEntries.map(([name, amt]) =>
@@ -3096,12 +3122,18 @@ function buildShiftBreakdownHtml(totals, extraRowsHtml) {
           ).join('')
         : `<div class="empty" style="padding:10px 0;">${t('لا يوجد مصروفات في هذا الشيفت', 'No expenses this shift')}</div>`;
 
+    let closedByRow = '';
+    if (closedBy && closedBy !== '—') {
+        closedByRow = `<div class="list-row"><div class="row-title">${t('أغلق بواسطة', 'Closed By')}</div><div class="row-value mono">${escapeHtml(closedBy)}</div></div>`;
+    }
+
     return `
         <div class="list-row"><div class="row-title">${t('إيراد الساعات', 'Hours Revenue')}</div><div class="row-value mono">${money(totals.hoursRevenue)}</div></div>
         <div class="list-row"><div class="row-title">${t('إيراد المنيو', 'Menu Revenue')}</div><div class="row-value mono">${money(totals.itemsRevenue)}</div></div>
         <div class="list-row"><div class="row-title">${t('إجمالي الإيراد', 'Total Revenue')}</div><div class="row-value mono">${money(totals.revenue)}</div></div>
         <div class="list-row"><div class="row-title">${t('المصروفات', 'Expenses')}</div><div class="row-value mono">${money(totals.expenses)}</div></div>
         <div class="list-row"><div class="row-title">${t('الصافي', 'Net Income')}</div><div class="row-value mono">${money(totals.profit)}</div></div>
+        ${closedByRow}
         ${extraRowsHtml || ''}
         <div class="section-title" style="margin:14px 0 6px;">${t('إيراد المنيو حسب الصنف', 'Menu Revenue by Item')}</div>
         ${itemsHtml}
@@ -3116,7 +3148,7 @@ async function openCloseShiftSheet() {
     }
     const totals = await getShiftTotals(currentShift);
     const extraRow = `<div class="list-row"><div class="row-title">${t('أجهزة لسه شغالة', 'Active Devices')}</div><div class="row-value mono">${Object.keys(sessions).length}</div></div>`;
-    document.getElementById('closeShiftSummary').innerHTML = buildShiftBreakdownHtml(totals, extraRow);
+    document.getElementById('closeShiftSummary').innerHTML = buildShiftBreakdownHtml(totals, extraRow, totals.closedBy);
     openSheet('closeShiftOverlay');
 }
 
@@ -3133,7 +3165,7 @@ async function viewShiftDetails(shiftId) {
     const extraRows = `
         <div class="list-row"><div class="row-title">${t('وقت الفتح', 'Opened At')}</div><div class="row-value mono">${openedStr}</div></div>
         <div class="list-row"><div class="row-title">${t('وقت الإقفال', 'Closed At')}</div><div class="row-value mono">${closedStr}</div></div>`;
-    document.getElementById('shiftDetailsSummary').innerHTML = buildShiftBreakdownHtml(totals, extraRows);
+    document.getElementById('shiftDetailsSummary').innerHTML = buildShiftBreakdownHtml(totals, extraRows, totals.closedBy);
     openSheet('shiftDetailsOverlay');
 }
 
@@ -3616,20 +3648,6 @@ async function refreshStationSheetContent(stationId) {
                 <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
-
-        <div class="section-title">${t('دفع مقدماً', 'Advance Payment')}</div>
-        <div style="background:var(--bg-sunken);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:12px;color:var(--text-dim);">${t('المدفوع مقدماً حالياً', 'Currently Paid in Advance')}</span>
-                <span class="mono" id="currentPrepaidDisplay" style="font-weight:700;color:var(--teal);">${moneyDec(Number(session.prepaid_amount) || 0)} ${t('ج', 'EGP')}</span>
-            </div>
-            <div style="display:flex;gap:8px;">
-                <input type="number" id="addPrepaidInput" class="mono" min="0" step="0.5" placeholder="${t('أضف مبلغ', 'Add amount')}" style="flex:1;">
-                <button class="btn btn-teal" style="flex-shrink:0;" onclick="addPrepaidAmount('${stationId}')">
-                    <i class="fa-solid fa-plus"></i> ${t('إضافة', 'Add')}
-                </button>
-            </div>
-        </div>
         
         ${segments.filter(s => s.ended_at).length > 0 ? `
         <div class="segment-breakdown">
@@ -3673,51 +3691,13 @@ async function refreshStationSheetContent(stationId) {
                 </button>
             </div>
             <button class="btn btn-ghost" onclick="closeSheet('stationOverlay')">${t('رجوع', 'Back')}</button>
-            <button class="btn btn-teal btn-block" onclick="showEndSessionPayment('${stationId}')"><i class="fa-solid fa-stop"></i> ${t('إنهاء الجلسة', 'End Session')}</button>
+            <button class="btn btn-teal btn-block" onclick="handleEndSessionClick('${stationId}')"><i class="fa-solid fa-stop"></i> ${t('إنهاء الجلسة', 'End Session')}</button>
         </div>
         <div class="error-text" id="stationSheetError"></div>
     `;
     
     renderMenuQuickAdd();
     renderStationOrdersSection();
-}
-
-// ============================================================
-// ✅ إضافة مبلغ مقدم أثناء الجلسة (بدون المساس بحسابات الأجزاء/الطلبات/الإجمالي)
-// ============================================================
-async function addPrepaidAmount(stationId) {
-    const session = sessions[stationId];
-    if (!session) return;
-
-    const input = document.getElementById('addPrepaidInput');
-    const addAmount = Math.max(0, parseFloat(input && input.value) || 0);
-    if (addAmount <= 0) {
-        showToast(t('اكتب مبلغ أكبر من صفر', 'Enter an amount greater than zero'), 'warning');
-        return;
-    }
-
-    const currentPrepaid = Number(session.prepaid_amount) || 0;
-    const newPrepaid = Math.round((currentPrepaid + addAmount) * 100) / 100;
-
-    try {
-        const { error } = await supabaseClient.from('sessions').update({ prepaid_amount: newPrepaid }).eq('id', session.id);
-
-        if (error && /column .* does not exist/i.test(error.message || '')) {
-            console.warn('prepaid_amount column missing — cannot save advance payment:', error.message);
-            showToast(t('عمود المبلغ المقدم غير موجود في قاعدة البيانات، ضيفه الأول', 'Advance payment column missing in database — add it first'), 'error');
-            return;
-        }
-        if (error) { throw error; }
-
-        session.prepaid_amount = newPrepaid;
-        if (input) input.value = '';
-        showToast(t(`تمت إضافة ${moneyDec(addAmount)} ج مقدماً`, `Added ${moneyDec(addAmount)} EGP in advance`), 'success');
-
-        await refreshStationSheetContent(stationId);
-    } catch (e) {
-        console.error('Error adding prepaid amount:', e);
-        showToast(t('فشلت إضافة المبلغ المقدم', 'Failed to add advance payment'), 'error');
-    }
 }
 
 // ============================================================
