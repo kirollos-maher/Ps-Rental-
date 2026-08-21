@@ -123,6 +123,10 @@ let currentOrderSessionId = null;
 let selectedPaymentMethod = null;
 let endSessionStationId = null;
 let endingSessionInProgress = false;
+// ✅ منع أي إعادة رسم من الـ realtime أثناء بدء الجلسة + تسجيل الدفعة المقدمة
+// (كان بيحصل Race Condition: حدث realtime لإنشاء الجلسة/الجزء بيوصل قبل ما الدفعة المقدمة تتسجل،
+// فيعمل fetch فاضي للدفعات ويكاش صفر، وبعدين الكاش الفاضي ده بيغلب على تحديث addPrepayment)
+let startingSessionInProgress = false;
 // ✅ حالة الخصم/المبلغ المدفوع لشاشة إنهاء الجلسة
 let currentEndSessionTotals = null;
 let endSessionDiscount = 0;
@@ -1081,7 +1085,7 @@ function handleSessionChange(payload) {
     renderStationsGrid();
     if (document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
     if (document.getElementById('view-shift').classList.contains('active')) renderShiftView();
-    if (activeStationId === row.station_id && !pendingSwitch && !endingSessionInProgress) openStationSheet(activeStationId);
+    if (activeStationId === row.station_id && !pendingSwitch && !endingSessionInProgress && !startingSessionInProgress) openStationSheet(activeStationId);
 }
 
 function handleOrderChange(payload) {
@@ -1101,7 +1105,7 @@ function handleSegmentChange(payload) {
         const row = payload.new;
         sessionSegmentsCache[row.session_id] = null;
         activeSegmentCache[row.session_id] = row.ended_at ? null : row;
-        if (activeStationId && !pendingSwitch && !endingSessionInProgress) {
+        if (activeStationId && !pendingSwitch && !endingSessionInProgress && !startingSessionInProgress) {
             const session = sessions[activeStationId];
             if (session && session.id === row.session_id) {
                 openStationSheet(activeStationId);
@@ -2388,6 +2392,7 @@ async function startSessionWithMode(stationId) {
     
     const now = new Date(nowCorrected()).toISOString();
     
+    startingSessionInProgress = true;
     try {
         const { data: session, error } = await supabaseClient.from('sessions').insert({
             business_id: business.id, 
@@ -2426,12 +2431,17 @@ async function startSessionWithMode(stationId) {
             showToast(t(`اتبدأت الجلسة - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay})`, `Session started - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay})`), 'success');
         }
         
+        // ✅ نفك القفل هنا (بعد ما الدفعة المقدمة اتسجلت فعلاً) عشان الـ realtime يرجع يشتغل عادي
+        startingSessionInProgress = false;
+        
         renderDashboard();
         // ✅ نفتح شيت الجلسة بعد تسجيل الدفعة المقدمة عشان تظهر صح
         setTimeout(() => openStationSheet(stationId), 400);
     } catch (e) {
         console.error('Error starting session:', e);
         errEl.textContent = t('فشل بدء الجلسة', 'Failed to start session');
+    } finally {
+        startingSessionInProgress = false;
     }
 }
 
