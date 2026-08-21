@@ -709,7 +709,11 @@ async function getActiveSegment(sessionId) {
 }
 
 function getActiveSegmentFast(sessionId) {
-    return activeSegmentCache[sessionId] || null;
+    // ✅ لو الكاش فاضي أو null، نجيب من الداتابيز
+    if (!activeSegmentCache[sessionId]) {
+        return null;
+    }
+    return activeSegmentCache[sessionId];
 }
 
 // ============================================================
@@ -732,12 +736,24 @@ async function addPrepayment(sessionId, amount, note) {
     }).select().single();
     if (error) throw error;
 
-    sessionPrepaymentsCache[sessionId] = null; // إبطال الكاش عشان يتجاب تاني
+    // ✅ إبطال الكاش عشان يتجاب تاني
+    sessionPrepaymentsCache[sessionId] = null;
+    
+    // ✅ تحديث واجهة الجلسة الحالية عشان تظهر الدفعة الجديدة
+    if (activeStationId && sessions[activeStationId] && sessions[activeStationId].id === sessionId) {
+        setTimeout(() => {
+            refreshStationSheetContent(activeStationId);
+        }, 300);
+    }
+    
     return data;
 }
 
 async function getSessionPrepayments(sessionId) {
-    if (sessionPrepaymentsCache[sessionId]) return sessionPrepaymentsCache[sessionId];
+    // ✅ لو في كاش، نجيب من الكاش
+    if (sessionPrepaymentsCache[sessionId] !== undefined && sessionPrepaymentsCache[sessionId] !== null) {
+        return sessionPrepaymentsCache[sessionId];
+    }
     try {
         const { data, error } = await supabaseClient
             .from('session_prepayments')
@@ -754,6 +770,7 @@ async function getSessionPrepayments(sessionId) {
         return sessionPrepaymentsCache[sessionId];
     } catch (e) {
         console.warn('Error loading prepayments:', e);
+        sessionPrepaymentsCache[sessionId] = [];
         return [];
     }
 }
@@ -841,7 +858,22 @@ async function fetchWithTimeout(url, ms) {
 }
 
 async function syncServerClock() {
-    // المصدر الأول
+    // ✅ المصدر الأول (الأوثق): وقت Supabase بتاعنا نفسه عن طريق RPC
+    // ده بيعتمد على نفس الاتصال اللي التطبيق أصلاً بينجح يكلمه في كل حتة
+    // تانية (مش على API خارجي ممكن يتحجب من الشبكة/الإضافات زي worldtimeapi)
+    try {
+        const { data, error } = await supabaseClient.rpc('get_server_time');
+        if (!error && data) {
+            const serverTime = new Date(data).getTime();
+            if (!isNaN(serverTime)) {
+                serverClockOffsetMs = serverTime - Date.now();
+                return;
+            }
+        }
+    } catch (e) {
+        // متاح لو الدالة get_server_time لسه متعملتش في قاعدة البيانات، بنكمل على المصادر الاحتياطية
+    }
+    // مصدر احتياطي أول
     try {
         const res = await fetchWithTimeout('https://worldtimeapi.org/api/timezone/Etc/UTC', 4000);
         const data = await res.json();
@@ -850,9 +882,9 @@ async function syncServerClock() {
             return;
         }
     } catch (e) {
-        console.warn('worldtimeapi failed, trying fallback:', e);
+        // متوقع لو الدومين ده محجوب على الشبكة الحالية، بنكمل على المصدر التاني
     }
-    // مصدر احتياطي لو الأول فشل أو بطيء
+    // مصدر احتياطي تاني
     try {
         const res = await fetchWithTimeout('https://timeapi.io/api/Time/current/zone?timeZone=UTC', 4000);
         const data = await res.json();
@@ -861,7 +893,10 @@ async function syncServerClock() {
             if (!isNaN(serverTime)) serverClockOffsetMs = serverTime - Date.now();
         }
     } catch (e) {
-        console.warn('Error syncing server clock (both sources failed):', e);
+        // كل المصادر فشلت (غالباً الشبكة الحالية بتحجب الدومينات الخارجية دي) —
+        // بنسيب serverClockOffsetMs = 0 (يعتمد على ساعة الجهاز) من غير ما نضرب
+        // console.warn عشان ده سيناريو متوقع ومش خطأ حقيقي في التطبيق
+        console.info('Clock sync: using local device time (external time sources unreachable).');
     }
 }
 
@@ -915,7 +950,16 @@ async function calculateTotalAmounts(sessionId) {
         .select('quantity, unit_price')
         .eq('session_id', sessionId);
     const ordersTotal = (orders || []).reduce((sum, o) => sum + (Number(o.quantity) * Number(o.unit_price)), 0);
-    const prepaidTotal = await getPrepaidTotal(sessionId);
+    
+    // ✅ جلب الدفعات المقدمة من الكاش أو الداتابيز
+    let prepaidTotal = 0;
+    try {
+        prepaidTotal = await getPrepaidTotal(sessionId);
+    } catch (e) {
+        console.warn('Error getting prepaid total:', e);
+        prepaidTotal = 0;
+    }
+    
     const grandTotal = Math.round((singleTotal + multiTotal + ordersTotal) * 100) / 100;
     
     return {
@@ -2069,6 +2113,10 @@ async function openStationSheet(stationId) {
 
     currentOrderSessionId = session.id;
 
+    // ✅ تحديث الكاش عشان نجيب أحدث بيانات
+    sessionSegmentsCache[session.id] = null;
+    activeSegmentCache[session.id] = null;
+
     const segments = await getSessionSegments(session.id);
     let activeSeg = segments.find(s => !s.ended_at);
 
@@ -2136,12 +2184,10 @@ async function openStationSheet(stationId) {
                 <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
-        ${totals.prepaidTotal > 0 ? `
-        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;border:1px dashed var(--teal-dim);">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;border:1px dashed ${totals.prepaidTotal > 0 ? 'var(--teal-dim)' : 'var(--border)'};">
             <span style="font-size:12px;color:var(--text-dim);"><i class="fa-solid fa-money-bill-wave"></i> ${t('مدفوع مقدماً', 'Prepaid')}</span>
-            <span class="mono" style="font-size:15px;font-weight:700;color:var(--teal);">${moneyDec(totals.prepaidTotal)} ${t('ج', 'EGP')}</span>
+            <span class="mono" style="font-size:15px;font-weight:700;color:${totals.prepaidTotal > 0 ? 'var(--teal)' : 'var(--text-faint)'};">${moneyDec(totals.prepaidTotal)} ${t('ج', 'EGP')}</span>
         </div>
-        ` : ''}
         
         ${segments.filter(s => s.ended_at).length > 0 ? `
         <div class="segment-breakdown">
@@ -2356,26 +2402,33 @@ async function startSessionWithMode(stationId) {
         
         await createSegment(session.id, mode, now, rate, timerType, durationSeconds);
         
-        // ✅ لو العميل دفع مقدماً قبل ما يقعد، نسجل الدفعة دي على الجلسة الجديدة
-        const prepayInput = document.getElementById('prepaymentInput');
-        const prepayAmount = prepayInput ? (parseFloat(prepayInput.value) || 0) : 0;
-        if (prepayAmount > 0) {
-            try {
-                await addPrepayment(session.id, prepayAmount, t('قبل الجلسة', 'Before session'));
-            } catch (e) {
-                console.warn('Error saving prepayment on start:', e);
-                showToast(t('اتبدأت الجلسة لكن فشل تسجيل الدفعة المقدمة', 'Session started but saving the prepayment failed'), 'error');
-            }
-        }
-        
+        // ✅ تسجيل الجلسة في الـ sessions قبل ما نضيف الدفعة المقدمة
         sessions[stationId] = session;
         renderStationsGrid();
         closeSheet('stationOverlay');
+        
         const timerLabel = timerType === 'countdown' ? t('تنازلي', 'Countdown') : t('تصاعدي', 'Count Up');
         const durationDisplay = timerType === 'countdown' ? ` (${hours} ${t('ساعة', 'hour')})` : '';
-        showToast(t(`اتبدأت الجلسة - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay})`, `Session started - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay})`), 'success');
+        
+        // ✅ لو العميل دفع مقدماً قبل ما يقعد، نسجل الدفعة دي على الجلسة الجديدة
+        const prepayInput = document.getElementById('prepaymentInput');
+        const prepayAmount = prepayInput ? (parseFloat(prepayInput.value) || 0) : 0;
+        
+        if (prepayAmount > 0) {
+            try {
+                await addPrepayment(session.id, prepayAmount, t('قبل الجلسة', 'Before session'));
+                showToast(t(`اتبدأت الجلسة - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay}) + دفعة مقدمة ${moneyDec(prepayAmount)} ج`, `Session started - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay}) + Prepayment ${moneyDec(prepayAmount)} EGP`), 'success');
+            } catch (e) {
+                console.warn('Error saving prepayment on start:', e);
+                showToast(t(`اتبدأت الجلسة - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay}) لكن فشل تسجيل الدفعة المقدمة`, `Session started - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay}) but failed to save prepayment`), 'error');
+            }
+        } else {
+            showToast(t(`اتبدأت الجلسة - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay})`, `Session started - ${mode === 'single' ? 'Single' : 'Multi'} (${timerLabel}${durationDisplay})`), 'success');
+        }
+        
         renderDashboard();
-        setTimeout(() => openStationSheet(stationId), 300);
+        // ✅ نفتح شيت الجلسة بعد تسجيل الدفعة المقدمة عشان تظهر صح
+        setTimeout(() => openStationSheet(stationId), 400);
     } catch (e) {
         console.error('Error starting session:', e);
         errEl.textContent = t('فشل بدء الجلسة', 'Failed to start session');
@@ -2383,7 +2436,7 @@ async function startSessionWithMode(stationId) {
 }
 
 // ============================================================
-// END SESSION WITH PAYMENT - من الملف الشغال
+// END SESSION WITH PAYMENT - مع خيار تمديد الوقت للجلسات التنازلية
 // ============================================================
 function showEndSessionPayment(stationId) {
     endSessionStationId = stationId;
@@ -2393,6 +2446,207 @@ function showEndSessionPayment(stationId) {
     if (!session) { endingSessionInProgress = false; return; }
 
     (async () => {
+        const activeSeg = await getActiveSegment(session.id);
+        
+        // ✅ لو الجلسة تنازلية والوقت خلص أو باقي أقل من 5 ثواني، نعرض خيار التمديد
+        if (activeSeg && activeSeg.timer_type === 'countdown' && activeSeg.duration_seconds) {
+            const remaining = getRemainingSeconds(activeSeg);
+            // لو الوقت خلص (0) أو أقل من 5 ثواني، نعرض خيار التمديد
+            if (remaining <= 5) {
+                showExtendOrEndOptions(stationId, session, activeSeg);
+                return;
+            }
+        }
+        
+        // ✅ باقي الكود القديم (لو الجلسة تصاعدية أو فيها وقت باقي)
+        await proceedToEndSession(stationId, session);
+    })();
+}
+
+// ============================================================
+// ✅ عرض خيارات التمديد أو إنهاء الجلسة (للجلسات التنازلية المنتهية)
+// ============================================================
+function showExtendOrEndOptions(stationId, session, activeSeg) {
+    const st = stations.find(s => s.id === stationId);
+    const stationName = st ? (st.name || t('جهاز', 'Device') + ' ' + st.number) : t('جهاز', 'Device');
+    
+    const body = document.getElementById('stationSheetBody');
+    if (!body) return;
+    
+    // حساب إجمالي الجلسة حتى الآن
+    const start = new Date(activeSeg.started_at);
+    const now = new Date(nowCorrected());
+    const elapsedSeconds = Math.min((now - start) / 1000, activeSeg.duration_seconds || 0);
+    const hoursUsed = elapsedSeconds / 3600;
+    const currentAmount = Math.round((hoursUsed * Number(activeSeg.rate)) * 100) / 100;
+    
+    body.innerHTML = `
+        <div style="text-align:center;margin:20px 0;">
+            <div style="font-size:48px;margin-bottom:8px;">⏰</div>
+            <div style="font-size:22px;font-weight:800;color:var(--amber);">${t('انتهى الوقت!', 'Time\'s up!')}</div>
+            <div style="font-size:14px;color:var(--text-dim);margin-top:4px;">
+                ${t('جهاز', 'Device')} <strong>${escapeHtml(stationName)}</strong>
+            </div>
+            <div style="font-size:13px;color:var(--text-dim);margin-top:4px;">
+                ${t('المدة المستخدمة', 'Time used')}: ${formatElapsed(start)} 
+                (${moneyDec(hoursUsed)} ${t('ساعة', 'hr')})
+            </div>
+            <div style="font-size:16px;font-weight:700;color:var(--amber);margin-top:6px;">
+                ${t('المبلغ المستحق حتى الآن', 'Amount due so far')}: ${moneyDec(currentAmount)} ${t('ج', 'EGP')}
+            </div>
+        </div>
+        
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+            <button class="btn btn-amber btn-block" onclick="showExtendTimeSheet('${stationId}')" style="font-size:16px;padding:16px;">
+                <i class="fa-solid fa-clock"></i> ${t('🔄 تمديد الوقت', 'Extend Time')}
+            </button>
+            <button class="btn btn-teal btn-block" onclick="proceedToEndSession('${stationId}', null)" style="font-size:16px;padding:16px;">
+                <i class="fa-solid fa-stop"></i> ${t('💰 إنهاء الجلسة والدفع', 'End Session & Pay')}
+            </button>
+        </div>
+        <div class="error-text" id="extendError"></div>
+    `;
+}
+
+// ============================================================
+// ✅ عرض شاشة إضافة وقت إضافي للجلسة التنازلية
+// ============================================================
+function showExtendTimeSheet(stationId) {
+    const session = sessions[stationId];
+    if (!session) return;
+    
+    const activeSeg = getActiveSegmentFast(session.id);
+    if (!activeSeg) {
+        showToast(t('لا يوجد جزء نشط للجلسة', 'No active segment found'), 'error');
+        return;
+    }
+    
+    const st = stations.find(s => s.id === stationId);
+    const stationName = st ? (st.name || t('جهاز', 'Device') + ' ' + st.number) : t('جهاز', 'Device');
+    
+    // حساب الوقت المستخدم حتى الآن
+    const start = new Date(activeSeg.started_at);
+    const now = new Date(nowCorrected());
+    const elapsedSeconds = Math.min((now - start) / 1000, activeSeg.duration_seconds || 0);
+    const hoursUsed = elapsedSeconds / 3600;
+    const currentAmount = Math.round((hoursUsed * Number(activeSeg.rate)) * 100) / 100;
+    
+    const body = document.getElementById('stationSheetBody');
+    if (!body) return;
+    
+    body.innerHTML = `
+        <div style="text-align:center;margin:12px 0;">
+            <div style="font-size:28px;margin-bottom:4px;">⏱️</div>
+            <div style="font-size:18px;font-weight:700;">${t('تمديد الوقت', 'Extend Time')}</div>
+            <div style="font-size:13px;color:var(--text-dim);">
+                ${escapeHtml(stationName)} — ${t('المستخدم', 'Used')}: ${formatElapsed(start)} (${moneyDec(hoursUsed)} ${t('ساعة', 'hr')})
+            </div>
+            <div style="font-size:13px;color:var(--text-dim);">
+                ${t('المبلغ المستحق حتى الآن', 'Amount due so far')}: ${moneyDec(currentAmount)} ${t('ج', 'EGP')}
+            </div>
+        </div>
+        
+        <div class="field">
+            <label data-ar="أضف وقت إضافي (بالساعات)" data-en="Add extra time (in hours)">${t('أضف وقت إضافي (بالساعات)', 'Add extra time (in hours)')}</label>
+            <input type="number" id="extendHoursInput" class="mono" step="0.25" min="0.25" value="1" placeholder="مثال: 1.5">
+        </div>
+        <div style="font-size:12px;color:var(--text-dim);margin:-8px 0 12px;text-align:center;">
+            ${t('0.25 = 15 دقيقة، 0.5 = 30 دقيقة، 1 = ساعة، 2 = ساعتين', '0.25 = 15 min, 0.5 = 30 min, 1 = 1 hour, 2 = 2 hours')}
+        </div>
+        
+        <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-ghost" style="flex:1;" onclick="showExtendOrEndOptions('${stationId}', null, null)">
+                <i class="fa-solid fa-arrow-right"></i> ${t('رجوع', 'Back')}
+            </button>
+            <button class="btn btn-amber" style="flex:2;" onclick="confirmExtendTime('${stationId}')">
+                <i class="fa-solid fa-check"></i> ${t('تأكيد التمديد', 'Confirm Extend')}
+            </button>
+        </div>
+        <div class="error-text" id="extendTimeError"></div>
+    `;
+}
+
+// ============================================================
+// ✅ تأكيد تمديد الوقت للجلسة التنازلية
+// ============================================================
+async function confirmExtendTime(stationId) {
+    const session = sessions[stationId];
+    if (!session) {
+        showToast(t('الجلسة غير موجودة', 'Session not found'), 'error');
+        return;
+    }
+    
+    const activeSeg = getActiveSegmentFast(session.id);
+    if (!activeSeg) {
+        showToast(t('لا يوجد جزء نشط للجلسة', 'No active segment found'), 'error');
+        return;
+    }
+    
+    const input = document.getElementById('extendHoursInput');
+    const errEl = document.getElementById('extendTimeError');
+    if (errEl) errEl.textContent = '';
+    
+    const extraHours = parseFloat(input ? input.value : '');
+    if (!extraHours || extraHours <= 0) {
+        if (errEl) errEl.textContent = t('أدخل مدة صحيحة أكبر من صفر', 'Enter a valid duration greater than zero');
+        return;
+    }
+    
+    const extraSeconds = Math.round(extraHours * 3600);
+    if (extraSeconds < 60) {
+        if (errEl) errEl.textContent = t('المدة يجب أن تكون دقيقة على الأقل', 'Duration must be at least 1 minute');
+        return;
+    }
+    
+    try {
+        // ✅ 1. نحسب الوقت المستخدم حتى الآن في الجزء الحالي
+        const start = new Date(activeSeg.started_at);
+        const now = new Date(nowCorrected());
+        const elapsedSeconds = Math.min((now - start) / 1000, activeSeg.duration_seconds || 0);
+        const hoursUsed = elapsedSeconds / 3600;
+        const currentAmount = Math.round((hoursUsed * Number(activeSeg.rate)) * 100) / 100;
+        
+        // ✅ 2. نقفل الجزء الحالي بالمبلغ المستحق
+        await closeSegment(activeSeg.id, now.toISOString(), currentAmount);
+        
+        // ✅ 3. نفتح جزء جديد بنفس الوضع والمعدل مع المدة الجديدة (الوقت المتبقي القديم + الوقت الإضافي)
+        const remainingOld = Math.max(0, (activeSeg.duration_seconds || 0) - elapsedSeconds);
+        const newDuration = remainingOld + extraSeconds;
+        
+        const mode = activeSeg.mode || 'single';
+        const rate = activeSeg.rate || (mode === 'single' ? 20 : 30);
+        const timerType = 'countdown';
+        
+        await createSegment(session.id, mode, now.toISOString(), rate, timerType, newDuration);
+        
+        // ✅ 4. تحديث الكاش
+        activeSegmentCache[session.id] = null;
+        sessionSegmentsCache[session.id] = null;
+        
+        // ✅ 5. نعمل ريفريش للشاشة
+        showToast(t(`✅ تم تمديد الوقت ${extraHours} ساعة`, `✅ Time extended by ${extraHours} hours`), 'success');
+        
+        // ✅ 6. نحدث واجهة الجلسة
+        await refreshStationSheetContent(stationId);
+        
+    } catch (e) {
+        console.error('Error extending time:', e);
+        if (errEl) errEl.textContent = t('فشل تمديد الوقت: ' + e.message, 'Failed to extend time: ' + e.message);
+        showToast(t('فشل تمديد الوقت', 'Failed to extend time'), 'error');
+    }
+}
+
+// ============================================================
+// ✅ متابعة إنهاء الجلسة (الجزء القديم من showEndSessionPayment)
+// ============================================================
+async function proceedToEndSession(stationId, sessionParam) {
+    const session = sessionParam || sessions[stationId];
+    if (!session) { 
+        endingSessionInProgress = false;
+        return; 
+    }
+    
+    try {
         const activeSeg = await getActiveSegment(session.id);
         if (activeSeg && !activeSeg.ended_at) {
             const now = new Date(nowCorrected()).toISOString();
@@ -2525,12 +2779,16 @@ function showEndSessionPayment(stationId) {
         });
         
         selectedPaymentMethod = null;
-    })();
+        
+    } catch (e) {
+        console.error('Error in proceedToEndSession:', e);
+        endingSessionInProgress = false;
+        showToast(t('حصل خطأ، حاول تاني.', 'Error, try again.'), 'error');
+    }
 }
 
-
 // ============================================================
-// SELECT PAYMENT METHOD - من الملف الشغال
+// SELECT PAYMENT METHOD
 // ============================================================
 function selectPaymentMethod(pmId) {
     selectedPaymentMethod = pmId;
@@ -2606,7 +2864,7 @@ function updatePaymentCalculation() {
 }
 
 // ============================================================
-// CANCEL END SESSION (Back button) - من الملف الشغال
+// CANCEL END SESSION (Back button)
 // ============================================================
 function cancelEndSession() {
     const stationId = endSessionStationId || activeStationId;
@@ -2623,7 +2881,7 @@ function cancelEndSession() {
 }
 
 // ============================================================
-// CONFIRM END SESSION WITH PAYMENT - من الملف الشغال
+// CONFIRM END SESSION WITH PAYMENT
 // ============================================================
 async function confirmEndSessionWithPayment() {
     if (!selectedPaymentMethod) {
@@ -3022,7 +3280,8 @@ async function renderShiftView() {
             .lt('closed_at', endDate.toISOString());
     }
     
-    const { data: pastShifts } = await query.limit(50);
+    // ✅ Limit to last 30 shifts for performance
+    const { data: pastShifts } = await query.limit(30);
     
     const histEl = document.getElementById('shiftHistory');
     
@@ -3046,19 +3305,31 @@ async function renderShiftView() {
         return;
     }
 
+    // ✅ Load all shift totals in parallel for better performance
+    const shiftPromises = pastShifts.map(shift => getShiftTotals(shift));
+    const shiftTotalsResults = await Promise.all(shiftPromises);
+    
     let historyHtml = '';
-    for (const shift of pastShifts) {
-        const shiftTotals = await getShiftTotals(shift);
+    for (let i = 0; i < pastShifts.length; i++) {
+        const shift = pastShifts[i];
+        const shiftTotals = shiftTotalsResults[i];
         const dateStr = new Date(shift.closed_at).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
         const timeStr = new Date(shift.closed_at).toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
         const revLabel = t('إيراد', 'Revenue');
         const expLabel = t('مصروفات', 'Expenses');
         const netLabel = t('صافي الدخل', 'Net Income');
         
+        // ✅ Show who closed the shift with a small orange badge
+        const closedBy = shift.closed_by || t('غير معروف', 'Unknown');
+        const closedByBadge = `<span class="badge badge-amber" style="font-size:9px;padding:1px 8px;">👤 ${escapeHtml(closedBy)}</span>`;
+        
         historyHtml += `
             <div class="list-row" style="flex-direction:column;align-items:stretch;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="viewShiftDetails('${shift.id}')">
                 <div style="display:flex;justify-content:space-between;width:100%;margin-bottom:6px;">
-                    <div class="row-title">${dateStr} - ${timeStr}</div>
+                    <div class="row-title" style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                        ${dateStr} - ${timeStr}
+                        ${closedByBadge}
+                    </div>
                     <div style="display:flex;gap:8px;align-items:center;">
                         <div style="display:flex;gap:12px;font-size:12px;color:var(--text-dim);">
                             <span>${revLabel} <span class="mono" style="color:var(--text);">${money(shiftTotals.revenue)}</span></span>
@@ -3195,6 +3466,9 @@ async function confirmCloseShift() {
     const totals = await getShiftTotals(currentShift);
     const closedAt = new Date().toISOString();
     
+    // ✅ Get the name of who's closing the shift
+    const closedByName = currentUser ? (currentUser.name || currentUser.type || t('غير معروف', 'Unknown')) : t('غير معروف', 'Unknown');
+    
     const { data, error } = await supabaseClient
         .from('shifts')
         .update({ 
@@ -3203,7 +3477,7 @@ async function confirmCloseShift() {
             total_revenue: totals.revenue, 
             total_expenses: totals.expenses, 
             total_profit: totals.profit, 
-            closed_by: currentUser.name || currentUser.type 
+            closed_by: closedByName
         })
         .eq('id', currentShift.id)
         .select();
@@ -3613,6 +3887,10 @@ async function refreshStationSheetContent(stationId) {
     const session = sessions[stationId];
     if (!session || !st) return;
     
+    // ✅ تحديث الكاش عشان نجيب أحدث بيانات
+    sessionSegmentsCache[session.id] = null;
+    activeSegmentCache[session.id] = null;
+    
     const body = document.getElementById('stationSheetBody');
     if (!body) return;
     
@@ -3669,12 +3947,10 @@ async function refreshStationSheetContent(stationId) {
                 <div class="mono" style="font-size:18px;font-weight:700;color:var(--amber);" id="overallTotalAmount" data-base-total="${totals.grandTotal}">${moneyDec(liveGrandTotal)}</div>
             </div>
         </div>
-        ${totals.prepaidTotal > 0 ? `
-        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;border:1px dashed var(--teal-dim);">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-sunken);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;border:1px dashed ${totals.prepaidTotal > 0 ? 'var(--teal-dim)' : 'var(--border)'};">
             <span style="font-size:12px;color:var(--text-dim);"><i class="fa-solid fa-money-bill-wave"></i> ${t('مدفوع مقدماً', 'Prepaid')}</span>
-            <span class="mono" style="font-size:15px;font-weight:700;color:var(--teal);">${moneyDec(totals.prepaidTotal)} ${t('ج', 'EGP')}</span>
+            <span class="mono" style="font-size:15px;font-weight:700;color:${totals.prepaidTotal > 0 ? 'var(--teal)' : 'var(--text-faint)'};">${moneyDec(totals.prepaidTotal)} ${t('ج', 'EGP')}</span>
         </div>
-        ` : ''}
         
         ${segments.filter(s => s.ended_at).length > 0 ? `
         <div class="segment-breakdown">
